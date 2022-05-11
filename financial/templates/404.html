@@ -1,11 +1,6 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    {{ super() }}
-    <style>
-        body {
-            background-image: none
-        }
-    </style>
-    <p class="page_not_found">Page not found. Go to <a href="{{ url_for('financial.home_page') }}">Homepage</a>
-{% endblock %}
+<style>
+    body {
+        background-image: none
+    }
+</style>
+<p class="page_not_found">Page not found. Go to <a href="{{ url_for('financial.home_page') }}">Homepage</a>

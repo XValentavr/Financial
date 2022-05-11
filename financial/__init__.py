@@ -6,7 +6,6 @@ Defines all the needed variables for proper app functioning
 # standard library imports
 import os
 
-from financial.logging import create_logger
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from configuration import Config
@@ -18,8 +17,6 @@ login_manager = LoginManager()
 
 
 def create_app():
-    # create logger
-    create_logger()
     # create app
     app = Flask(__name__)
     app.config.from_object(Config)

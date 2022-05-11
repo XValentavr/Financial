@@ -1,27 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <link type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet"/>
+    <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+
 </head>
 <body>
-{% block content -%}
-    {%- block mainmenu -%}
-        <ul class="mainmenu">
-            {% if current_user.is_authenticated %}
-                <li class="last"><a href="{{ url_for('financial.logout') }}">Logout</a></li>
-            {% else %}
-                <li class="last"><a href="{{ url_for('financial.login') }}">Login</a></li>
-            {% endif %}
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container-fluid">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fa fa-bars"></span> Menu
+        </button>
+        {% if current_user.is_authenticated %}
+            <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav m-auto">
+            <li class="nav-item active"><a href="{{ url_for('financial.home_page') }}" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item"><a href="#" class="nav-link">Оплата</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Доход</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Расход</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Перемещение</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Обмен</a></li>
+            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Logout</a></li>
+        {% else %}
+
+        {% endif %}
         </ul>
-    {% endblock mainmenu -%}
-    <style>
-        body {
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-size: cover;
-        }
-    </style>
-{% endblock %}
+        </div>
+    </div>
+</nav>
+
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/main.js"></script>
+
 </body>
 </html>
 

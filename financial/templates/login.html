@@ -1,95 +1,90 @@
-{% extends 'base.html' %}
-{% block content %}
-    {{ super() }}
-    <!doctype html>
-    <html lang="en">
-    <head>
-        <title>Login</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
 
-        <link rel="stylesheet" href="static/css/style.css">
-
-    </head>
-    <body>
-    <section class="ftco-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 text-center mb-5">
-                    <h2 class="heading-section">Авторизация</h2>
-                </div>
+</head>
+<body>
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">Авторизация</h2>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-md-7 col-lg-5">
-                    <div class="wrap">
-                        <div class="login-wrap p-4 p-md-5">
-                            <div class="d-flex">
-                                <div class="w-100">
-                                    <h3 class="mb-4">Sign In</h3>
-                                </div>
-                                <div class="w-100">
-                                </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-5">
+                <div class="wrap">
+                    <div class="login-wrap p-4 p-md-5">
+                        <div class="d-flex">
+                            <div class="w-100">
+                                <h3 class="mb-4">Sign In</h3>
                             </div>
-                            {% for cat, msg in get_flashed_messages(True) %}
-                                <div class="flash {{ cat }}">{{ msg }}</div>
-                            {% endfor %}
-                            <form action="" method="post" class="form-contact">
-                                {{ form.hidden_tag() }}
-                                {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
-                                    <p>                                    {% if field.errors %}
-                                        {{ field(class="invalid") }}
-                                        <span class="invalid-feedback">
+                            <div class="w-100">
+                            </div>
+                        </div>
+                        {% for cat, msg in get_flashed_messages(True) %}
+                            <div class="flash {{ cat }}">{{ msg }}</div>
+                        {% endfor %}
+                        <form action="" method="post" class="form-contact">
+                            {{ form.hidden_tag() }}
+                            {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
+                                <p>                                    {% if field.errors %}
+                                    {{ field(class="invalid") }}
+                                    <span class="invalid-feedback">
 		{% for e in field.errors %}
             {{ e }}
         {% endfor %}
 	</span>
-                                    {% else %}
-                                        {% if field.name=='username' %}
-                                            <div class="form-group mt-3">
-                                                {{ field(class="form-control") }}
-                                            </div>
-                                        {% endif %}
-                                        {% if field.name=='password' %}
-                                            <div class="form-group">
-                                                {{ field(id="password-field",class="form-control" ) }}
-                                                <span toggle="#password-field"
-                                                      class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                            </div>
-                                        {% endif %}
+                                {% else %}
+                                    {% if field.name=='username' %}
+                                        <div class="form-group mt-3">
+                                            {{ field(class="form-control") }}
+                                        </div>
                                     {% endif %}
-                                {% endfor %}
+                                    {% if field.name=='password' %}
+                                        <div class="form-group">
+                                            {{ field(id="password-field",class="form-control" ) }}
+                                            <span toggle="#password-field"
+                                                  class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <div class="form-group">
                                 <div class="form-group">
-                                    <div class="form-group">
-                                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">
-                                            Sign
-                                            In
-                                        </button>
-                                    </div>
+                                    <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                                        Sign
+                                        In
+                                    </button>
                                 </div>
-                                <div class="form-group d-md-flex">
-                                    <div class="w-50 text-left">
-                                        <label class="checkbox-wrap checkbox-primary mb-0">Remember Me
-                                            <input type="checkbox" checked>
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="form-group d-md-flex">
+                                <div class="w-50 text-left">
+                                    <label class="checkbox-wrap checkbox-primary mb-0">Remember Me
+                                        <input type="checkbox" checked>
+                                        <span class="checkmark"></span>
+                                    </label>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-    </section>
+        </div>
+</section>
 
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/popper.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-    <script src="static/js/main.js"></script>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/main.js"></script>
 
-    </body>
-    </html>
-{% endblock %}
+</body>
+</html>
