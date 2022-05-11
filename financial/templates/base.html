@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet"/>
+</head>
+<body>
+{% block content -%}
+    {%- block mainmenu -%}
+        <ul class="mainmenu">
+            {% if current_user.is_authenticated %}
+                <li class="last"><a href="{{ url_for('financial.logout') }}">Logout</a></li>
+            {% else %}
+                <li class="last"><a href="{{ url_for('financial.login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    {% endblock mainmenu -%}
+    <style>
+        body {
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+{% endblock %}
+</body>
+</html>
+
+
