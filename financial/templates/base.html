@@ -13,61 +13,57 @@
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-    <div class="container-fluid">
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="fa fa-bars"></span> Menu
-        </button>
-        {% if current_user.is_authenticated %}
-            <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav m-auto">
-            {% if not user and superuser %}
-                <li class="nav-item"><a href="{{ url_for('financial.add') }}" class="nav-link">Добавить пользователя</a>
-                </li>
-                <li class="nav-item"><a href="{{ url_for('financial.pay') }}" class="nav-link">Оплата</a></li>
-            {% endif %}
-            <li class="nav-item"><a href="{{ url_for('financial.income') }}" class="nav-link">Доход</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.outcome') }}" class="nav-link">Расход</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.move') }}" class="nav-link">Перемещение</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.exchange') }}" class="nav-link">Обмен</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Выйти</a>
-            </li>
-        {% endif %}
-        </ul>
-        </div>
-    </div>
-</nav>
-<div class='right'>
-    <p><br></p>
-    <p id="seif" class="pmoney"></p>
-    <p id="wallet" class="pmoney"></p>
-    <p id="bank" class="pmoney"></p>
-    <p id="crypto" class="pmoney"></p>
-
-
-    <div class='inner'>
-        <div class="dropdown">
-            <button class="dropbtn">Валюта</button>
-            <div class="dropdown-content">
-                <a href='#' onclick="currency('$')" id='usd'>$</a>
-                <a href='#' onclick="currency('€')" id='eu'>€</a>
-                <a href='#' onclick="currency('₽')" id='rubble'>₽</a>
-                <a href='#' onclick="currency('UAH')" id='uah'>UAH</a>
+{% block content -%}
+    {%- block mainmenu -%}
+        <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                        aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fa fa-bars"></span> Menu
+                </button>
+                {% if current_user.is_authenticated %}
+                    <div class="collapse navbar-collapse" id="ftco-nav">
+                    <ul class="navbar-nav m-auto">
+                    {% if not user and superuser %}
+                        <li class="nav-item"><a href="{{ url_for('financial.add') }}" class="nav-link">Добавить
+                            пользователя</a>
+                        </li>
+                        <li class="nav-item"><a href="{{ url_for('financial.pay') }}" class="nav-link">Оплата</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a href="{{ url_for('financial.income') }}" class="nav-link">Доход</a></li>
+                    <li class="nav-item"><a href="{{ url_for('financial.outcome') }}" class="nav-link">Расход</a></li>
+                    <li class="nav-item"><a href="{{ url_for('financial.move') }}" class="nav-link">Перемещение</a></li>
+                    <li class="nav-item"><a href="{{ url_for('financial.exchange') }}" class="nav-link">Обмен</a></li>
+                    <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Выйти</a>
+                    </li>
+                {% endif %}
+                </ul>
+                </div>
+            </div>
+        </nav>
+    {% endblock mainmenu -%}
+    <div class='right'>
+        <p><br></p>
+        <p id="seif" class="pmoney"></p>
+        <p id="wallet" class="pmoney"></p>
+        <p id="bank" class="pmoney"></p>
+        <p id="crypto" class="pmoney"></p>
+        <div class='inner'>
+            <div class="dropdown">
+                <button class="dropbtn">Валюта</button>
+                <div class="dropdown-content">
+                    <a href='#' onclick="currency('$')" id='usd'>$</a>
+                    <a href='#' onclick="currency('€')" id='eu'>€</a>
+                    <a href='#' onclick="currency('₽')" id='rubble'>₽</a>
+                    <a href='#' onclick="currency('UAH')" id='uah'>UAH</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<p id="session" hidden>{{ session['UUID'] }}</p>
-
-<script src="{{ url_for('static', filename='js/purse.js') }}"></script>
-<script src="static/js/jquery.min.js"></script>
-<script src="static/js/popper.js"></script>
-<script src="static/js/bootstrap.min.js"></script>
-<script src="static/js/main.js"></script>
-
-</body>
+    <p id="session" hidden>{{ session['UUID'] }}</p>
+    <script src="{{ url_for('static', filename='js/purse.js') }}"></script>
+    </body>
+{% endblock %}
 </html>
 
 
