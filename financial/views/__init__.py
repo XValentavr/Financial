@@ -13,9 +13,13 @@ from flask import render_template, redirect, session, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 from . import WTForm
 from ..models.users import Users
-from werkzeug.security import check_password_hash
 from financial import login_manager
-from financial.service.users import get_user_by_name
+from financial.service.users import get_user_by_name, get_super_user_by_name
+from . import income
+from . import outcome
+from . import moving
+from . import exchange
+from . import pay
 
 
 @login_manager.user_loader
@@ -24,15 +28,6 @@ def load_user(user_UUID):
 
 
 # because the blueprint must be registered before importing the views
-
-
-@financial.route('/home')
-@login_required
-def home_page():
-    """
-    Render the home page template on the / route
-    """
-    return render_template('index.html', session=session)
 
 
 @financial.route('/', methods=["POST", "GET"])
@@ -47,16 +42,25 @@ def login():
     """
     session.permanent = True
     if current_user.is_authenticated:
-        return redirect(url_for('financial.home_page'))
+        return redirect(url_for('financial.income'))
     form = WTForm.LoginForm()
     if form.validate_on_submit():
-        root_user = get_user_by_name(form.username.data)
-        if not root_user:
+        root_user = get_user_by_name(form.username.data, form.password.data)
+        superuser = get_super_user_by_name(form.username.data, form.password.data)
+        if not root_user and not superuser:
             return redirect(url_for('financial.login'))
-        if not check_password_hash(root_user.password, form.password.data):
-            return redirect(url_for('financial.login'))
-        login_user(root_user)
-        return redirect(url_for('financial.home_page'))
+        if root_user and not superuser:
+            login_user(root_user)
+            session['superuser'] = False
+            session['user'] = True
+            return render_template('base.html', superuser=False, user=True)
+
+        elif root_user and superuser:
+            login_user(superuser)
+            session['superuser'] = True
+            session['user'] = False
+            return render_template('base.html', superuser=True, user=False)
+
     return render_template('login.html', form=form)
 
 
@@ -68,6 +72,9 @@ def logout():
     Allow employee to logout moving to home page.
     """
     logout_user()
+    del session['superuser']
+    del session['user']
+
     return redirect(url_for('financial.login'))
 
 

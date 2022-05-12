@@ -128,15 +128,15 @@
 }
 
 .btn.btn-primary {
-    background: #01d28e !important;
-    border: 1px solid #01d28e !important;
+    background: gray !important;
+    border: 1px solid lightgray !important;
     color: #fff !important;
 }
 
 .btn.btn-primary:hover {
-    border: 1px solid #01d28e;
+    border: 1px solid gray;
     background: transparent;
-    color: #01d28e;
+    color: gray;
 }
 
 
@@ -320,13 +320,13 @@ a:not([href]):not([tabindex]):focus {
 }
 
 .btn-primary {
-    color: #fff;
+    color: lightgray;
     background-color: #007bff;
     border-color: #007bff;
 }
 
 .btn-primary:hover {
-    color: #fff;
+     color: lightgray;
     background-color: #0069d9;
     border-color: #0062cc;
 }
@@ -529,7 +529,6 @@ a:not([href]):not([tabindex]):focus {
     }
 
 }
-
 
 
 .bg-dark {

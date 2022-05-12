@@ -23,14 +23,14 @@
         {% if current_user.is_authenticated %}
             <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav m-auto">
-            <li class="nav-item active"><a href="{{ url_for('financial.home_page') }}" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item"><a href="#" class="nav-link">Оплата</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Доход</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Расход</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Перемещение</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Обмен</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Logout</a></li>
+            {% if not user and superuser %}
+                <li class="nav-item"><a href="{{ url_for('financial.pay') }}" class="nav-link">Оплата</a></li>
+            {% endif %}
+            <li class="nav-item"><a href="{{ url_for('financial.income') }}" class="nav-link">Доход</a></li>
+            <li class="nav-item"><a href="{{ url_for('financial.outcome') }}" class="nav-link">Расход</a></li>
+            <li class="nav-item"><a href="{{ url_for('financial.move') }}" class="nav-link">Перемещение</a></li>
+            <li class="nav-item"><a href="{{ url_for('financial.exchange') }}" class="nav-link">Обмен</a></li>
+            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Выйти</a></li>
         {% else %}
 
         {% endif %}
