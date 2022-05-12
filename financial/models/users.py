@@ -20,7 +20,7 @@ class Users(UserMixin, database.Model):
     __tablename__ = 'user'
 
     #: admin's database id
-    id = database.Column(database.Integer(), primary_key=True)
+    id = database.Column(database.Integer(), database.ForeignKey('accountstatus.user'), primary_key=True)
 
     #: admin's name
     name = database.Column(database.String(length=255), nullable=False, unique=True)
@@ -38,6 +38,13 @@ class Users(UserMixin, database.Model):
         self.password = password
         #: admin's uuid
         self.UUID = UUID
+
+    def __repr__(self):
+        """
+        The representation of the department
+        :return: the string, representing the department of hospital by its name
+        """
+        return '<Users: {}>'.format(self.name)
 
 
 class SuperUser(UserMixin, database.Model):

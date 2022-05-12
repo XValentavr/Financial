@@ -326,7 +326,7 @@ a:not([href]):not([tabindex]):focus {
 }
 
 .btn-primary:hover {
-     color: lightgray;
+    color: lightgray;
     background-color: #0069d9;
     border-color: #0062cc;
 }
@@ -626,6 +626,19 @@ body {
     opacity: 1 !important;
 }
 
+.ftco-navbar-light .navbar-nav > .nav-item > .nav-link {
+    font-size: 11px;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-weight: 500;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    opacity: 1 !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
     .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:before {
@@ -688,4 +701,75 @@ body {
     font-size: 12px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.3);
+}
+
+
+.accounts {
+    margin-top: 10px;
+    margin-right: 10px;
+    width: 25%;
+    height: 300px;
+    float: right;
+    background-color: yellow;
+}
+
+
+.dropbtn {
+    background-color: gray;
+    color: white;
+    padding: 10px;
+    font-size: 10px;
+    border: none;
+    float: right;
+}
+
+
+.dropdown-content {
+    display: none;
+    background-color: #f1f1f1;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    float: right;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: gray;
+}
+
+@media screen and (max-width: 500px) {
+
+    .accounts {
+        width: 20%;
+        height: 250px;
+
+    }
+
+    .dropbtn {
+        font-size: 5px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 1px 1px;
+        text-decoration: none;
+        display: block;
+
+    }
 }

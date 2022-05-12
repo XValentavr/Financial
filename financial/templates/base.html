@@ -30,14 +30,25 @@
             <li class="nav-item"><a href="{{ url_for('financial.outcome') }}" class="nav-link">Расход</a></li>
             <li class="nav-item"><a href="{{ url_for('financial.move') }}" class="nav-link">Перемещение</a></li>
             <li class="nav-item"><a href="{{ url_for('financial.exchange') }}" class="nav-link">Обмен</a></li>
-            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Выйти</a></li>
-        {% else %}
-
+            <li class="nav-item"><a href="{{ url_for('financial.logout') }}" class="nav-link">Выйти</a>
+            </li>
         {% endif %}
         </ul>
         </div>
     </div>
 </nav>
+<div class="accounts">
+    <p style="text-align: center">Остатки</p>
+    <div class="dropdown">
+        <button class="dropbtn">Валюта</button>
+        <div class="dropdown-content">
+            <a href="#">$</a>
+            <a href="#">€</a>
+            <a href="#">₽</a>
+            <a href="#">UAH</a>
+        </div>
+    </div>
+</div>
 
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/popper.js"></script>
