@@ -16,27 +16,20 @@ class Users(UserMixin, database.Model):
 
     """
 
-    #: Name of the database table storing admin
     __tablename__ = 'user'
 
-    #: admin's database id
-    id = database.Column(database.Integer(), database.ForeignKey('accountstatus.user'), primary_key=True)
+    id = database.Column(database.Integer(), database.ForeignKey('accountstatus.user'), primary_key=True,
+                         autoincrement=True)
 
-    #: admin's name
     name = database.Column(database.String(length=255), nullable=False, unique=True)
 
-    #: admin's full name
     password = database.Column(database.String(length=255), nullable=False)
 
-    #: admin's avatar
     UUID = database.Column(database.String(length=255), nullable=False)
 
     def __init__(self, name, password, UUID):
-        #: admin's name
         self.name = name
-        #: admin's date of birth
         self.password = password
-        #: admin's uuid
         self.UUID = UUID
 
     def __repr__(self):

@@ -1,6 +1,5 @@
 from financial import database
 from financial.models.accounts import Accounts
-from financial.models.users import Users
 
 
 class Accountstatus(database.Model):
@@ -25,13 +24,9 @@ class Accountstatus(database.Model):
         :return: the department in json format
         """
         return {
-            'id': self.id,
             'account': Accounts.query.get_or_404(self.account).name
             if self.account is not None else None,
-            'money': self.money,
-            'user': Users.query.get_or_404(self.user).name
-            if self.user is not None else None,
-
+            'money': self.money
         }
 
     def __repr__(self):

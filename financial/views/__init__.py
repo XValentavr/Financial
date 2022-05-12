@@ -20,7 +20,7 @@ from . import outcome
 from . import moving
 from . import exchange
 from . import pay
-from financial.service.accounts import get_account_money
+from . import adduser
 
 
 @login_manager.user_loader
@@ -54,15 +54,16 @@ def login():
             login_user(root_user)
             session['superuser'] = False
             session['user'] = True
-            get_account_money(root_user.id)
-            return render_template('base.html', superuser=False, user=True)
+            session['UUID'] = root_user.UUID
+            return render_template('base.html', superuser=False, user=True, session=session)
 
         elif root_user and superuser:
             login_user(superuser)
+            session['UUID'] = superuser.UUID
             session['superuser'] = True
             session['user'] = False
-            get_account_money(root_user.id)
-            return render_template('base.html', superuser=True, user=False)
+
+            return render_template('base.html', superuser=True, user=False, session=session)
 
     return render_template('login.html', form=form)
 

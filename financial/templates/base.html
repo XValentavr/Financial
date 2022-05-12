@@ -24,6 +24,8 @@
             <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav m-auto">
             {% if not user and superuser %}
+                <li class="nav-item"><a href="{{ url_for('financial.add') }}" class="nav-link">Добавить пользователя</a>
+                </li>
                 <li class="nav-item"><a href="{{ url_for('financial.pay') }}" class="nav-link">Оплата</a></li>
             {% endif %}
             <li class="nav-item"><a href="{{ url_for('financial.income') }}" class="nav-link">Доход</a></li>
@@ -37,19 +39,29 @@
         </div>
     </div>
 </nav>
-<div class="accounts">
-    <p style="text-align: center">Остатки</p>
-    <div class="dropdown">
-        <button class="dropbtn">Валюта</button>
-        <div class="dropdown-content">
-            <a href="#">$</a>
-            <a href="#">€</a>
-            <a href="#">₽</a>
-            <a href="#">UAH</a>
+<div class='right'>
+    <p><br></p>
+    <p id="seif" class="pmoney"></p>
+    <p id="wallet" class="pmoney"></p>
+    <p id="bank" class="pmoney"></p>
+    <p id="crypto" class="pmoney"></p>
+
+
+    <div class='inner'>
+        <div class="dropdown">
+            <button class="dropbtn">Валюта</button>
+            <div class="dropdown-content">
+                <a href='#' onclick="currency('$')" id='usd'>$</a>
+                <a href='#' onclick="currency('€')" id='eu'>€</a>
+                <a href='#' onclick="currency('₽')" id='rubble'>₽</a>
+                <a href='#' onclick="currency('UAH')" id='uah'>UAH</a>
+            </div>
         </div>
     </div>
 </div>
+<p id="session" hidden>{{ session['UUID'] }}</p>
 
+<script src="{{ url_for('static', filename='js/purse.js') }}"></script>
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/popper.js"></script>
 <script src="static/js/bootstrap.min.js"></script>

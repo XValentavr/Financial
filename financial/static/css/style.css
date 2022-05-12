@@ -155,7 +155,6 @@ body {
     line-height: 1.5;
     color: #212529;
     text-align: left;
-    background-color: #fff;
 }
 
 a {
@@ -185,7 +184,7 @@ a:not([href]):not([tabindex]):focus {
 
 
 .container {
-    width: 100%;
+    width: 20%;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
@@ -592,7 +591,6 @@ body {
     font-size: 16px;
     line-height: 1.8;
     font-weight: normal;
-    background: #fafafa;
     color: gray;
 }
 
@@ -624,6 +622,22 @@ body {
     letter-spacing: 2px;
     position: relative;
     opacity: 1 !important;
+}
+
+.last {
+    font-size: 11px;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-weight: 500;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    opacity: 1 !important;
+    text-align: left;
+
 }
 
 .ftco-navbar-light .navbar-nav > .nav-item > .nav-link {
@@ -713,6 +727,30 @@ body {
     background-color: yellow;
 }
 
+.right {
+    float: right;
+    width: 300px;
+    position: relative;
+}
+.left {
+    float: left;
+    width: 300px;
+    position: relative;
+}
+.pmoney {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.inner {
+    padding-top: 10px;
+    padding-right: 10px;
+    color: blue;
+    width: 70px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
 
 .dropbtn {
     background-color: gray;
@@ -755,9 +793,8 @@ body {
 
 @media screen and (max-width: 500px) {
 
-    .accounts {
-        width: 20%;
-        height: 250px;
+    .right {
+        width: 25%;
 
     }
 
