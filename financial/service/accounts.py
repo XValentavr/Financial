@@ -1,6 +1,6 @@
 from financial.models.accounts import Accounts
 from financial.models.accountstatus import Accountstatus
-from financial.service.moneysum import inser_into_money_sum
+from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
 from financial import database
 
 
@@ -45,15 +45,21 @@ def insert_account(form, summa: float, currency: str, wallet: str, info: str, da
     """
     symbol = dict(form.currency.choices)[int(form.currency.data)]
     currency = form.currency.data
-    inser_into_money_sum(summa, user, currency, wallet)
-    # accounts = Accountstatus(money=11, date=date, comments=info)
-    # database.session.add(accounts)
-    # database.session.commit()
+    summas = get_to_sum(user, wallet, currency)
+    if summas:
+        for summas in summas:
+            summas.moneysum += float(summa)
+            update_summa(summas, summas.moneysum, user, currency, wallet, date, info)
+    else:
+        inser_into_money_sum(summa, user, currency, wallet)
+        accounts = Accountstatus(money=85, date=date, comments=info)
+        database.session.add(accounts)
+        database.session.commit()
 
 
 def get_name_account():
     """
-    This module gets account name of value
+    This module gets account name of valuex
     :return: list of account name
     """
     from financial import create_app

@@ -19,11 +19,4 @@ class Moneysum(database.Model):
     currencyid = database.relationship('Currency', backref='money_sum',
                                        lazy='dynamic')
     accountid = database.relationship('Accounts', backref='money_sum',
-                                    lazy='dynamic')
-
-    def __repr__(self):
-        """
-        The representation of the department
-        :return: the string, representing the department of hospital by its name
-        """
-        return '<Currency: {}>'.format(self.name)
+                                      lazy='dynamic')
