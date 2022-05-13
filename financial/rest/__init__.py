@@ -11,6 +11,6 @@ from . import purse
 def create_api(application):
     api = Api(application)
 
-    api.add_resource(purse.Purse, '/api/purse/<identifier>')
+    api.add_resource(purse.Purse, "/api/purse/<identifier>")
 
     return api

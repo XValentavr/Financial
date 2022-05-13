@@ -7,7 +7,7 @@ Also handle an error status
 # pylint: disable=cyclic-import
 from flask import Blueprint
 
-financial = Blueprint('financial', __name__)
+financial = Blueprint("financial", __name__)
 
 from flask import render_template, redirect, session, url_for
 from flask_login import login_user, login_required, logout_user, current_user
@@ -31,8 +31,8 @@ def load_user(user_UUID):
 # because the blueprint must be registered before importing the views
 
 
-@financial.route('/', methods=["POST", "GET"])
-@financial.route('/login', methods=["POST", "GET"])
+@financial.route("/", methods=["POST", "GET"])
+@financial.route("/login", methods=["POST", "GET"])
 def login():
     """
     Handle requests to the /login route
@@ -43,32 +43,36 @@ def login():
     """
     session.permanent = True
     if current_user.is_authenticated:
-        return redirect(url_for('financial.income'))
+        return redirect(url_for("financial.income"))
     form = LoginForm()
     if form.validate_on_submit():
         root_user = get_user_by_name(form.username.data, form.password.data)
         superuser = get_super_user_by_name(form.username.data, form.password.data)
         if not root_user and not superuser:
-            return redirect(url_for('financial.login'))
+            return redirect(url_for("financial.login"))
         if root_user and not superuser:
             login_user(root_user)
-            session['superuser'] = False
-            session['user'] = True
-            session['UUID'] = root_user.UUID
-            return render_template('base.html', superuser=False, user=True, session=session)
+            session["superuser"] = False
+            session["user"] = True
+            session["UUID"] = root_user.UUID
+            return render_template(
+                "base.html", superuser=False, user=True, session=session
+            )
 
         elif root_user and superuser:
             login_user(superuser)
-            session['UUID'] = superuser.UUID
-            session['superuser'] = True
-            session['user'] = False
+            session["UUID"] = superuser.UUID
+            session["superuser"] = True
+            session["user"] = False
 
-            return render_template('base.html', superuser=True, user=False, session=session)
+            return render_template(
+                "base.html", superuser=True, user=False, session=session
+            )
 
-    return render_template('login.html', form=form)
+    return render_template("login.html", form=form)
 
 
-@financial.route('/logout')
+@financial.route("/logout")
 @login_required
 def logout():
     """
@@ -76,10 +80,10 @@ def logout():
     Allow employee to logout moving to home page.
     """
     logout_user()
-    del session['superuser']
-    del session['user']
+    del session["superuser"]
+    del session["user"]
 
-    return redirect(url_for('financial.login'))
+    return redirect(url_for("financial.login"))
 
 
 @financial.app_errorhandler(404)
@@ -87,7 +91,7 @@ def handle_404(err):
     """
     Handel 404 error and redirect to 404.html page
     """
-    return render_template('404.html'), 404
+    return render_template("404.html"), 404
 
 
 @financial.app_errorhandler(401)
@@ -95,4 +99,4 @@ def handle_401(err):
     """
     Handel 401 error and redirect to 401.html page
     """
-    return render_template('401.html'), 401
+    return render_template("401.html"), 401

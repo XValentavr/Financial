@@ -83,6 +83,8 @@ def add_user(username: str, password: str):
     :param password: password of user
     :return: None
     """
-    user = Users(name=username, password=generate_password_hash(password), UUID=uuid.uuid4())
+    user = Users(
+        name=username, password=generate_password_hash(password), UUID=uuid.uuid4()
+    )
     database.session.add(user)
     database.session.commit()

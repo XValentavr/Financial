@@ -32,7 +32,9 @@ def get_account_money(UUID: str):
  return dct_lst"""
 
 
-def insert_account(form, summa: float, currency: str, wallet: str, info: str, date: str, user: int):
+def insert_account(
+    form, summa: float, currency: str, wallet: str, info: str, date: str, user: int
+):
     """
     This module add new value to account
     :param summa: summa of transaction
@@ -49,10 +51,12 @@ def insert_account(form, summa: float, currency: str, wallet: str, info: str, da
     if summas:
         for summas in summas:
             summas.moneysum += float(summa)
-            update_summa(summas, summas.moneysum, user, currency, wallet, date, info)
+            update_summa(
+                summas, summas.moneysum, user, currency, wallet, date, info, summa
+            )
     else:
         inser_into_money_sum(summa, user, currency, wallet)
-        accounts = Accountstatus(money=85, date=date, comments=info)
+        accounts = Accountstatus(money=85, date=date, comments=info, addedsumma=summa)
         database.session.add(accounts)
         database.session.commit()
 
@@ -63,6 +67,7 @@ def get_name_account():
     :return: list of account name
     """
     from financial import create_app
+
     with create_app().app_context():
         result = Accounts.query.all()
         return [(result.id, result.name) for result in result]

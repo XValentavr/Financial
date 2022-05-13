@@ -22,13 +22,15 @@ def create_app():
     app.config.from_object(Config)
     # to create an api and register the routes
     from .rest import create_api
+
     create_api(app)
 
     database.init_app(app)
     login_manager.init_app(app)
     # migrate database
-    Migrate(app, database, directory=os.path.join('financial', 'migrations'))
+    Migrate(app, database, directory=os.path.join("financial", "migrations"))
     from .views import financial as financial_blueprint
+
     login_manager.init_app(app)
     from .models.users import Users
 

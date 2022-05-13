@@ -11,8 +11,8 @@ from ..service import accounts
 parser = reqparse.RequestParser()
 
 # define the arguments which will be in a request query
-parser.add_argument('name')
-parser.add_argument('money')
+parser.add_argument("name")
+parser.add_argument("money")
 
 
 def abort_if_department_doesnt_exist(identifier):
@@ -26,7 +26,7 @@ def abort_if_department_doesnt_exist(identifier):
 
 class Purse(Resource):
     """
-     This is the class for AllDepartments Resource available at /hospital url
+    This is the class for AllDepartments Resource available at /hospital url
     """
 
     @staticmethod

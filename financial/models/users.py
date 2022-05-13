@@ -16,10 +16,14 @@ class Users(UserMixin, database.Model):
 
     """
 
-    __tablename__ = 'user'
+    __tablename__ = "user"
 
-    id = database.Column(database.Integer(), database.ForeignKey('money_sum.user'), primary_key=True,
-                         autoincrement=True)
+    id = database.Column(
+        database.Integer(),
+        database.ForeignKey("money_sum.user"),
+        primary_key=True,
+        autoincrement=True,
+    )
 
     name = database.Column(database.String(length=255), nullable=False, unique=True)
 
@@ -37,7 +41,7 @@ class Users(UserMixin, database.Model):
         The representation of the department
         :return: the string, representing the department of hospital by its name
         """
-        return '<Users: {}>'.format(self.name)
+        return "<Users: {}>".format(self.name)
 
 
 class SuperUser(UserMixin, database.Model):
@@ -49,7 +53,7 @@ class SuperUser(UserMixin, database.Model):
     """
 
     #: Name of the database table storing admin
-    __tablename__ = 'superuser'
+    __tablename__ = "superuser"
 
     #: admin's database id
     id = database.Column(database.Integer(), primary_key=True)
@@ -63,7 +67,7 @@ class SuperUser(UserMixin, database.Model):
     #: admin's avatar
     UUID = database.Column(database.String(length=255), nullable=False)
 
-    user = database.Column(database.Integer, database.ForeignKey('user.id'))
+    user = database.Column(database.Integer, database.ForeignKey("user.id"))
 
     def __init__(self, name, password, UUID):
         #: admin's name
@@ -83,7 +87,7 @@ class OwnUser(UserMixin, database.Model):
     """
 
     #: Name of the database table storing admin
-    __tablename__ = 'ownuser'
+    __tablename__ = "ownuser"
 
     #: admin's database id
     id = database.Column(database.Integer(), primary_key=True)
@@ -97,7 +101,7 @@ class OwnUser(UserMixin, database.Model):
     #: admin's avatar
     UUID = database.Column(database.String(length=255), nullable=False)
 
-    user = database.Column(database.Integer, database.ForeignKey('user.id'))
+    user = database.Column(database.Integer, database.ForeignKey("user.id"))
 
     def __init__(self, name, password, UUID):
         #: admin's name
