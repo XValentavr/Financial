@@ -3,8 +3,9 @@ This module creates WTForm to provide security of authentication
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import DataRequired, Length
+from financial.service.currency import get_currency
 
 
 class LoginForm(FlaskForm):
@@ -27,3 +28,10 @@ class Register(FlaskForm):
                                                      Length(min=4, max=25,
                                                             message='Field must be between 4 and 100 characters long.')])
     password = PasswordField('Password: ', validators=[DataRequired(), Length(min=4, max=100)])
+
+
+class Income(FlaskForm):
+    sum = StringField('Сумма: ', validators=[DataRequired()])
+    currency = SelectField('Валюта', choices=get_currency())
+    wallet = SelectField('Выберите кошелек', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    info = StringField('Введите комментарий: ', validators=[DataRequired()])

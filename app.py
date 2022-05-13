@@ -1,4 +1,6 @@
 from financial import create_app
 
 application = create_app()
-application.run(debug=True)
+
+if __name__ == "__main__":
+    application.run(debug=True)

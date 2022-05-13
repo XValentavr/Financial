@@ -11,7 +11,7 @@ financial = Blueprint('financial', __name__)
 
 from flask import render_template, redirect, session, url_for
 from flask_login import login_user, login_required, logout_user, current_user
-from . import WTForm
+from .WTForm import LoginForm
 from ..models.users import Users
 from financial import login_manager
 from financial.service.users import get_user_by_name, get_super_user_by_name
@@ -44,7 +44,7 @@ def login():
     session.permanent = True
     if current_user.is_authenticated:
         return redirect(url_for('financial.income'))
-    form = WTForm.LoginForm()
+    form = LoginForm()
     if form.validate_on_submit():
         root_user = get_user_by_name(form.username.data, form.password.data)
         superuser = get_super_user_by_name(form.username.data, form.password.data)
