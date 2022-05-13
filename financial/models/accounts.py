@@ -6,7 +6,8 @@ class Accounts(database.Model):
     __tablename__ = 'accounts'
 
     #: admin's database id
-    id = database.Column(database.Integer(), database.ForeignKey('accountstatus.account'), primary_key=True)
+    id = database.Column(database.Integer(), database.ForeignKey('money_sum.wallet'),
+                         primary_key=True)
 
     #: admin's name
     name = database.Column(database.String(length=255), nullable=False, unique=True)
@@ -21,5 +22,3 @@ class Accounts(database.Model):
         :return: the string, representing the department of hospital by its name
         """
         return '<Account: {}>'.format(self.name)
-
-

@@ -9,14 +9,9 @@ class Accountstatus(database.Model):
     #: admin's database id
     id = database.Column(database.Integer(), primary_key=True)
 
-    money = database.Column(database.FLOAT)
-    user = database.Column(database.Integer())
-    account = database.Column(database.Integer())
-    userid = database.relationship('Users', backref='accountstatus',
-                                   lazy='dynamic')
-
-    accountid = database.relationship('Accounts', backref='accountstatus',
-                                      lazy='dynamic')
+    money = database.Column(database.Integer(), database.ForeignKey('money_sum.id'))
+    date = database.Column(database.DATE())
+    comments = database.Column(database.String())
 
     def json(self):
         """

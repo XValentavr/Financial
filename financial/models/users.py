@@ -18,7 +18,7 @@ class Users(UserMixin, database.Model):
 
     __tablename__ = 'user'
 
-    id = database.Column(database.Integer(), database.ForeignKey('accountstatus.user'), primary_key=True,
+    id = database.Column(database.Integer(), database.ForeignKey('money_sum.user'), primary_key=True,
                          autoincrement=True)
 
     name = database.Column(database.String(length=255), nullable=False, unique=True)

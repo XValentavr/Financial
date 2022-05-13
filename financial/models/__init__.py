@@ -6,3 +6,4 @@ from . import accountstatus
 from . import accounts
 from . import users
 from . import currency
+from . import moneysum
