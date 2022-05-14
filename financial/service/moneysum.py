@@ -32,7 +32,9 @@ def get_to_sum(user: int, wallet: int, currency: int):
     return None
 
 
-def update_summa(summas, summa, user, currency, wallet, date, info, s_add, s_delete) -> None:
+def update_summa(
+    summas, summa, user, currency, wallet, date, info, s_add, s_delete
+) -> None:
     """
     This module updates money in wallet
     :param summas: object of get summa
@@ -49,7 +51,11 @@ def update_summa(summas, summa, user, currency, wallet, date, info, s_add, s_del
     if int(summas.wallet) != int(wallet) and int(summas.currency) != int(currency):
         inser_into_money_sum(summa, user, currency, wallet)
         accounts = Accountstatus(
-            money=summas.id, date=date, comments=info, addedsumma=s_add, deletedsumma=s_delete
+            money=summas.id,
+            date=date,
+            comments=info,
+            addedsumma=s_add,
+            deletedsumma=s_delete,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -58,7 +64,11 @@ def update_summa(summas, summa, user, currency, wallet, date, info, s_add, s_del
         database.session.add(summas)
         database.session.commit()
         accounts = Accountstatus(
-            money=summas.id, date=date, comments=info, addedsumma=s_add, deletedsumma=s_delete
+            money=summas.id,
+            date=date,
+            comments=info,
+            addedsumma=s_add,
+            deletedsumma=s_delete,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -70,12 +80,14 @@ def exchange_rate(valuta: str):
     :param valuta: valluta to get rate
     :return: dict of acrual currency
     """
-    url = f'https://v6.exchangerate-api.com/v6/727a8cafbfa682e3187bc8ab/latest/{valuta}'
+    url = f"https://v6.exchangerate-api.com/v6/727a8cafbfa682e3187bc8ab/latest/{valuta}"
     response = requests.get(url)
     return response.json()
 
 
-def get_new_transfered_sum(sum_: float, currency_from: float, currency_to: float) -> float:
+def get_new_transfered_sum(
+    sum_: float, currency_from: float, currency_to: float
+) -> float:
     """
     This module exchange valuta
     :param sum_: summa to exchange
@@ -85,63 +97,63 @@ def get_new_transfered_sum(sum_: float, currency_from: float, currency_to: float
     """
     final_sum = 0
     if currency_from == 1 and currency_to == 2:
-        rate = exchange_rate('USD')
-        exchange = rate['conversion_rates'].get('EUR')
+        rate = exchange_rate("USD")
+        exchange = rate["conversion_rates"].get("EUR")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 1 and currency_to == 3:
-        rate = exchange_rate('USD')
-        exchange = rate['conversion_rates'].get('RUB')
+        rate = exchange_rate("USD")
+        exchange = rate["conversion_rates"].get("RUB")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 1 and currency_to == 4:
-        rate = exchange_rate('USD')
-        exchange = rate['conversion_rates'].get('UAH')
+        rate = exchange_rate("USD")
+        exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 2 and currency_to == 1:
-        rate = exchange_rate('EUR')
-        exchange = rate['conversion_rates'].get('USD')
+        rate = exchange_rate("EUR")
+        exchange = rate["conversion_rates"].get("USD")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 2 and currency_to == 3:
-        rate = exchange_rate('EUR')
-        exchange = rate['conversion_rates'].get('RUB')
+        rate = exchange_rate("EUR")
+        exchange = rate["conversion_rates"].get("RUB")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 2 and currency_to == 4:
-        rate = exchange_rate('EUR')
-        exchange = rate['conversion_rates'].get('UAH')
+        rate = exchange_rate("EUR")
+        exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 3 and currency_to == 1:
-        rate = exchange_rate('RUB')
-        exchange = rate['conversion_rates'].get('USD')
+        rate = exchange_rate("RUB")
+        exchange = rate["conversion_rates"].get("USD")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 3 and currency_to == 2:
-        rate = exchange_rate('RUB')
-        exchange = rate['conversion_rates'].get('EUR')
+        rate = exchange_rate("RUB")
+        exchange = rate["conversion_rates"].get("EUR")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 3 and currency_to == 4:
-        rate = exchange_rate('RUB')
-        exchange = rate['conversion_rates'].get('UAH')
+        rate = exchange_rate("RUB")
+        exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 4 and currency_to == 1:
-        rate = exchange_rate('UAH')
-        exchange = rate['conversion_rates'].get('USD')
+        rate = exchange_rate("UAH")
+        exchange = rate["conversion_rates"].get("USD")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 4 and currency_to == 2:
-        rate = exchange_rate('UAH')
-        exchange = rate['conversion_rates'].get('EUR')
+        rate = exchange_rate("UAH")
+        exchange = rate["conversion_rates"].get("EUR")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     elif currency_from == 4 and currency_to == 3:
-        rate = exchange_rate('UAH')
-        exchange = rate['conversion_rates'].get('EUR')
+        rate = exchange_rate("UAH")
+        exchange = rate["conversion_rates"].get("EUR")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
     return final_sum

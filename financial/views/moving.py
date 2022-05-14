@@ -1,10 +1,14 @@
-import requests
 from flask import render_template, session
 from flask_login import login_required
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
-from financial.service.moneysum import get_to_sum, update_summa, inser_into_money_sum, get_new_transfered_sum
+from financial.service.moneysum import (
+    get_to_sum,
+    update_summa,
+    inser_into_money_sum,
+    get_new_transfered_sum,
+)
 from financial.service.users import get_user_by_UUID
 from financial.views import financial, WTForm
 
@@ -19,7 +23,7 @@ def move():
         currency_from = int(form.currency_from.data)
         currency_to = int(form.currency_to.data)
         user = get_user_by_UUID(session["UUID"].strip())
-        user = user.get('id')
+        user = user.get("id")
         summa_to_delete = get_to_sum(user, int(from_), currency_from)
         info = form.info.data
         date = form.date.data
@@ -38,14 +42,30 @@ def move():
                 for _sum in summa_to_delete:
                     summa_to_delete = _sum
         update_summa(
-            summa_to_delete, final_sum, user, currency_from, from_, date, info, None, sum_
+            summa_to_delete,
+            final_sum,
+            user,
+            currency_from,
+            from_,
+            date,
+            info,
+            None,
+            sum_,
         )
         summa_to_add = get_to_sum(user, int(to_), currency_to)
         if summa_to_add:
             for summa_to_add in summa_to_add:
                 summa_to_add.moneysum += float(new_entered_summa)
                 update_summa(
-                    summa_to_add, summa_to_add.moneysum, user, currency_to, to_, date, info, sum_, None
+                    summa_to_add,
+                    summa_to_add.moneysum,
+                    user,
+                    currency_to,
+                    to_,
+                    date,
+                    info,
+                    sum_,
+                    None,
                 )
         else:
             inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -53,7 +73,13 @@ def move():
             if summa_to_update:
                 for summa_to_update in summa_to_update:
                     money = summa_to_update.id
-                    accounts = Accountstatus(money=money, date=date, comments=info, addedsumma=sum_, deletedsumma=None)
+                    accounts = Accountstatus(
+                        money=money,
+                        date=date,
+                        comments=info,
+                        addedsumma=sum_,
+                        deletedsumma=None,
+                    )
                     database.session.add(accounts)
                     database.session.commit()
 

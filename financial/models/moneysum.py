@@ -14,6 +14,12 @@ class Moneysum(database.Model):
     currency = database.Column(database.Integer(), nullable=False)
     wallet = database.Column(database.Integer(), nullable=False)
 
-    userid = database.relationship("Users", backref="money_sum", lazy="dynamic", cascade="all,delete")
-    currencyid = database.relationship("Currency", backref="money_sum", lazy="dynamic", cascade="all,delete")
-    accountid = database.relationship("Accounts", backref="money_sum", lazy="dynamic", cascade="all,delete")
+    userid = database.relationship(
+        "Users", backref="money_sum", lazy="dynamic", cascade="all,delete"
+    )
+    currencyid = database.relationship(
+        "Currency", backref="money_sum", lazy="dynamic", cascade="all,delete"
+    )
+    accountid = database.relationship(
+        "Accounts", backref="money_sum", lazy="dynamic", cascade="all,delete"
+    )

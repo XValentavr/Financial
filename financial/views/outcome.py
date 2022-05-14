@@ -12,4 +12,5 @@ def outcome():
     if form.validate_on_submit():
         delete_data(form)
     return render_template(
-        "outcome.html", user=session["user"], superuser=session["superuser"], form=form)
+        "outcome.html", user=session["user"], superuser=session["superuser"], form=form
+    )

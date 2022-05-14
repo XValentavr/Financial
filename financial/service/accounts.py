@@ -24,22 +24,26 @@ def get_account_money(UUID: str):
 
     dct_lst = []
     get_user = get_user_by_UUID(UUID)
-    account_id = get_user.get('id')
-    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
+    account_id = get_user.get("id")
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
     session = sessionmaker(bind=engine)
     session = session()
-    result = (session.query(
-        Moneysum.wallet,
-        Accounts.name,
-        Moneysum.moneysum,
-        Currency.name
-    ).join(Moneysum.accountid)
-              .join(Moneysum.currencyid)
-              .filter(Moneysum.user == account_id).all()
-              )
+    result = (
+        session.query(Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name)
+        .join(Moneysum.accountid)
+        .join(Moneysum.currencyid)
+        .filter(Moneysum.user == account_id)
+        .all()
+    )
     for details in sorted(result):
         transpone = list(details)
-        dct_lst.append({'id': transpone[0], 'account': transpone[1], 'money': str(transpone[2]) + ' ' + transpone[3]})
+        dct_lst.append(
+            {
+                "id": transpone[0],
+                "account": transpone[1],
+                "money": str(transpone[2]) + " " + transpone[3],
+            }
+        )
     return dct_lst
 
 
@@ -53,7 +57,7 @@ def insert_account(form):
     info = form.info.data
     date = form.date.data
     user = get_user_by_UUID(session["UUID"].strip())
-    user = user.get('id')
+    user = user.get("id")
     summa = form.sum.data
     currency = form.currency.data
     summa_to_update = get_to_sum(user, int(wallet), currency)
@@ -61,7 +65,15 @@ def insert_account(form):
         for summa_to_update in summa_to_update:
             summa_to_update.moneysum += float(summa)
             update_summa(
-                summa_to_update, summa_to_update.moneysum, user, currency, wallet, date, info, summa, None
+                summa_to_update,
+                summa_to_update.moneysum,
+                user,
+                currency,
+                wallet,
+                date,
+                info,
+                summa,
+                None,
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -69,7 +81,13 @@ def insert_account(form):
         if summa_to_update:
             for summa_to_update in summa_to_update:
                 money = summa_to_update.id
-                accounts = Accountstatus(money=money, date=date, comments=info, addedsumma=summa, deletedsumma=None)
+                accounts = Accountstatus(
+                    money=money,
+                    date=date,
+                    comments=info,
+                    addedsumma=summa,
+                    deletedsumma=None,
+                )
                 database.session.add(accounts)
                 database.session.commit()
 
@@ -83,7 +101,7 @@ def delete_data(form):
     wallet = form.wallet.data
     info = form.info.data
     date = form.date.data
-    user = get_user_by_UUID(session["UUID"].strip()).get('id')
+    user = get_user_by_UUID(session["UUID"].strip()).get("id")
     summa = form.sum.data
     currency = form.currency.data
     summa_to_update = get_to_sum(user, int(wallet), currency)
@@ -92,7 +110,15 @@ def delete_data(form):
             summa_to_update.moneysum -= float(summa)
             added = None
             update_summa(
-                summa_to_update, summa_to_update.moneysum, user, currency, wallet, date, info, added, summa
+                summa_to_update,
+                summa_to_update.moneysum,
+                user,
+                currency,
+                wallet,
+                date,
+                info,
+                added,
+                summa,
             )
     else:
         summa = 0 - int(summa)
@@ -101,7 +127,13 @@ def delete_data(form):
         if summa_to_update:
             for summa_to_update in summa_to_update:
                 money = summa_to_update.id
-                accounts = Accountstatus(money=money, date=date, comments=info, addedsumma=None, deletedsumma=summa)
+                accounts = Accountstatus(
+                    money=money,
+                    date=date,
+                    comments=info,
+                    addedsumma=None,
+                    deletedsumma=summa,
+                )
                 database.session.add(accounts)
                 database.session.commit()
 

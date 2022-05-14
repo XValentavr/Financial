@@ -112,7 +112,7 @@ def get_all_users():
     """
 
     users = Users.query.all()
-    return [user.json() for user in users if user.UUID != str(session['UUID']).strip()]
+    return [user.json() for user in users if user.UUID != str(session["UUID"]).strip()]
 
 
 def delete_user(identifier: int) -> None:

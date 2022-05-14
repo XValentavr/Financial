@@ -11,8 +11,8 @@ from ..service.users import get_all_users, get_user_by_id, delete_user
 parser = reqparse.RequestParser()
 
 # define the arguments which will be in a request query
-parser.add_argument('name')
-parser.add_argument('password')
+parser.add_argument("name")
+parser.add_argument("password")
 
 
 def abort_if_department_doesnt_exist(identifier):
@@ -26,7 +26,7 @@ def abort_if_department_doesnt_exist(identifier):
 
 class AllUsers(Resource):
     """
-     This is the class for AllDepartments Resource available at /hospital url
+    This is the class for AllDepartments Resource available at /hospital url
     """
 
     @staticmethod
@@ -56,4 +56,4 @@ class SingleUser(Resource):
         """
         abort_if_department_doesnt_exist(identifier)
         delete_user(identifier)
-        return 'User deleted', 200
+        return "User deleted", 200

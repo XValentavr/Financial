@@ -15,7 +15,9 @@ class Accountstatus(database.Model):
     addedsumma = database.Column(database.String())
     deletedsumma = database.Column(database.String())
 
-    moneyid = database.relationship("Moneysum", backref="accountstatus", cascade="all,delete")
+    moneyid = database.relationship(
+        "Moneysum", backref="accountstatus", cascade="all,delete"
+    )
 
     def json(self):
         """
