@@ -33,7 +33,7 @@ def move():
         else:
             if not summa_to_delete:
                 inser_into_money_sum(0, user, currency_from, from_)
-                final_sum = 0 - int(sum_)
+                final_sum = 0 - float(sum_)
                 summa_to_delete = get_to_sum(user, int(from_), currency_from)
                 for _sum in summa_to_delete:
                     summa_to_delete = _sum
@@ -48,7 +48,7 @@ def move():
                     summa_to_add, summa_to_add.moneysum, user, currency_to, to_, date, info, sum_, None
                 )
         else:
-            inser_into_money_sum(sum_, user, currency_to, int(to_))
+            inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
             summa_to_update = get_to_sum(user, int(to_), currency_to)
             if summa_to_update:
                 for summa_to_update in summa_to_update:
