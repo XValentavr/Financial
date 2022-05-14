@@ -34,7 +34,7 @@ function currency(currency_value) {
     if (currency_value === '₽') {
         rate[0] = 0.02
     }
-    if (currency_value === 'UAH') {
+    if (currency_value === '₴') {
         rate[0] = 1
     }
     let session = document.getElementById("session").textContent

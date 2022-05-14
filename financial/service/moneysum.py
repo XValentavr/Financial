@@ -16,7 +16,7 @@ def inser_into_money_sum(money: float, user: int, currency: int, wallet: int):
     database.session.commit()
 
 
-def get_to_sum(user: int, wallet: str, currency: int):
+def get_to_sum(user: int, wallet: int, currency: int):
     """
     This module gets to sum
     :param user: user id
@@ -25,10 +25,12 @@ def get_to_sum(user: int, wallet: str, currency: int):
     :return:
     """
     money = Moneysum.query.filter_by(user=user, wallet=wallet, currency=currency).all()
-    return money
+    if money:
+        return money
+    return None
 
 
-def update_summa(summas, summa, user, currency, wallet, date, info, s_add) -> None:
+def update_summa(summas, summa, user, currency, wallet, date, info, s_add, s_delete) -> None:
     """
     This module updates money in wallet
     :param summas: object of get summa
@@ -39,12 +41,14 @@ def update_summa(summas, summa, user, currency, wallet, date, info, s_add) -> No
     :param date: date to add
     :param info: info about adding
     :param s_add: summa to add
+    :param s_delete" summa to delete
     :return: None
     """
+
     if int(summas.wallet) != int(wallet) and int(summas.currency) != int(currency):
         inser_into_money_sum(summa, user, currency, wallet)
         accounts = Accountstatus(
-            money=summas.id, date=date, comments=info, addedsumma=s_add
+            money=summas.id, date=date, comments=info, addedsumma=s_add, deletedsumma=s_delete
         )
         database.session.add(accounts)
         database.session.commit()
@@ -53,7 +57,7 @@ def update_summa(summas, summa, user, currency, wallet, date, info, s_add) -> No
         database.session.add(summas)
         database.session.commit()
         accounts = Accountstatus(
-            money=summas.id, date=date, comments=info, addedsumma=s_add
+            money=summas.id, date=date, comments=info, addedsumma=s_add, deletedsumma=s_delete
         )
         database.session.add(accounts)
         database.session.commit()

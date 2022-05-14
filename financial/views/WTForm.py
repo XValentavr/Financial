@@ -59,3 +59,11 @@ class Income(FlaskForm):
     wallet = SelectField("Выберите кошелек", choices=get_name_account())
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
+
+
+class Outcome(FlaskForm):
+    sum = StringField("Сумма: ", validators=[DataRequired()])
+    currency = SelectField("Валюта", choices=get_currency())
+    wallet = SelectField("Выберите кошелек", choices=get_name_account())
+    info = StringField("Введите комментарий: ", validators=[DataRequired()])
+    date = DateField("Выберите дату", validators=[DataRequired()])

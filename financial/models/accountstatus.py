@@ -13,6 +13,7 @@ class Accountstatus(database.Model):
     date = database.Column(database.DATE())
     comments = database.Column(database.String())
     addedsumma = database.Column(database.String())
+    deletedsumma = database.Column(database.String())
 
     def json(self):
         """
