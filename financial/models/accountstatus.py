@@ -15,6 +15,8 @@ class Accountstatus(database.Model):
     addedsumma = database.Column(database.String())
     deletedsumma = database.Column(database.String())
 
+    moneyid = database.relationship("Moneysum", backref="accountstatus", cascade="all,delete")
+
     def json(self):
         """
         This method is used to return the department in json format

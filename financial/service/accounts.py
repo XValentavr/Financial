@@ -24,7 +24,7 @@ def get_account_money(UUID: str):
 
     dct_lst = []
     get_user = get_user_by_UUID(UUID)
-    account_id = get_user.id
+    account_id = get_user.get('id')
     engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
     session = sessionmaker(bind=engine)
     session = session()
@@ -52,7 +52,8 @@ def insert_account(form):
     wallet = form.wallet.data
     info = form.info.data
     date = form.date.data
-    user = get_user_by_UUID(session["UUID"].strip()).id
+    user = get_user_by_UUID(session["UUID"].strip())
+    user = user.get('id')
     summa = form.sum.data
     currency = form.currency.data
     summa_to_update = get_to_sum(user, int(wallet), currency)
@@ -82,7 +83,7 @@ def delete_data(form):
     wallet = form.wallet.data
     info = form.info.data
     date = form.date.data
-    user = get_user_by_UUID(session["UUID"].strip()).id
+    user = get_user_by_UUID(session["UUID"].strip()).get('id')
     summa = form.sum.data
     currency = form.currency.data
     summa_to_update = get_to_sum(user, int(wallet), currency)
@@ -94,6 +95,7 @@ def delete_data(form):
                 summa_to_update, summa_to_update.moneysum, user, currency, wallet, date, info, added, summa
             )
     else:
+        summa = 0 - int(summa)
         inser_into_money_sum(summa, user, currency, int(wallet))
         summa_to_update = get_to_sum(user, int(wallet), currency)
         if summa_to_update:

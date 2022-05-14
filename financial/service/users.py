@@ -2,6 +2,9 @@
 This module defines crud operations to work with user table
 """
 import uuid
+
+from flask import session
+
 from financial import database
 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -73,7 +76,18 @@ def get_user_by_UUID(UUID: str):
     :param UUID: string of uuid code
     :return: current user
     """
-    return Users.query.filter_by(UUID=UUID).first()
+    user = Users.query.filter_by(UUID=UUID).first()
+    return user.json() if user is not None else None
+
+
+def get_user_by_id(identifier: str):
+    """
+    This module gets user by UUID
+    :param identifier string of uuid code
+    :return: current user
+    """
+    user = Users.query.filter_by(id=identifier).first()
+    return user.json() if user is not None else None
 
 
 def add_user(username: str, password: str):
@@ -86,5 +100,43 @@ def add_user(username: str, password: str):
     user = Users(
         name=username, password=generate_password_hash(password), UUID=uuid.uuid4()
     )
+    database.session.add(user)
+    database.session.commit()
+
+
+def get_all_users():
+    """
+    This module gets user by UUID
+    :param UUID: string of uuid code
+    :return: current user
+    """
+
+    users = Users.query.all()
+    return [user.json() for user in users if user.UUID != str(session['UUID']).strip()]
+
+
+def delete_user(identifier: int) -> None:
+    """
+    This function is used to delete an existing department
+    :param identifier: the id of the department of hospital to delete
+    """
+    user = Users.query.get_or_404(identifier)
+    database.session.delete(user)
+    database.session.commit()
+
+
+def update_user(UUID: int, name: str, password: str) -> None:
+    """
+    This function is used to update an existing department
+    :param identifier: the id of the department of hospital to update
+    :param name: the name of the department of hospital to update
+    :param to_do: the description of the department of hospital to update
+    """
+    print(UUID)
+    user = Users.query.filter_by(UUID=UUID).first()
+    print(user)
+    user.name = name
+    user.password = password
+    user.UUID = UUID
     database.session.add(user)
     database.session.commit()

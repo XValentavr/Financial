@@ -43,6 +43,18 @@ class Users(UserMixin, database.Model):
         """
         return "<Users: {}>".format(self.name)
 
+    def json(self):
+        """
+        This method is used to return the department in json format
+        :return: the department in json format
+        """
+        return {
+            'id': self.id,
+            'UUID': self.UUID,
+            "user": self.name,
+            "password": self.password
+        }
+
 
 class SuperUser(UserMixin, database.Model):
     """
