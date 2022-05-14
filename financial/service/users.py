@@ -132,9 +132,7 @@ def update_user(UUID: int, name: str, password: str) -> None:
     :param name: the name of the department of hospital to update
     :param to_do: the description of the department of hospital to update
     """
-    print(UUID)
     user = Users.query.filter_by(UUID=UUID).first()
-    print(user)
     user.name = name
     user.password = password
     user.UUID = UUID

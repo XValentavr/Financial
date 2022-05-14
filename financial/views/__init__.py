@@ -22,6 +22,7 @@ from . import exchange
 from . import pay
 from . import adduser
 from . import changeuser
+from . import moving
 
 
 @login_manager.user_loader

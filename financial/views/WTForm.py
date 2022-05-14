@@ -67,3 +67,13 @@ class Outcome(FlaskForm):
     wallet = SelectField("Выберите кошелек", choices=get_name_account())
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
+
+
+class Move(FlaskForm):
+    sum_ = StringField("Сумма: ", validators=[DataRequired()])
+    from_ = SelectField("Выберите кошелек", choices=get_name_account())
+    currency_from = SelectField("Валюта", choices=get_currency())
+    to_ = SelectField("Выберите кошелек", choices=get_name_account())
+    currency_to = SelectField("Валюта", choices=get_currency())
+    info = StringField("Введите комментарий: ", validators=[DataRequired()])
+    date = DateField("Выберите дату", validators=[DataRequired()])
