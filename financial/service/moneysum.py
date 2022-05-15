@@ -38,7 +38,7 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-        summas, summa, user, currency, wallet, date, info, s_add, s_delete
+    summas, summa, user, currency, wallet, date, info, s_add, s_delete
 ) -> None:
     """
     This module updates money in wallet
@@ -99,17 +99,19 @@ def get_count_users(identifier: int):
     session = sessionmaker(bind=engine)
     session = session()
     with session as session:
-        result = session.query(Moneysum.wallet, func.count(Moneysum.wallet)).filter_by(wallet=identifier).group_by(
-            Moneysum.wallet).all()
+        result = (
+            session.query(Moneysum.wallet, func.count(Moneysum.wallet))
+            .filter_by(wallet=identifier)
+            .group_by(Moneysum.wallet)
+            .all()
+        )
     res_list = []
     if result:
         res_list.append(list(result[0]))
     return res_list
 
 
-def get_new_transfered_sum(
-        sum_: float, currency_from: float, currency_to: float
-) -> float:
+def get_new_transfered_sum(sum_: float, currency_from: str, currency_to: str) -> float:
     """
     This module exchange valuta
     :param sum_: summa to exchange
@@ -117,74 +119,8 @@ def get_new_transfered_sum(
     :param currency_to: to exchage
     :return: new summa
     """
-    final_sum = 0
-    if currency_from == 1 and currency_to == 2:
-        rate = exchange_rate("USD")
-        exchange = rate["conversion_rates"].get("EUR")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 1 and currency_to == 3:
-        rate = exchange_rate("USD")
-        exchange = rate["conversion_rates"].get("RUB")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 1 and currency_to == 4:
-        rate = exchange_rate("USD")
-        exchange = rate["conversion_rates"].get("UAH")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 1 and currency_to == 1:
-        final_sum = sum_
-    elif currency_from == 2 and currency_to == 1:
-        rate = exchange_rate("EUR")
-        exchange = rate["conversion_rates"].get("USD")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 2 and currency_to == 3:
-        rate = exchange_rate("EUR")
-        exchange = rate["conversion_rates"].get("RUB")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 2 and currency_to == 4:
-        rate = exchange_rate("EUR")
-        exchange = rate["conversion_rates"].get("UAH")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 2 and currency_to == 2:
-        final_sum = sum_
-    elif currency_from == 3 and currency_to == 1:
-        rate = exchange_rate("RUB")
-        exchange = rate["conversion_rates"].get("USD")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 3 and currency_to == 2:
-        rate = exchange_rate("RUB")
-        exchange = rate["conversion_rates"].get("EUR")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 3 and currency_to == 4:
-        rate = exchange_rate("RUB")
-        exchange = rate["conversion_rates"].get("UAH")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 3 and currency_to == 3:
-        final_sum = sum_
-    elif currency_from == 4 and currency_to == 1:
-        rate = exchange_rate("UAH")
-        exchange = rate["conversion_rates"].get("USD")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 4 and currency_to == 2:
-        rate = exchange_rate("UAH")
-        exchange = rate["conversion_rates"].get("EUR")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 4 and currency_to == 3:
-        rate = exchange_rate("UAH")
-        exchange = rate["conversion_rates"].get("EUR")
-        new_entered_summa = round(sum_ * exchange, 2)
-        final_sum = new_entered_summa
-    elif currency_from == 4 and currency_to == 4:
-        final_sum = sum_
-    print()
+    rate = exchange_rate(currency_from)
+    exchange = rate["conversion_rates"].get(currency_to)
+    new_entered_summa = round(sum_ * exchange, 2)
+    final_sum = new_entered_summa
     return final_sum

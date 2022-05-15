@@ -9,6 +9,7 @@ from financial.models.wallet import Accounts
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
+from financial.service.currency import get_list_currency
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
 from financial import database
 from financial.service.users import get_user_by_UUID
@@ -30,14 +31,19 @@ def get_account_money(UUID: str):
     session = session()
     checker = get_name_account_checker()
     for check in checker:
-        if check.visibility == 'Приватный':
+        if check.visibility == "Приватный":
             result = (
-                session.query(Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name)
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(Moneysum.user == account_id, Accounts.visibility == check.visibility,
-                            Accounts.name == check.name)
-                    .all()
+                session.query(
+                    Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                )
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
+                    Moneysum.user == account_id,
+                    Accounts.visibility == check.visibility,
+                    Accounts.name == check.name,
+                )
+                .all()
             )
             if result:
                 for details in sorted(result):
@@ -49,31 +55,35 @@ def get_account_money(UUID: str):
                             "money": str(transpone[2]) + " " + transpone[3],
                         }
                     )
-        elif check.visibility == 'Общий':
+        elif check.visibility == "Общий":
             result = (
-                session.query(Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name)
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(Accounts.visibility == check.visibility, Accounts.name == check.name).all()
+                session.query(
+                    Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                )
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
+                    Accounts.visibility == check.visibility, Accounts.name == check.name
+                )
+                .all()
             )
-            summa_usd = 0
-            summa_eur = 0
-            summa_rub = 0
-            summa_uah = 0
+            summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
             for details in sorted(result):
                 transpone = list(details)
-                if transpone[3] == '$':
+                if transpone[3] == "USD":
                     summa_usd += transpone[2]
-                if transpone[3] == '€':
+                if transpone[3] == "EUR":
                     summa_eur += transpone[2]
-                if transpone[3] == '₽':
+                if transpone[3] == "RUB":
                     summa_rub += transpone[2]
-                if transpone[3] == '₴':
+                if transpone[3] == "UAH":
                     summa_uah += transpone[2]
-            count_usd = count_uah = count_rub = count_eur = 0
+                if transpone[3] == "PLN":
+                    summa_zlt += transpone[2]
+            count_usd = count_uah = count_rub = count_eur = count_pln = count_zlt = 0
             for details in sorted(result):
                 transpone = list(details)
-                if transpone[3] == '$' and count_usd == 0:
+                if transpone[3] == "USD" and count_usd == 0:
                     count_usd += 1
                     dct_lst.append(
                         {
@@ -82,7 +92,7 @@ def get_account_money(UUID: str):
                             "money": str(summa_usd) + " " + transpone[3],
                         }
                     )
-                if transpone[3] == '€' and count_eur == 0:
+                if transpone[3] == "EUR" and count_eur == 0:
                     count_eur += 1
                     dct_lst.append(
                         {
@@ -91,7 +101,7 @@ def get_account_money(UUID: str):
                             "money": str(summa_eur) + " " + transpone[3],
                         }
                     )
-                if transpone[3] == '₽' and count_rub == 0:
+                if transpone[3] == "RUB" and count_rub == 0:
                     count_rub += 1
                     dct_lst.append(
                         {
@@ -100,7 +110,7 @@ def get_account_money(UUID: str):
                             "money": str(summa_rub) + " " + transpone[3],
                         }
                     )
-                if transpone[3] == '₴' and count_uah == 0:
+                if transpone[3] == "UAH" and count_uah == 0:
                     count_uah += 1
                     dct_lst.append(
                         {
@@ -109,7 +119,15 @@ def get_account_money(UUID: str):
                             "money": str(summa_uah) + " " + transpone[3],
                         }
                     )
-
+                if transpone[3] == "PLN" and count_pln == 0:
+                    count_pln += 1
+                    dct_lst.append(
+                        {
+                            "id": transpone[0],
+                            "account": transpone[1],
+                            "money": str(summa_zlt) + " " + transpone[3],
+                        }
+                    )
     return merge_dict(dct_lst)
 
 
@@ -237,8 +255,8 @@ def merge_dict(dct_list: list[dict]) -> list[dict]:
             res_dict.append(dct)
         else:
             for d in res_dict:
-                if d['account'] == dct['account']:
-                    d['money'] = d['money'] + ', ' + dct['money']
+                if d["account"] == dct["account"]:
+                    d["money"] = d["money"] + ", " + dct["money"]
                     break
             else:
                 res_dict.append(dct)
@@ -254,19 +272,14 @@ def restrict_dict(dct: list[dict]):
     :return: final transformed dict
     """
     final = []
-    for d in dct:
-        valuta = d['money'].split(', ')
-        del d['money']
-        for v in valuta:
-            if '₽' in v:
-                d['rub'] = v.replace(' ₽', '')
-            elif '$' in v:
-                d['usd'] = v.replace(' $', '')
-            elif '€' in v:
-                d['eur'] = v.replace(' €', '')
-            elif '₴' in v:
-                d['uah'] = v.replace(' ₴', '')
-            final.append(d)
+    cur = get_list_currency()
+    for c in cur:
+        for d in dct:
+            valuta = d.get("money").split(", ")
+            for v in valuta:
+                if c.name in v:
+                    d[c.name] = v.replace(f" {c.name}", "")
+                    final.append(d)
 
 
 def check_keys(dct: list[dict]) -> None:
@@ -275,12 +288,8 @@ def check_keys(dct: list[dict]) -> None:
     :param dct: dict to add keys
     :return: None
     """
-    for d in dct:
-        if 'rub' not in d.keys():
-            d['rub'] = '0.0'
-        if 'usd' not in d.keys():
-            d['usd'] = '0.0'
-        if 'eur' not in d.keys():
-            d['eur'] = '0.0'
-        if 'uah' not in d.keys():
-            d['uah'] = '0.0'
+    cur = get_list_currency()
+    for c in cur:
+        for d in dct:
+            if c.name not in d.keys():
+                d[c.name] = "0.0"

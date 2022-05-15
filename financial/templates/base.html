@@ -8,7 +8,11 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
+    <style>
+        body {
+            background-image: linear-gradient(to right, gray, lightgray);
+        }
+    </style>
 </head>
 <body>
 {% block content -%}
@@ -60,11 +64,10 @@
         <table class="currency" style="border: none">
             <thead>
             <tr style="border: none">
-                <th>Кошелек</th>
-                <th>USD</th>
-                <th>EUR</th>
-                <th>RUB</th>
-                <th>UAH</th>
+            <th>Кошелек</th>
+                {% for th in ths %}
+                    <th>{{ th.name }}</th>
+                {% endfor %}
             </tr>
             </thead>
         </table>

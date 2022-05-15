@@ -7,6 +7,8 @@ Also handle an error status
 # pylint: disable=cyclic-import
 from flask import Blueprint
 
+from ..service.currency import get_list_currency
+
 financial = Blueprint("financial", __name__)
 
 from flask import render_template, redirect, session, url_for
@@ -44,6 +46,7 @@ def login():
 
     :return: html page
     """
+    ths = get_list_currency()
     session.permanent = True
     if current_user.is_authenticated:
         return redirect(url_for("financial.income"))
@@ -59,7 +62,7 @@ def login():
             session["user"] = True
             session["UUID"] = root_user.UUID
             return render_template(
-                "base.html", superuser=False, user=True, session=session
+                "base.html", superuser=False, user=True, session=session, ths=ths
             )
 
         elif root_user and superuser:
@@ -69,7 +72,7 @@ def login():
             session["user"] = False
 
             return render_template(
-                "base.html", superuser=True, user=False, session=session
+                "base.html", superuser=True, user=False, session=session, ths=ths
             )
 
     return render_template("login.html", form=form)

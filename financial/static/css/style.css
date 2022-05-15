@@ -12,6 +12,8 @@
     -webkit-box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
     -moz-box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
     box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
+        color: black;
+    font-weight: bold;
 }
 
 
@@ -25,6 +27,7 @@
 .form-control::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     color: rgba(0, 0, 0, 0.2) !important;
+
 }
 
 .form-control::-moz-placeholder {
@@ -153,6 +156,7 @@
     font-size: 15px;
     font-weight: bold;
     text-align: right;
+    color: black;
 }
 
 body {
@@ -879,6 +883,8 @@ table,
 td {
     border: 1px solid black;
     overflow: auto;
+        color: black;
+
 }
 
 .equal-width-cols {
@@ -909,7 +915,7 @@ td {
     padding-left: 10px;
     border: none;
     overflow: auto;
-
+    color: black;
 }
 
 .currency th {
@@ -918,5 +924,6 @@ td {
     height: 50%;
     padding-left: 10px;
     overflow: auto;
-
+    color: black;
+    font-weight: bold;
 }

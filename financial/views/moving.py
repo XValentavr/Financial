@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
+from financial.service.currency import get_current_currency, get_list_currency
 from financial.service.moneysum import (
     get_to_sum,
     update_summa,
@@ -10,6 +11,7 @@ from financial.service.moneysum import (
     get_new_transfered_sum,
 )
 from financial.service.users import get_user_by_UUID
+from financial.service.wallet import get_wallets
 from financial.views import financial, WTForm
 
 
@@ -30,7 +32,11 @@ def move():
         date = form.date.data
         to_ = form.to_.data
         final_sum = 0
-        new_entered_summa = get_new_transfered_sum(sum_, currency_from, currency_to)
+        code_from = get_current_currency(currency_from)
+        currency_from = code_from.id
+        code_to = get_current_currency(currency_to)
+        currency_to = code_to.id
+        new_entered_summa = get_new_transfered_sum(sum_, code_from.name, code_to.name)
         if summa_to_delete:
             for summa_to_delete in summa_to_delete:
                 final_sum = summa_to_delete.moneysum
@@ -57,7 +63,6 @@ def move():
         if summa_to_add:
             for summa_to_add in summa_to_add:
                 summa_to_add.moneysum += float(new_entered_summa)
-                print(summa_to_add.moneysum)
                 update_summa(
                     summa_to_add,
                     summa_to_add.moneysum,
@@ -84,7 +89,11 @@ def move():
                     )
                     database.session.add(accounts)
                     database.session.commit()
-
+    ths = get_list_currency()
     return render_template(
-        "move.html", form=form, user=session["user"], superuser=session["superuser"]
+        "move.html",
+        form=form,
+        user=session["user"],
+        superuser=session["superuser"],
+        ths=ths,
     )
