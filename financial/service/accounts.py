@@ -110,7 +110,7 @@ def get_account_money(UUID: str):
                         }
                     )
 
-    return dct_lst
+    return merge_dict(dct_lst)
 
 
 def insert_account(form):
@@ -223,3 +223,64 @@ def get_name_account_checker():
     """
     result = Accounts.query.all()
     return [result for result in result]
+
+
+def merge_dict(dct_list: list[dict]) -> list[dict]:
+    """
+    This module merges valuta on the sample wallet
+    :param dct_list: dict to check and merge
+    :return: new merged dict
+    """
+    res_dict = []
+    for dct in dct_list:
+        if not res_dict:
+            res_dict.append(dct)
+        else:
+            for d in res_dict:
+                if d['account'] == dct['account']:
+                    d['money'] = d['money'] + ', ' + dct['money']
+                    break
+            else:
+                res_dict.append(dct)
+    restrict_dict(res_dict)
+    check_keys(res_dict)
+    return res_dict
+
+
+def restrict_dict(dct: list[dict]):
+    """
+    Thid module changes data in money key
+    :param dct: dict to change
+    :return: final transformed dict
+    """
+    final = []
+    for d in dct:
+        valuta = d['money'].split(', ')
+        del d['money']
+        for v in valuta:
+            if '₽' in v:
+                d['rub'] = v.replace(' ₽', '')
+            elif '$' in v:
+                d['usd'] = v.replace(' $', '')
+            elif '€' in v:
+                d['eur'] = v.replace(' €', '')
+            elif '₴' in v:
+                d['uah'] = v.replace(' ₴', '')
+            final.append(d)
+
+
+def check_keys(dct: list[dict]) -> None:
+    """
+    This module adds needed keys to yser dict
+    :param dct: dict to add keys
+    :return: None
+    """
+    for d in dct:
+        if 'rub' not in d.keys():
+            d['rub'] = '0.0'
+        if 'usd' not in d.keys():
+            d['usd'] = '0.0'
+        if 'eur' not in d.keys():
+            d['eur'] = '0.0'
+        if 'uah' not in d.keys():
+            d['uah'] = '0.0'

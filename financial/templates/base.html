@@ -9,8 +9,6 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
-
 </head>
 <body>
 {% block content -%}
@@ -54,12 +52,22 @@
             </div>
         </nav>
     {% endblock mainmenu -%}
+
     <div class='right'>
-        <p><br></p>
-        <p id="seif" class="pmoney"></p>
-        <p id="wallet" class="pmoney"></p>
-        <p id="bank" class="pmoney"></p>
-        <p id="crypto" class="pmoney"></p>
+        <div class="col-md-6 text-center mb-5">
+            <h2 class="heading-section">Кошельки</h2>
+        </div>
+        <table class="currency" style="border: none">
+            <thead>
+            <tr style="border: none">
+                <th>Кошелек</th>
+                <th>USD</th>
+                <th>EUR</th>
+                <th>RUB</th>
+                <th>UAH</th>
+            </tr>
+            </thead>
+        </table>
     </div>
     <p id="session" hidden>{{ session['UUID'] }}</p>
     <script src="{{ url_for('static', filename='js/purse.js') }}"></script>
