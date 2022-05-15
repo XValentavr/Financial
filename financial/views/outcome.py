@@ -9,6 +9,7 @@ from financial.views import financial, WTForm
 @login_required
 def outcome():
     form = WTForm.Outcome()
+    form.set_choices()
     if form.validate_on_submit():
         delete_data(form)
     return render_template(

@@ -694,7 +694,7 @@ body {
     display: block;
     font-size: 12px;
     font-weight: 500;
-    color: rgba(0, 0, 0, 0.3);
+    color: #fff;
 }
 
 
@@ -763,11 +763,10 @@ body {
 }
 
 .dropdown-content a, span, button {
-    color: black;
+    color: #fff;
     padding: 5px 5px;
     text-decoration: none;
     display: block;
-
 }
 
 .dropdown-content a:hover {

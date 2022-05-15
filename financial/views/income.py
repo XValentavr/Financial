@@ -8,6 +8,7 @@ from financial.views import financial, WTForm
 @login_required
 def income():
     form = WTForm.Income()
+    form.set_choices()
     if form.validate_on_submit():
         insert_account(form)
     return render_template(

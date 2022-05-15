@@ -24,7 +24,8 @@ function GetData(data) {
         let json_wallets = {
             'identifier': current_wallet['id'],
             'Name': current_wallet['name'],
-            'users': current_wallet['users']
+            'users': current_wallet['users'],
+            'visibility': current_wallet['visibility']
         }
         information.push(json_wallets)
     }
@@ -44,8 +45,14 @@ function CreateTable(data) {
         }
         let cell = row.insertCell();
         let a = document.createElement("a");
+        a.setAttribute("href", `/wallet/edit/${element['identifier']}`);
+        let text = document.createTextNode("Изменить");
+        a.appendChild(text);
+        cell.appendChild(a);
+        cell = row.insertCell();
+        a = document.createElement("a");
         a.setAttribute("onclick", `api_delete(${element['identifier']})`)
-        let text = document.createTextNode("Удалить");
+        text = document.createTextNode("Удалить");
         a.appendChild(text);
         cell.appendChild(a);
     }

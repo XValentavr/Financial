@@ -1,5 +1,5 @@
 from financial import database
-from financial.models.accounts import Accounts
+from financial.models.wallet import Accounts
 
 
 def get_wallets():
@@ -30,13 +30,36 @@ def delete_wallet(identifier):
     database.session.commit()
 
 
-def insert_wallet(identifier: int, name: str):
+def insert_wallet(identifier: int, name: str, visibility: str):
     """
     This module insert new wallet into database
     :param identifier: wallet id
     :param name: name of wallet to add
     :return:
     """
-    wallet = Accounts(identifier=identifier, name=name)
+    if visibility.strip() == 'Да':
+        visibility = 'Приватный'
+    else:
+        visibility = 'Общий'
+    wallet = Accounts(identifier=identifier, name=name, visibility=visibility)
+    database.session.add(wallet)
+    database.session.commit()
+
+
+def update_wallet(identifier: int, name: str, visibility: str) -> None:
+    """
+    This function is used to update an existing department
+    :param identifier: the id of the department of hospital to update
+    :param name: the name of the department of hospital to update
+    :param to_do: the description of the department of hospital to update
+    """
+    wallet = Accounts.query.filter_by(id=identifier).first()
+    wallet.name = name
+    if visibility.strip() == 'Да':
+        visibility = 'Общий'
+    else:
+        visibility = 'Приватный'
+    wallet.visibility = visibility
+    wallet.id = identifier
     database.session.add(wallet)
     database.session.commit()

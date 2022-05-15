@@ -1,5 +1,5 @@
 from financial import database
-from financial.models.accounts import Accounts
+from financial.models.wallet import Accounts
 
 
 class Accountstatus(database.Model):

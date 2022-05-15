@@ -26,19 +26,18 @@
                     <div class="navbar-nav m-auto">
                     {% if not user and superuser %}
                         <div class="dropdown">
-                            <p class="nav-link">Работа с
-                                пользователем</p>
+                            <span class="nav-item"><p class="nav-link">Работа с
+                            пользователем</p></span>
                             <div class="dropdown-content">
                                 <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
                                 <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
                             </div>
                         </div>
                         <div class="dropdown">
-                            <p class="nav-link">Счета</p>
+                            <span class="nav-item"><p class="nav-link">Счета</p></span>
                             <div class="dropdown-content">
-                                <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть</a>
-                                <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Закрыть</a>
-                                <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                                <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
+                                <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Редактировать</a>
                             </div>
                         </div>
                         <li class="nav-item"><a href="{{ url_for('financial.pay') }}" class="nav-link">Оплата</a></li>
@@ -61,17 +60,6 @@
         <p id="wallet" class="pmoney"></p>
         <p id="bank" class="pmoney"></p>
         <p id="crypto" class="pmoney"></p>
-        <div class='inner'>
-            <div class="dropdown">
-                <button class="dropbtn">Валюта</button>
-                <div class="dropdown-content">
-                    <a href='#' onclick="currency('$')" id='usd'>$</a>
-                    <a href='#' onclick="currency('€')" id='eu'>€</a>
-                    <a href='#' onclick="currency('₽')" id='rubble'>₽</a>
-                    <a href='#' onclick="currency('₴')" id='uah'>₴</a>
-                </div>
-            </div>
-        </div>
     </div>
     <p id="session" hidden>{{ session['UUID'] }}</p>
     <script src="{{ url_for('static', filename='js/purse.js') }}"></script>

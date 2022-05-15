@@ -17,6 +17,7 @@ from financial.views import financial, WTForm
 @login_required
 def move():
     form = WTForm.Move()
+    form.set_choices()
     if form.validate_on_submit():
         sum_ = float(form.sum_.data)
         from_ = form.from_.data
@@ -56,6 +57,7 @@ def move():
         if summa_to_add:
             for summa_to_add in summa_to_add:
                 summa_to_add.moneysum += float(new_entered_summa)
+                print(summa_to_add.moneysum)
                 update_summa(
                     summa_to_add,
                     summa_to_add.moneysum,

@@ -133,6 +133,8 @@ def get_new_transfered_sum(
         exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
+    elif currency_from == 1 and currency_to == 1:
+        final_sum = sum_
     elif currency_from == 2 and currency_to == 1:
         rate = exchange_rate("EUR")
         exchange = rate["conversion_rates"].get("USD")
@@ -148,6 +150,8 @@ def get_new_transfered_sum(
         exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
+    elif currency_from == 2 and currency_to == 2:
+        final_sum = sum_
     elif currency_from == 3 and currency_to == 1:
         rate = exchange_rate("RUB")
         exchange = rate["conversion_rates"].get("USD")
@@ -163,6 +167,8 @@ def get_new_transfered_sum(
         exchange = rate["conversion_rates"].get("UAH")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
+    elif currency_from == 3 and currency_to == 3:
+        final_sum = sum_
     elif currency_from == 4 and currency_to == 1:
         rate = exchange_rate("UAH")
         exchange = rate["conversion_rates"].get("USD")
@@ -178,4 +184,7 @@ def get_new_transfered_sum(
         exchange = rate["conversion_rates"].get("EUR")
         new_entered_summa = round(sum_ * exchange, 2)
         final_sum = new_entered_summa
+    elif currency_from == 4 and currency_to == 4:
+        final_sum = sum_
+    print()
     return final_sum

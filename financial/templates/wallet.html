@@ -6,6 +6,12 @@
 </head>
 <body>
 <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container-fluid">
@@ -17,19 +23,18 @@
         <div class="collapse navbar-collapse" id="ftco-nav">
             <div class="navbar-nav m-auto">
                 <div class="dropdown">
-                    <p class="nav-link">Работа с
-                        пользователем</p>
+                            <span class="nav-item"><p class="nav-link">Работа с
+                            пользователем</p></span>
                     <div class="dropdown-content">
                         <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
                         <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
                     </div>
                 </div>
                 <div class="dropdown">
-                    <p class="nav-link">Счета</p>
+                    <span class="nav-item"><p class="nav-link">Счета</p></span>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть</a>
-                        <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Закрыть</a>
-                        <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                        <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
+                        <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Редактировать</a>
                     </div>
                 </div>
                 <li class="nav-item"><a href="/pay" class="nav-link">Оплата</a></li>
@@ -78,9 +83,17 @@
                     </div>
                 </div>
             </form>
+            <a href="{{ url_for('financial.changewallet') }}">
+                <button class="form-control btn btn-primary rounded submit px-3">
+                    Вернуться назад
+                </button>
+            </a>
         </div>
     </div>
-
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/popper.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/main.js"></script>
 </div>
 </body>
 </html>

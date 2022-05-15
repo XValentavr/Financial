@@ -13,7 +13,6 @@ class Currency(database.Model):
     #: admin's name
     name = database.Column(database.String(length=255), nullable=False, unique=True)
 
-    visibility = database.Column(database.String(length=50), nullable=False)
 
     def __init__(self, name):
         #: admin's name
