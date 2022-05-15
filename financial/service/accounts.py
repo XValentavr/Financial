@@ -30,10 +30,10 @@ def get_account_money(UUID: str):
     session = session()
     result = (
         session.query(Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name)
-        .join(Moneysum.accountid)
-        .join(Moneysum.currencyid)
-        .filter(Moneysum.user == account_id)
-        .all()
+            .join(Moneysum.accountid)
+            .join(Moneysum.currencyid)
+            .filter(Moneysum.user == account_id)
+            .all()
     )
     for details in sorted(result):
         transpone = list(details)

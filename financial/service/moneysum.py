@@ -1,4 +1,9 @@
+import os
+
 import requests
+import sqlalchemy
+from sqlalchemy import func
+from sqlalchemy.orm import sessionmaker
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
@@ -33,7 +38,7 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-    summas, summa, user, currency, wallet, date, info, s_add, s_delete
+        summas, summa, user, currency, wallet, date, info, s_add, s_delete
 ) -> None:
     """
     This module updates money in wallet
@@ -85,8 +90,25 @@ def exchange_rate(valuta: str):
     return response.json()
 
 
+def get_count_users(identifier: int):
+    """
+    This module gets users wallet group by wallets
+    :return: list of number of wallets
+    """
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    with session as session:
+        result = session.query(Moneysum.wallet, func.count(Moneysum.wallet)).filter_by(wallet=identifier).group_by(
+            Moneysum.wallet).all()
+    res_list = []
+    if result:
+        res_list.append(list(result[0]))
+    return res_list
+
+
 def get_new_transfered_sum(
-    sum_: float, currency_from: float, currency_to: float
+        sum_: float, currency_from: float, currency_to: float
 ) -> float:
     """
     This module exchange valuta

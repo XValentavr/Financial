@@ -9,7 +9,7 @@ fetch("/api/users")
 function DisplayGotData(data) {
     if (data.length === 0) {
         let empty = document.getElementById("empty");
-        let text = document.createTextNode("No departments of hospital were found");
+        let text = document.createTextNode("No users were found");
         empty.appendChild(text);
     } else {
         CreateTable(GetData(data));
@@ -20,14 +20,14 @@ function DisplayGotData(data) {
 function GetData(data) {
     let information = []
     for (let i = 0; i < data.length; i++) {
-        let current_department = data[i];
-        let json_departments = {
-            'identifier': current_department['id'],
-            'Name': current_department['user'],
-            'password': current_department['password'],
-            'UUID': current_department['UUID']
+        let current_user = data[i];
+        let json_users = {
+            'identifier': current_user['id'],
+            'Name': current_user['user'],
+            'password': current_user['password'],
+            'UUID': current_user['UUID']
         }
-        information.push(json_departments)
+        information.push(json_users)
     }
     return information
 }

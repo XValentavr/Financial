@@ -12,7 +12,7 @@ def change():
     if not session["superuser"]:
         return render_template("404.html")
     return render_template(
-        "change.html", user=session["user"], superuser=session["superuser"]
+        "changeuser.html", user=session["user"], superuser=session["superuser"]
     )
 
 
@@ -34,7 +34,7 @@ def edit_employee(UUID):
                 UUID, form.username.data, generate_password_hash(form.password.data)
             )
             return render_template(
-                "change.html", user=session["user"], superuser=session["superuser"]
+                "changeuser.html", user=session["user"], superuser=session["superuser"]
             )
 
     return render_template(

@@ -23,6 +23,7 @@ from . import pay
 from . import adduser
 from . import changeuser
 from . import moving
+from . import createwallet
 
 
 @login_manager.user_loader
