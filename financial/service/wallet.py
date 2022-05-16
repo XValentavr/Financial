@@ -20,6 +20,15 @@ def get_current_wallet(identifier):
     return wallet.json() if wallet else None
 
 
+def get_current_wallet_by_name(name):
+    """
+    This module gets all wallets in database
+    :return: list of wallets
+    """
+    wallet = Accounts.query.filter_by(name=name).first()
+    return wallet.id
+
+
 def delete_wallet(identifier):
     """
     This module gets all wallets in database
@@ -37,10 +46,10 @@ def insert_wallet(identifier: int, name: str, visibility: str):
     :param name: name of wallet to add
     :return:
     """
-    if visibility.strip() == 'Да':
-        visibility = 'Приватный'
+    if visibility.strip() == "Да":
+        visibility = "Приватный"
     else:
-        visibility = 'Общий'
+        visibility = "Общий"
     wallet = Accounts(identifier=identifier, name=name, visibility=visibility)
     database.session.add(wallet)
     database.session.commit()
@@ -55,10 +64,10 @@ def update_wallet(identifier: int, name: str, visibility: str) -> None:
     """
     wallet = Accounts.query.filter_by(id=identifier).first()
     wallet.name = name
-    if visibility.strip() == 'Да':
-        visibility = 'Общий'
+    if visibility.strip() == "Да":
+        visibility = "Общий"
     else:
-        visibility = 'Приватный'
+        visibility = "Приватный"
     wallet.visibility = visibility
     wallet.id = identifier
     database.session.add(wallet)

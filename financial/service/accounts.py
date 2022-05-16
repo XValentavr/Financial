@@ -2,17 +2,17 @@ import os
 
 import sqlalchemy
 from flask import session
-from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
 from financial.models.wallet import Accounts
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
-from financial.service.currency import get_list_currency
+from financial.service.currency import get_list_currency, get_current_currency_by_name
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
 from financial import database
 from financial.service.users import get_user_by_UUID
+from financial.service.wallet import get_current_wallet_by_name
 
 
 def get_account_money(UUID: str):
@@ -36,14 +36,14 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
                 )
-                .all()
+                    .all()
             )
             if result:
                 for details in sorted(result):
@@ -60,12 +60,12 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Accounts.visibility == check.visibility, Accounts.name == check.name
                 )
-                .all()
+                    .all()
             )
             summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -158,6 +158,8 @@ def insert_account(form):
                 info,
                 summa,
                 None,
+                None,
+                None
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -171,6 +173,8 @@ def insert_account(form):
                     comments=info,
                     addedsumma=summa,
                     deletedsumma=None,
+                    number=None,
+                    percent=None
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -293,3 +297,60 @@ def check_keys(dct: list[dict]) -> None:
         for d in dct:
             if c.name not in d.keys():
                 d[c.name] = "0.0"
+
+
+def insert_pay_account(form):
+    """
+    This module add new value to account
+    :param form: get data from form
+    :return: none
+    """
+    number = form.get("number")
+    percent = form.get("percent")
+    wallet = form.get("wallet")
+    summa = form.get("summa")
+    comments = form.get('comments')
+    currency = form.get('valuta')
+    currency = get_current_currency_by_name(currency)
+    date = form.get('date')
+    user = get_user_by_UUID(session["UUID"].strip())
+    user = user.get("id")
+    wallet = get_current_wallet_by_name(wallet)
+    if int(percent) > 0:
+        summa = int(summa) - (int(summa) * (int(percent) / 100))
+    else:
+        summa = int(summa)
+    summa_to_update = get_to_sum(user, int(wallet), currency)
+    if summa_to_update:
+        for summa_to_update in summa_to_update:
+            summa_to_update.moneysum += float(summa)
+            update_summa(
+                summa_to_update,
+                summa_to_update.moneysum,
+                user,
+                currency,
+                wallet,
+                date,
+                comments,
+                summa,
+                None,
+                number,
+                percent
+            )
+    else:
+        inser_into_money_sum(summa, user, currency, int(wallet))
+        summa_to_update = get_to_sum(user, int(wallet), currency)
+        if summa_to_update:
+            for summa_to_update in summa_to_update:
+                money = summa_to_update.id
+                accounts = Accountstatus(
+                    money=money,
+                    date=date,
+                    comments=comments,
+                    addedsumma=summa,
+                    deletedsumma=None,
+                    number=number,
+                    percent=percent
+                )
+                database.session.add(accounts)
+                database.session.commit()

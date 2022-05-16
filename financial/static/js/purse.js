@@ -1,4 +1,3 @@
-let rate = []
 let session = document.getElementById("session").textContent
 fetch(`/api/purse/${session}`)
     .then((response) => response.json())
@@ -13,11 +12,11 @@ function GetData(data) {
         let banker = data[i];
         let json_departments = {
             'bank': banker['account'],
-            'usd': parseFloat(banker['USD']).toFixed(2),
-            'eur': parseFloat(banker['EUR']).toFixed(2),
-            'rub': parseFloat(banker['RUB']).toFixed(2),
-            'uah': parseFloat(banker['UAH']).toFixed(2),
-            'pln': parseFloat(banker['PLN']).toFixed(2),
+            'usd': parseFloat(banker['USD']).toFixed(1),
+            'eur': parseFloat(banker['EUR']).toFixed(1),
+            'rub': parseFloat(banker['RUB']).toFixed(1),
+            'uah': parseFloat(banker['UAH']).toFixed(1),
+            'pln': parseFloat(banker['PLN']).toFixed(1),
         }
         information.push(json_departments)
     }

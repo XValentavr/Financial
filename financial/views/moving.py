@@ -11,7 +11,6 @@ from financial.service.moneysum import (
     get_new_transfered_sum,
 )
 from financial.service.users import get_user_by_UUID
-from financial.service.wallet import get_wallets
 from financial.views import financial, WTForm
 
 

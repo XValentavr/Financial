@@ -10,11 +10,12 @@ class Accountstatus(database.Model):
     id = database.Column(database.Integer(), primary_key=True)
 
     money = database.Column(database.Integer(), database.ForeignKey("money_sum.id"))
-    date = database.Column(database.DATE())
+    date = database.Column(database.DateTime())
     comments = database.Column(database.String())
     addedsumma = database.Column(database.String())
     deletedsumma = database.Column(database.String())
-
+    number = database.Column(database.String())
+    percent = database.Column(database.String())
     moneyid = database.relationship(
         "Moneysum", backref="accountstatus", cascade="all,delete"
     )

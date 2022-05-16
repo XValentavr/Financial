@@ -21,11 +21,11 @@ from . import income
 from . import outcome
 from . import moving
 from . import exchange
-from . import pay
 from . import adduser
 from . import changeuser
 from . import moving
 from . import createwallet
+from . import pay
 
 
 @login_manager.user_loader

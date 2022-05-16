@@ -52,18 +52,14 @@
                                     {% if field.name=='password' %}
                                         <div class="form-group">
                                             {{ field(id="password-field",class="form-control" ) }}
-                                            <span toggle="#password-field"
-                                                  class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                         </div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
                             <div class="form-group">
-                                <div class="form-group">
-                                    <button type="submit" class="form-control btn btn-primary rounded submit px-3">
-                                        Войти
-                                    </button>
-                                </div>
+                                <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                                    Войти
+                                </button>
                             </div>
                             <div class="form-group d-md-flex">
                                 <div class="w-50 text-left">

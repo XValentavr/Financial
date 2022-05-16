@@ -1,13 +1,76 @@
 {% extends 'base.html' %}
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Оплата</title>
     </head>
     <body>
     {{ super() }}
+
+    <div class="col-md-7 col-lg-5" style="padding-left: 10px;padding-bottom: 10px;width: 50%">
+        <div class="col-md-6 text-center mb-5">
+            <h2 class="heading-section">Оплатить</h2>
+        </div>
+        <div class="wrap">
+            <div class="login-wrap p-4 p-md-5">
+                <form action="" method="post" class="form-contact">
+                    <div class="form-group mt-3">
+                        <label>
+                            <div style="display:inline-block">
+                                <label class="labelstyle">№: </label>
+                                <input type="text" id="counter" class="form-inline" name="number" required>
+                                <label class="labelstyle">%:</label>
+                                <input type="text" name="percent" class="form-inline" id='percent'
+                                       onkeyup="summa_counter()" required>
+                                <input type="reset" class="form-inline  btn btn-primary rounded submit px-3"
+                                       style="float: right" value="&#8634;">
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Кошелек:</label>
+                        <select name="wallet" class="form-control" id='wallet'>
+                            {% for s in selected %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Валюта:</label>
+                        <select name="valuta" class="form-control" id='valuta'>
+                            {% for v in ths %}
+                                <option value="{{ v.name }}">{{ v.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>
+                            <label class='labelstyle'>Сумма:</label>
+                            <div style="display:inline-block">
+                                <input id="number" class="summa_inline" onkeyup="summa_counter()" name="summa" required>
+                                <label class='labelstyle'>- </label>
+                                <input id="changedsumma" name="newsumma" class="summa_inline" readonly>
+                            </div>
+                        </label>
+                    </div>
+                    <div class=" form-group mt-3">
+                        <label id='comments' class='labelstyle'>Коментарий<input type="text" required
+                                                                                 class="form-control" name="comments"/></label>
+                    </div>
+                    <div class=" form-group mt-3">
+                        <label id='date' class='labelstyle'>Дата<input type="date"
+                                                                       class="form-control" name="date"/></label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                            Подтвердить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="static/js/summapercent.js"></script>
+
     </body>
-    </html>
 {% endblock %}

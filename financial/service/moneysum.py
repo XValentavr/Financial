@@ -38,7 +38,7 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-    summas, summa, user, currency, wallet, date, info, s_add, s_delete
+        summas, summa, user, currency, wallet, date, info, s_add, s_delete, number, percent
 ) -> None:
     """
     This module updates money in wallet
@@ -61,6 +61,8 @@ def update_summa(
             comments=info,
             addedsumma=s_add,
             deletedsumma=s_delete,
+            number=number,
+            percent=percent
         )
         database.session.add(accounts)
         database.session.commit()
@@ -74,6 +76,8 @@ def update_summa(
             comments=info,
             addedsumma=s_add,
             deletedsumma=s_delete,
+            number=number,
+            percent=percent
         )
         database.session.add(accounts)
         database.session.commit()
@@ -101,9 +105,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-            .filter_by(wallet=identifier)
-            .group_by(Moneysum.wallet)
-            .all()
+                .filter_by(wallet=identifier)
+                .group_by(Moneysum.wallet)
+                .all()
         )
     res_list = []
     if result:

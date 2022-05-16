@@ -16,17 +16,23 @@ def wallet():
             name = form.wallet.data
             visibility = form.visibility.data
             wallets = get_wallets()
-            identifier = wallets[-1].get('id') + 1
+            identifier = wallets[-1].get("id") + 1
             for w in wallets:
-                if str(w['name']).strip() == name.strip():
-                    flash('Такой кошелек уже есть')
+                if str(w["name"]).strip() == name.strip():
+                    flash("Такой кошелек уже есть")
                     return render_template(
-                        "wallet.html", form=form, user=session["user"], superuser=session["superuser"]
+                        "wallet.html",
+                        form=form,
+                        user=session["user"],
+                        superuser=session["superuser"],
                     )
             else:
                 insert_wallet(identifier, name, visibility)
         return render_template(
-            "wallet.html", form=form, user=session["user"], superuser=session["superuser"]
+            "wallet.html",
+            form=form,
+            user=session["user"],
+            superuser=session["superuser"],
         )
 
 
@@ -55,10 +61,14 @@ def edit_wallet(identifier):
         form = WTForm.Wallet()
         if form.validate_on_submit():
             update_wallet(
-                identifier, form.wallet.data, form.visibility.data,
+                identifier,
+                form.wallet.data,
+                form.visibility.data,
             )
             return render_template(
-                "changewallet.html", user=session["user"], superuser=session["superuser"]
+                "changewallet.html",
+                user=session["user"],
+                superuser=session["superuser"],
             )
 
     return render_template(

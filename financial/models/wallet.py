@@ -26,18 +26,19 @@ class Accounts(database.Model):
         :return: the department in json format
         """
         from financial.service.moneysum import get_count_users
+
         wallet = get_count_users(self.id)
         if wallet:
             users = wallet[0][1] if wallet[0][0] == self.id else 0
         else:
             users = 0
-        if self.visibility.strip() == 'No':
-            self.visibility = 'Приватный'
-        elif self.visibility.strip() == 'Yes':
-            self.visibility = 'Общий'
+        if self.visibility.strip() == "No":
+            self.visibility = "Приватный"
+        elif self.visibility.strip() == "Yes":
+            self.visibility = "Общий"
         return {
             "id": self.id,
-            'users': users,
+            "users": users,
             "name": self.name,
-            'visibility': self.visibility
+            "visibility": self.visibility,
         }

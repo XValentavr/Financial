@@ -3,7 +3,7 @@ This module creates WTForm to provide security of authentication
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, DateField, BooleanField
+from wtforms import StringField, PasswordField, SelectField, DateField
 from wtforms.validators import DataRequired, Length
 from financial.service.currency import get_currency
 from financial.service.accounts import get_name_account
@@ -95,4 +95,4 @@ class Move(FlaskForm):
 
 class Wallet(FlaskForm):
     wallet = StringField("Введите название кошелька", validators=[DataRequired()])
-    visibility = SelectField("Сделать видимым для всех?", choices=['Да', 'Нет'])
+    visibility = SelectField("Сделать видимым для всех?", choices=["Да", "Нет"])
