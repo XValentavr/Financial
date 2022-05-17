@@ -1,5 +1,5 @@
+import datetime
 import os
-
 import sqlalchemy
 from flask import session
 from sqlalchemy.orm import sessionmaker
@@ -8,7 +8,7 @@ from financial.models.wallet import Accounts
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
-from financial.service.currency import get_list_currency, get_current_currency_by_name
+from financial.service.currency import get_list_currency, get_current_currency_by_name, get_current_currency
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
 from financial import database
 from financial.service.users import get_user_by_UUID
@@ -139,11 +139,12 @@ def insert_account(form):
     """
     wallet = form.wallet.data
     info = form.info.data
-    date = form.date.data
+    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip())
     user = user.get("id")
     summa = form.sum.data
     currency = form.currency.data
+    currency_name = get_current_currency(currency).name
     summa_to_update = get_to_sum(user, int(wallet), currency)
     if summa_to_update:
         for summa_to_update in summa_to_update:
@@ -171,7 +172,7 @@ def insert_account(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=summa,
+                    addedsumma=str(summa) + ' ' + currency_name,
                     deletedsumma=None,
                     number=None,
                     percent=None
@@ -188,10 +189,11 @@ def delete_data(form):
     """
     wallet = form.wallet.data
     info = form.info.data
-    date = form.date.data
+    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip()).get("id")
     summa = form.sum.data
     currency = form.currency.data
+    currency_name = get_current_currency(currency).name
     summa_to_update = get_to_sum(user, int(wallet), currency)
     if summa_to_update:
         for summa_to_update in summa_to_update:
@@ -207,6 +209,7 @@ def delete_data(form):
                 info,
                 added,
                 summa,
+                None, None
             )
     else:
         summa = 0 - int(summa)
@@ -220,7 +223,7 @@ def delete_data(form):
                     date=date,
                     comments=info,
                     addedsumma=None,
-                    deletedsumma=summa,
+                    deletedsumma=str(summa) + ' ' + currency_name,
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -312,7 +315,7 @@ def insert_pay_account(form):
     comments = form.get('comments')
     currency = form.get('valuta')
     currency = get_current_currency_by_name(currency)
-    date = form.get('date')
+    date = str(form.get('date')) + ' ' + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
@@ -320,15 +323,15 @@ def insert_pay_account(form):
         summa = int(summa) - (int(summa) * (int(percent) / 100))
     else:
         summa = int(summa)
-    summa_to_update = get_to_sum(user, int(wallet), currency)
+    summa_to_update = get_to_sum(user, int(wallet), currency.id)
     if summa_to_update:
         for summa_to_update in summa_to_update:
-            summa_to_update.moneysum += float(summa)
+            summa_to_update.moneysum -= float(summa)
             update_summa(
                 summa_to_update,
                 summa_to_update.moneysum,
                 user,
-                currency,
+                currency.id,
                 wallet,
                 date,
                 comments,
@@ -338,8 +341,8 @@ def insert_pay_account(form):
                 percent
             )
     else:
-        inser_into_money_sum(summa, user, currency, int(wallet))
-        summa_to_update = get_to_sum(user, int(wallet), currency)
+        inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
+        summa_to_update = get_to_sum(user, int(wallet), currency.id)
         if summa_to_update:
             for summa_to_update in summa_to_update:
                 money = summa_to_update.id
@@ -347,7 +350,7 @@ def insert_pay_account(form):
                     money=money,
                     date=date,
                     comments=comments,
-                    addedsumma=summa,
+                    addedsumma=str(summa) + ' ' + currency.name,
                     deletedsumma=None,
                     number=number,
                     percent=percent

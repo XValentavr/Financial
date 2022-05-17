@@ -1,13 +1,85 @@
 {% extends 'base.html' %}
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Оплата</title>
+        <title>Обмен</title>
     </head>
     <body>
     {{ super() }}
+
+    <div class="col-md-7 col-lg-5" style="padding-left: 10px;padding-bottom: 10px;width: 50%">
+        <div class="col-md-6 text-center mb-5">
+            <h2 class="heading-section">Обменять</h2>
+        </div>
+        <div class="wrap">
+            <div class="login-wrap p-4 p-md-5">
+                <form action="" method="post" class="form-contact">
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Продали из:</label>
+                        <select name="wallet_from" class="form-control" id='wallet'>
+                            {% for s in selected %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Сумма:</label>
+                        <input id="changedsumma" name="summa" class="summa_inline" onkeyup="exchanged()">
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Валюта продажи:</label>
+                        <select id='currencies_sold' name="valuta_sold" class="form-control" onchange="exchanged()">
+                            {% for v in ths %}
+                                <option value="{{ v.name }}">{{ v.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Перевели в:</label>
+                        <select name="wallet_to" class="form-control" id='wallet'>
+                            {% for s in selected %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class='labelstyle'>Валюта покупки:</label>
+                        <select id='currencies_buy' name="valuta_buy" class="form-control" onchange="exchanged()">
+                            {% for v in ths %}
+                                <option value="{{ v.name }}">{{ v.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>
+                            <div style="display:inline-block">
+                                <label class='labelstyle'>Получили:</label><br>
+                                <input id="newsumma" class="summa_inline" onkeyup="exchanged()" name="changed_summa" readonly
+                                       style="border: none">
+                                <label class='labelstyle'>по курсу</label>
+                                <input id="valuta" name="newsumma" class="valuta" readonly style="border: none"
+                                       onkeyup="exchanged()">
+                            </div>
+                        </label>
+                    </div>
+                    <div class=" form-group mt-3">
+                        <label id='comments' class='labelstyle'>Коментарий<input type="text" required
+                                                                                 class="form-control" name="comments"/></label>
+                    </div>
+                    <div class=" form-group mt-3">
+                        <label id='date' class='labelstyle'>Дата<input type="date"
+                                                                       class="form-control" name="date"
+                                                                       required/></label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                            Подтвердить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="static/js/exchange.js"></script>
     </body>
-    </html>
 {% endblock %}

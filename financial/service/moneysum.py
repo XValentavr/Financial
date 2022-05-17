@@ -1,13 +1,18 @@
+import datetime
 import os
 
 import requests
 import sqlalchemy
+from flask import request, session
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.moneysum import Moneysum
+from financial.service.currency import get_current_currency_by_name, get_current_currency
+from financial.service.users import get_user_by_UUID
+from financial.service.wallet import get_current_wallet_by_name
 
 
 def inser_into_money_sum(money: float, user: int, currency: int, wallet: int):
@@ -53,14 +58,15 @@ def update_summa(
     :param s_delete" summa to delete
     :return: None
     """
+    currency_name = get_current_currency(currency).name
     if int(summas.wallet) != int(wallet) and int(summas.currency) != int(currency):
         inser_into_money_sum(summa, user, currency, wallet)
         accounts = Accountstatus(
             money=summas.id,
             date=date,
             comments=info,
-            addedsumma=s_add,
-            deletedsumma=s_delete,
+            addedsumma=str(s_add) + ' ' + currency_name if s_add else None,
+            deletedsumma=str(s_delete) + ' ' + currency_name if s_delete else None,
             number=number,
             percent=percent
         )
@@ -74,8 +80,8 @@ def update_summa(
             money=summas.id,
             date=date,
             comments=info,
-            addedsumma=s_add,
-            deletedsumma=s_delete,
+            addedsumma=str(s_add) + ' ' + currency_name if s_add else None,
+            deletedsumma=str(s_delete) + ' ' + currency_name if s_delete else None,
             number=number,
             percent=percent
         )
@@ -128,3 +134,154 @@ def get_new_transfered_sum(sum_: float, currency_from: str, currency_to: str) ->
     new_entered_summa = round(sum_ * exchange, 2)
     final_sum = new_entered_summa
     return final_sum
+
+
+def exchange_command(form):
+    summa = request.form.get('summa')
+
+    from_ = request.form.get('wallet_from')
+    from_ = get_current_wallet_by_name(from_)
+
+    currency_from_name = request.form.get('valuta_sold')
+    currency_to = request.form.get('valuta_buy')
+    currency_from = get_current_currency_by_name(currency_from_name).id
+    currency_to = get_current_currency_by_name(currency_to).id
+
+    user = get_user_by_UUID(session["UUID"].strip())
+    user = user.get("id")
+
+    summa_to_delete = get_to_sum(user, int(from_), currency_from)
+    info = request.form.get('comments')
+    date = str(request.form.get('date')) + ' ' + str(datetime.datetime.now().time())
+    to_ = request.form.get('wallet_to')
+    to_ = get_current_wallet_by_name(to_)
+    final_sum = 0
+    new_entered_summa = request.form.get('changed_summa')
+    if summa_to_delete:
+        for summa_to_delete in summa_to_delete:
+            final_sum = summa_to_delete.moneysum
+            final_sum -= float(summa)
+    else:
+        if not summa_to_delete:
+            inser_into_money_sum(0, user, currency_from, from_)
+            final_sum = 0 - float(summa)
+            summa_to_delete = get_to_sum(user, int(from_), currency_from)
+            for _sum in summa_to_delete:
+                summa_to_delete = _sum
+    update_summa(
+        summa_to_delete,
+        final_sum,
+        user,
+        currency_from,
+        from_,
+        date,
+        info,
+        None,
+        summa,
+        None, None
+    )
+    summa_to_add = get_to_sum(user, int(to_), currency_to)
+    if summa_to_add:
+        for summa_to_add in summa_to_add:
+            summa_to_add.moneysum += float(new_entered_summa)
+            update_summa(
+                summa_to_add,
+                summa_to_add.moneysum,
+                user,
+                currency_to,
+                to_,
+                date,
+                info,
+                new_entered_summa,
+                None,
+                None, None
+            )
+    else:
+        inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
+        summa_to_update = get_to_sum(user, int(to_), currency_to)
+        if summa_to_update:
+            for summa_to_update in summa_to_update:
+                money = summa_to_update.id
+                accounts = Accountstatus(
+                    money=money,
+                    date=date,
+                    comments=info,
+                    addedsumma=str(new_entered_summa) + ' ' + currency_from_name,
+                    deletedsumma=None,
+                )
+                database.session.add(accounts)
+                database.session.commit()
+
+
+def moving_command(form):
+    sum_ = float(form.sum_.data)
+    from_ = form.from_.data
+    currency_from = int(form.currency_from.data)
+    currency_to = int(form.currency_to.data)
+    user = get_user_by_UUID(session["UUID"].strip())
+    user = user.get("id")
+    summa_to_delete = get_to_sum(user, int(from_), currency_from)
+    info = form.info.data
+    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
+    to_ = form.to_.data
+    final_sum = 0
+    code_from = get_current_currency(currency_from)
+    currency_from = code_from.id
+    code_to = get_current_currency(currency_to)
+    currency_to = code_to.id
+    new_entered_summa = get_new_transfered_sum(sum_, code_from.name, code_to.name)
+    if summa_to_delete:
+        for summa_to_delete in summa_to_delete:
+            final_sum = summa_to_delete.moneysum
+            final_sum -= float(sum_)
+    else:
+        if not summa_to_delete:
+            print('bfn1')
+            inser_into_money_sum(0, user, currency_from, from_)
+            final_sum = 0 - float(sum_)
+            summa_to_delete = get_to_sum(user, int(from_), currency_from)
+            for _sum in summa_to_delete:
+                summa_to_delete = _sum
+    update_summa(
+        summa_to_delete,
+        final_sum,
+        user,
+        currency_from,
+        from_,
+        date,
+        info,
+        None,
+        sum_,
+        None, None
+    )
+    summa_to_add = get_to_sum(user, int(to_), currency_to)
+    if summa_to_add:
+        for summa_to_add in summa_to_add:
+            summa_to_add.moneysum += float(new_entered_summa)
+            print('hbf11111412425')
+            update_summa(
+                summa_to_add,
+                summa_to_add.moneysum,
+                user,
+                currency_to,
+                to_,
+                date,
+                info,
+                new_entered_summa,
+                None,
+                None, None
+            )
+    else:
+        inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
+        summa_to_update = get_to_sum(user, int(to_), currency_to)
+        if summa_to_update:
+            for summa_to_update in summa_to_update:
+                money = summa_to_update.id
+                accounts = Accountstatus(
+                    money=money,
+                    date=date,
+                    comments=info,
+                    addedsumma=sum_,
+                    deletedsumma=None,
+                )
+                database.session.add(accounts)

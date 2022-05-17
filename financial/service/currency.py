@@ -19,7 +19,8 @@ def get_current_currency_by_name(name: str):
     from financial.models.currency import Currency
 
     currency = Currency.query.filter_by(name=name).first()
-    return currency.id
+    return currency
+
 
 
 def get_list_currency():
