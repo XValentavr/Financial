@@ -20,4 +20,5 @@ def paynment():
         user=session["user"],
         superuser=session["superuser"],
         ths=ths,
-        selected=selected)
+        selected=selected,
+    )

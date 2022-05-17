@@ -13,6 +13,6 @@ function get_data(data) {
     let rate = data['conversion_rates']
     let summa = document.getElementById('changedsumma').value
     let currencies_buy = document.getElementById("currencies_buy").value;
-    let currency = document.getElementById("valuta").value = rate[currencies_buy];
+    let currency = document.getElementById("valuta").value = parseFloat(rate[currencies_buy].toFixed(2));
     document.getElementById("newsumma").value = summa * currency.toFixed(2);
 }

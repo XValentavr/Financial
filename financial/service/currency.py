@@ -4,6 +4,7 @@ def get_currency():
     :return: list of curencies
     """
     from financial.models.currency import Currency
+
     currency = Currency.query.all()
     return [(currency.id, currency.name) for currency in currency]
 
@@ -20,7 +21,6 @@ def get_current_currency_by_name(name: str):
 
     currency = Currency.query.filter_by(name=name).first()
     return currency
-
 
 
 def get_list_currency():

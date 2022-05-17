@@ -15,6 +15,9 @@ def exchange():
     if request.method == "POST":
         exchange_command(request.form)
     return render_template(
-        "exchange.html", user=session["user"], superuser=session["superuser"], ths=ths,
-        selected=selected
+        "exchange.html",
+        user=session["user"],
+        superuser=session["superuser"],
+        ths=ths,
+        selected=selected,
     )

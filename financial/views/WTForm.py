@@ -3,8 +3,8 @@ This module creates WTForm to provide security of authentication
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, DateField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, PasswordField, SelectField, DateField, IntegerField
+from wtforms.validators import DataRequired, Length, NumberRange
 from financial.service.currency import get_currency
 from financial.service.accounts import get_name_account
 
@@ -54,7 +54,7 @@ class Register(FlaskForm):
 
 
 class Income(FlaskForm):
-    sum = StringField("Сумма: ", validators=[DataRequired()])
+    sum = IntegerField("Сумма: ", validators=[DataRequired()])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
@@ -66,7 +66,7 @@ class Income(FlaskForm):
 
 
 class Outcome(FlaskForm):
-    sum = StringField("Сумма: ", validators=[DataRequired()])
+    sum = IntegerField("Сумма: ", validators=[DataRequired()])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
@@ -78,7 +78,7 @@ class Outcome(FlaskForm):
 
 
 class Move(FlaskForm):
-    sum_ = StringField("Сумма: ", validators=[DataRequired()])
+    sum_ = IntegerField("Сумма: ", validators=[DataRequired()])
     from_ = SelectField("Выберите кошелек", choices=[])
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Выберите кошелек", choices=[])

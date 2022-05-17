@@ -8,7 +8,11 @@ from financial.models.wallet import Accounts
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
-from financial.service.currency import get_list_currency, get_current_currency_by_name, get_current_currency
+from financial.service.currency import (
+    get_list_currency,
+    get_current_currency_by_name,
+    get_current_currency,
+)
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
 from financial import database
 from financial.service.users import get_user_by_UUID
@@ -36,14 +40,14 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
                 )
-                    .all()
+                .all()
             )
             if result:
                 for details in sorted(result):
@@ -60,12 +64,12 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
                     Accounts.visibility == check.visibility, Accounts.name == check.name
                 )
-                    .all()
+                .all()
             )
             summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -139,7 +143,7 @@ def insert_account(form):
     """
     wallet = form.wallet.data
     info = form.info.data
-    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
+    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip())
     user = user.get("id")
     summa = form.sum.data
@@ -160,7 +164,7 @@ def insert_account(form):
                 summa,
                 None,
                 None,
-                None
+                None,
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -172,10 +176,10 @@ def insert_account(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=str(summa) + ' ' + currency_name,
+                    addedsumma=str(summa) + " " + currency_name,
                     deletedsumma=None,
                     number=None,
-                    percent=None
+                    percent=None,
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -189,7 +193,7 @@ def delete_data(form):
     """
     wallet = form.wallet.data
     info = form.info.data
-    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
+    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip()).get("id")
     summa = form.sum.data
     currency = form.currency.data
@@ -209,7 +213,8 @@ def delete_data(form):
                 info,
                 added,
                 summa,
-                None, None
+                None,
+                None,
             )
     else:
         summa = 0 - int(summa)
@@ -223,7 +228,7 @@ def delete_data(form):
                     date=date,
                     comments=info,
                     addedsumma=None,
-                    deletedsumma=str(summa) + ' ' + currency_name,
+                    deletedsumma=str(summa) + " " + currency_name,
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -312,10 +317,10 @@ def insert_pay_account(form):
     percent = form.get("percent")
     wallet = form.get("wallet")
     summa = form.get("summa")
-    comments = form.get('comments')
-    currency = form.get('valuta')
+    comments = form.get("comments")
+    currency = form.get("valuta")
     currency = get_current_currency_by_name(currency)
-    date = str(form.get('date')) + ' ' + str(datetime.datetime.now().time())
+    date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
@@ -338,7 +343,7 @@ def insert_pay_account(form):
                 summa,
                 None,
                 number,
-                percent
+                percent,
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -350,10 +355,10 @@ def insert_pay_account(form):
                     money=money,
                     date=date,
                     comments=comments,
-                    addedsumma=str(summa) + ' ' + currency.name,
+                    addedsumma=str(summa) + " " + currency.name,
                     deletedsumma=None,
                     number=number,
-                    percent=percent
+                    percent=percent,
                 )
                 database.session.add(accounts)
                 database.session.commit()

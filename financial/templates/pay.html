@@ -18,9 +18,9 @@
                         <label>
                             <div style="display:inline-block">
                                 <label class="labelstyle">№: </label>
-                                <input type="text" id="counter" class="form-inline" name="number" required>
+                                <input type="number" id="counter" class="form-inline" name="number" required>
                                 <label class="labelstyle">%:</label>
-                                <input type="text" name="percent" class="form-inline" id='percent'
+                                <input type="number" name="percent" class="form-inline" id='percent'
                                        onkeyup="summa_counter()" required>
                                 <input type="reset" class="form-inline  btn btn-primary rounded submit px-3"
                                        style="float: right" value="&#8634;">
@@ -47,9 +47,11 @@
                         <label>
                             <label class='labelstyle'>Сумма:</label>
                             <div style="display:inline-block">
-                                <input id="number" class="summa_inline" onkeyup="summa_counter()" name="summa" required>
+                                <input id="number" type="number" class="summa_inline" onkeyup="summa_counter()"
+                                       name="summa" required>
                                 <label class='labelstyle'>- </label>
-                                <input id="changedsumma" name="newsumma" class="summa_inline" readonly>
+                                <input id="changedsumma" name="newsumma" class="summa_inline" readonly
+                                       style="border: none">
                             </div>
                         </label>
                     </div>

@@ -10,7 +10,10 @@ from sqlalchemy.orm import sessionmaker
 from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.moneysum import Moneysum
-from financial.service.currency import get_current_currency_by_name, get_current_currency
+from financial.service.currency import (
+    get_current_currency_by_name,
+    get_current_currency,
+)
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
@@ -43,7 +46,7 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-        summas, summa, user, currency, wallet, date, info, s_add, s_delete, number, percent
+    summas, summa, user, currency, wallet, date, info, s_add, s_delete, number, percent
 ) -> None:
     """
     This module updates money in wallet
@@ -65,10 +68,10 @@ def update_summa(
             money=summas.id,
             date=date,
             comments=info,
-            addedsumma=str(s_add) + ' ' + currency_name if s_add else None,
-            deletedsumma=str(s_delete) + ' ' + currency_name if s_delete else None,
+            addedsumma=str(s_add) + " " + currency_name if s_add else None,
+            deletedsumma=str(s_delete) + " " + currency_name if s_delete else None,
             number=number,
-            percent=percent
+            percent=percent,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -80,10 +83,10 @@ def update_summa(
             money=summas.id,
             date=date,
             comments=info,
-            addedsumma=str(s_add) + ' ' + currency_name if s_add else None,
-            deletedsumma=str(s_delete) + ' ' + currency_name if s_delete else None,
+            addedsumma=str(s_add) + " " + currency_name if s_add else None,
+            deletedsumma=str(s_delete) + " " + currency_name if s_delete else None,
             number=number,
-            percent=percent
+            percent=percent,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -111,9 +114,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-                .filter_by(wallet=identifier)
-                .group_by(Moneysum.wallet)
-                .all()
+            .filter_by(wallet=identifier)
+            .group_by(Moneysum.wallet)
+            .all()
         )
     res_list = []
     if result:
@@ -137,13 +140,13 @@ def get_new_transfered_sum(sum_: float, currency_from: str, currency_to: str) ->
 
 
 def exchange_command(form):
-    summa = request.form.get('summa')
+    summa = request.form.get("summa")
 
-    from_ = request.form.get('wallet_from')
+    from_ = request.form.get("wallet_from")
     from_ = get_current_wallet_by_name(from_)
 
-    currency_from_name = request.form.get('valuta_sold')
-    currency_to = request.form.get('valuta_buy')
+    currency_from_name = request.form.get("valuta_sold")
+    currency_to = request.form.get("valuta_buy")
     currency_from = get_current_currency_by_name(currency_from_name).id
     currency_to = get_current_currency_by_name(currency_to).id
 
@@ -151,12 +154,12 @@ def exchange_command(form):
     user = user.get("id")
 
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
-    info = request.form.get('comments')
-    date = str(request.form.get('date')) + ' ' + str(datetime.datetime.now().time())
-    to_ = request.form.get('wallet_to')
+    info = request.form.get("comments")
+    date = str(request.form.get("date")) + " " + str(datetime.datetime.now().time())
+    to_ = request.form.get("wallet_to")
     to_ = get_current_wallet_by_name(to_)
     final_sum = 0
-    new_entered_summa = request.form.get('changed_summa')
+    new_entered_summa = request.form.get("changed_summa")
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
@@ -178,7 +181,8 @@ def exchange_command(form):
         info,
         None,
         summa,
-        None, None
+        None,
+        None,
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -194,7 +198,8 @@ def exchange_command(form):
                 info,
                 new_entered_summa,
                 None,
-                None, None
+                None,
+                None,
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -206,7 +211,7 @@ def exchange_command(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=str(new_entered_summa) + ' ' + currency_from_name,
+                    addedsumma=str(new_entered_summa) + " " + currency_from_name,
                     deletedsumma=None,
                 )
                 database.session.add(accounts)
@@ -222,7 +227,7 @@ def moving_command(form):
     user = user.get("id")
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
     info = form.info.data
-    date = str(form.date.data) + ' ' + str(datetime.datetime.now().time())
+    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     to_ = form.to_.data
     final_sum = 0
     code_from = get_current_currency(currency_from)
@@ -236,7 +241,7 @@ def moving_command(form):
             final_sum -= float(sum_)
     else:
         if not summa_to_delete:
-            print('bfn1')
+            print("bfn1")
             inser_into_money_sum(0, user, currency_from, from_)
             final_sum = 0 - float(sum_)
             summa_to_delete = get_to_sum(user, int(from_), currency_from)
@@ -252,13 +257,14 @@ def moving_command(form):
         info,
         None,
         sum_,
-        None, None
+        None,
+        None,
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
         for summa_to_add in summa_to_add:
             summa_to_add.moneysum += float(new_entered_summa)
-            print('hbf11111412425')
+            print("hbf11111412425")
             update_summa(
                 summa_to_add,
                 summa_to_add.moneysum,
@@ -269,7 +275,8 @@ def moving_command(form):
                 info,
                 new_entered_summa,
                 None,
-                None, None
+                None,
+                None,
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
