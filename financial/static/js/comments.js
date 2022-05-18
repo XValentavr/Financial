@@ -39,7 +39,7 @@ function displaydata(data) {
             printer(element, tb, element['visibility'])
         } else if (element['visibility'] !== 'Общий') {
             if (element['UUID'] === USERID.trim()) {
-                printer(element, tb)
+                printer(element, tb, element['visibility'])
             }
         }
     }
@@ -70,19 +70,20 @@ function printer(element, tb, visibility) {
     let cell = row.insertCell();
     let text;
     if (visibility === 'Общий') {
-        text = document.createTextNode(string.italics());
         if (element['UUID'] === USERID.trim()) {
-            add_buttons(element, string, cell)
+            add_buttons(element, string.italics(), cell, visibility)
         } else {
+            text = document.createElement('div');
+            text.innerHTML = string.italics()
             cell.appendChild(text);
         }
     } else {
-        add_buttons(element, string, cell)
+        add_buttons(element, string, cell, visibility)
     }
 
 }
 
-function add_buttons(element, string, cell) {
+function add_buttons(element, string, cell, visibility) {
     let a = document.createElement("a");
     a.setAttribute("href", `/users/edit/${element['UUID']}`);
     let text1 = document.createTextNode("Изменить / ");
@@ -91,21 +92,30 @@ function add_buttons(element, string, cell) {
     adel.setAttribute("onclick", `api_delete(${element['identifier']})`)
     let text = document.createTextNode("Отменить");
     adel.appendChild(text);
-    text = document.createTextNode(string);
+    if (visibility === 'Общий') {
+        text = document.createElement('div');
+        text.innerHTML = string
+    } else {
+        text = document.createElement('div');
+        text.innerHTML = string.replace(/(<([^>]+)>)/ig, '');
+    }
     cell.appendChild(text);
     cell.appendChild(a);
     cell.appendChild(adel);
 }
 
 function api_delete(identifier) {
-    fetch(`/api/reset/${identifier}`, {
-        method: 'DELETE'
-    })
-        .then((response) => response.json())
-        .then(() => {
-            window.location.href = `/income`;
+    if (confirm("Вы уверенны, что хотите отменить транзацию?")) {
+        fetch(`/api/reset/${identifier}`, {
+            method: 'DELETE'
         })
-        .catch(() => {
-            window.location = document.URL;
-        })
+            .then((response) => response.json())
+            .then(() => {
+                window.location.href = `/income`;
+            })
+            .catch(() => {
+                window.location = document.URL;
+            })
+    } else window.location.href = document.URL
+
 }
