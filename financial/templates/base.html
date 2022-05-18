@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -72,6 +71,15 @@
             </tr>
             </thead>
         </table>
+        <div class='right_comments' id='setcomments'>
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">История</h2>
+            </div>
+            <table class="comments" id="userstory">
+                <thead>
+                </thead>
+            </table>
+        </div>
     </div>
     <p id="session" hidden>{{ session['UUID'] }}</p>
     <script src="{{ url_for('static', filename='js/purse.js') }}"></script>
@@ -79,6 +87,13 @@
     <script src="static/js/popper.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
     <script src="static/js/main.js"></script>
+    <script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+    <script>
+        window.setInterval(function () {
+       document.getElementById('setcomments').scrollTop = message.offsetHeight + message.offsetTop;
+
+        }, 5000);
+    </script>
     </body>
 {% endblock %}
 </html>

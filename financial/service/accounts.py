@@ -1,20 +1,21 @@
 import datetime
 import os
+
 import sqlalchemy
 from flask import session
 from sqlalchemy.orm import sessionmaker
 
-from financial.models.wallet import Accounts
+from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
+from financial.models.wallet import Accounts
 from financial.service.currency import (
     get_list_currency,
     get_current_currency_by_name,
     get_current_currency,
 )
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
-from financial import database
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
@@ -40,14 +41,14 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
                 )
-                .all()
+                    .all()
             )
             if result:
                 for details in sorted(result):
@@ -64,12 +65,12 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Accounts.visibility == check.visibility, Accounts.name == check.name
                 )
-                .all()
+                    .all()
             )
             summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -165,6 +166,9 @@ def insert_account(form):
                 None,
                 None,
                 None,
+                False,
+                False,
+                False
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -180,6 +184,9 @@ def insert_account(form):
                     deletedsumma=None,
                     number=None,
                     percent=None,
+                    isexchanged=False,
+                    ismoved=False,
+                    ismodified=False
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -215,6 +222,9 @@ def delete_data(form):
                 summa,
                 None,
                 None,
+                False,
+                False,
+                False
             )
     else:
         summa = 0 - int(summa)
@@ -229,6 +239,9 @@ def delete_data(form):
                     comments=info,
                     addedsumma=None,
                     deletedsumma=str(summa) + " " + currency_name,
+                    isexchanged=False,
+                    ismoved=False,
+                    ismodified=False
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -236,7 +249,7 @@ def delete_data(form):
 
 def get_name_account():
     """
-    This module gets account name of valuex
+    This module gets account name of value
     :return: list of account name
     """
     from financial import create_app
@@ -340,10 +353,13 @@ def insert_pay_account(form):
                 wallet,
                 date,
                 comments,
-                summa,
                 None,
+                summa,
                 number,
                 percent,
+                False,
+                False,
+                False
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -355,10 +371,30 @@ def insert_pay_account(form):
                     money=money,
                     date=date,
                     comments=comments,
-                    addedsumma=str(summa) + " " + currency.name,
-                    deletedsumma=None,
+                    addedsumma=None,
+                    deletedsumma=str(summa) + " " + currency.name,
                     number=number,
                     percent=percent,
+                    isexcnahged=False,
+                    ismoved=False,
+                    ismodified=False
                 )
                 database.session.add(accounts)
                 database.session.commit()
+
+
+def get_account_status_by_identifier(identifier):
+    status = Accountstatus.query.filter_by(id=identifier).first()
+    return status
+
+
+def delete_accountstatus(identifier: int):
+    """
+    This module deletes history by id
+    :param identifier: id of history
+    :return: new changed database
+    """
+    status = Accountstatus.query.get_or_404(identifier)
+    database.session.delete(status)
+    database.session.commit()
+    # TODO: add alert notifiication

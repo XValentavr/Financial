@@ -16,9 +16,11 @@ class Accountstatus(database.Model):
     deletedsumma = database.Column(database.String())
     number = database.Column(database.String())
     percent = database.Column(database.String())
-    moneyid = database.relationship(
-        "Moneysum", backref="accountstatus", cascade="all,delete"
-    )
+    isexchanged = database.Column(database.BOOLEAN())
+    ismoved = database.Column(database.BOOLEAN())
+    ismodified = database.Column(database.String())
+
+    moneyid = database.relationship("Moneysum", backref="accountstatus")
 
     def json(self):
         """

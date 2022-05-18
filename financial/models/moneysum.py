@@ -23,3 +23,6 @@ class Moneysum(database.Model):
     accountid = database.relationship(
         "Accounts", backref="money_sum", lazy="dynamic", cascade="all,delete"
     )
+    accountinfo = database.relationship(
+        "Accountstatus", backref="money_sum", lazy="dynamic", cascade="all,delete"
+    )

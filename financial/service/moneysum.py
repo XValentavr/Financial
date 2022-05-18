@@ -46,7 +46,20 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-    summas, summa, user, currency, wallet, date, info, s_add, s_delete, number, percent
+        summas,
+        summa,
+        user,
+        currency,
+        wallet,
+        date,
+        info,
+        s_add,
+        s_delete,
+        number,
+        percent,
+        exchanged,
+        moved,
+        modified
 ) -> None:
     """
     This module updates money in wallet
@@ -72,6 +85,9 @@ def update_summa(
             deletedsumma=str(s_delete) + " " + currency_name if s_delete else None,
             number=number,
             percent=percent,
+            isexchanged=exchanged,
+            ismoved=moved,
+            ismodified=modified
         )
         database.session.add(accounts)
         database.session.commit()
@@ -87,6 +103,9 @@ def update_summa(
             deletedsumma=str(s_delete) + " " + currency_name if s_delete else None,
             number=number,
             percent=percent,
+            isexchanged=exchanged,
+            ismoved=moved,
+            ismodified=modified
         )
         database.session.add(accounts)
         database.session.commit()
@@ -114,9 +133,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-            .filter_by(wallet=identifier)
-            .group_by(Moneysum.wallet)
-            .all()
+                .filter_by(wallet=identifier)
+                .group_by(Moneysum.wallet)
+                .all()
         )
     res_list = []
     if result:
@@ -140,6 +159,11 @@ def get_new_transfered_sum(sum_: float, currency_from: str, currency_to: str) ->
 
 
 def exchange_command(form):
+    """
+    This module exchange currencies
+    :param form: form
+    :return: None
+    """
     summa = request.form.get("summa")
 
     from_ = request.form.get("wallet_from")
@@ -183,6 +207,9 @@ def exchange_command(form):
         summa,
         None,
         None,
+        False,
+        False,
+        False
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -200,6 +227,9 @@ def exchange_command(form):
                 None,
                 None,
                 None,
+                False,
+                False,
+                False
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -213,6 +243,8 @@ def exchange_command(form):
                     comments=info,
                     addedsumma=str(new_entered_summa) + " " + currency_from_name,
                     deletedsumma=None,
+                    isexchanged=False,
+                    ismoved=False,
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -241,7 +273,6 @@ def moving_command(form):
             final_sum -= float(sum_)
     else:
         if not summa_to_delete:
-            print("bfn1")
             inser_into_money_sum(0, user, currency_from, from_)
             final_sum = 0 - float(sum_)
             summa_to_delete = get_to_sum(user, int(from_), currency_from)
@@ -259,6 +290,9 @@ def moving_command(form):
         sum_,
         None,
         None,
+        False,
+        True,
+        False
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -277,6 +311,9 @@ def moving_command(form):
                 None,
                 None,
                 None,
+                False,
+                True,
+                False
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -290,5 +327,29 @@ def moving_command(form):
                     comments=info,
                     addedsumma=sum_,
                     deletedsumma=None,
+                    isexchanged=False,
+                    ismoved=True,
+                    ismodified=False
                 )
                 database.session.add(accounts)
+
+
+def reset_moneysum(status_id: int, identifier: int, summa: float):
+    """
+    This module updates summa when reset button is clicked
+    :param status_id: id of status account
+    :param identifier: id of summa
+    :param summa: summa to update
+    :return: new inserted data
+    """
+    from financial.service.accounts import delete_accountstatus
+
+    changed = Moneysum.query.filter_by(id=identifier).first()
+    changed.id = changed.id
+    changed.user = changed.user
+    changed.currency = changed.currency
+    changed.wallet = changed.wallet
+    changed.moneysum = changed.moneysum + summa
+    database.session.add(changed)
+    database.session.commit()
+    delete_accountstatus(status_id)
