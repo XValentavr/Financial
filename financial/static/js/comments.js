@@ -47,8 +47,16 @@ function displaydata(data) {
 
 function printer(element, tb, visibility) {
     let string
-    //todo add moved and exhcanged string
-    if (element['number'] != null) {
+    if (element['exchanged'] === true && element['deletedsumma'] != null) {
+        string = ('Пользователь ' + element['user'] + ' обменял ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+
+    } else if (element['exchanged'] === true && element['deletedsumma'] === null) {
+        string = ('Пользователь ' + element['user'] + ' получил ' + element['addedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+
+    } else if (element['moved'] === true && element['deletedsumma'] != null) {
+        string = ('Пользователь ' + element['user'] + ' перевел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+
+    } else if (element['number'] != null) {
         string = ('Пользователь ' + element['user'] + ' оплатил ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['addedsumma'] != null) {

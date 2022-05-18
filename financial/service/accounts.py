@@ -1,5 +1,6 @@
 import datetime
 import os
+import uuid
 
 import sqlalchemy
 from flask import session
@@ -142,6 +143,7 @@ def insert_account(form):
     :param form: get data from form
     :return: none
     """
+    identificaator = uuid.uuid4()
     wallet = form.wallet.data
     info = form.info.data
     date = str(form.date.data) + " " + str(datetime.datetime.now().time())
@@ -168,7 +170,8 @@ def insert_account(form):
                 None,
                 False,
                 False,
-                False
+                False,
+                identificaator
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -186,7 +189,8 @@ def insert_account(form):
                     percent=None,
                     isexchanged=False,
                     ismoved=False,
-                    ismodified=False
+                    ismodified=False,
+                    pairidentificator=identificaator
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -198,6 +202,7 @@ def delete_data(form):
     :param form: get data from form
     :return: none
     """
+    identificator = uuid.uuid4()
     wallet = form.wallet.data
     info = form.info.data
     date = str(form.date.data) + " " + str(datetime.datetime.now().time())
@@ -224,7 +229,9 @@ def delete_data(form):
                 None,
                 False,
                 False,
-                False
+                False,
+                identificator
+
             )
     else:
         summa = 0 - int(summa)
@@ -238,10 +245,10 @@ def delete_data(form):
                     date=date,
                     comments=info,
                     addedsumma=None,
-                    deletedsumma=str(summa) + " " + currency_name,
+                    deletedsumma=str(abs(summa)) + " " + currency_name,
                     isexchanged=False,
                     ismoved=False,
-                    ismodified=False
+                    ismodified=False, pairidentificator=identificator
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -359,7 +366,8 @@ def insert_pay_account(form):
                 percent,
                 False,
                 False,
-                False
+                False,
+                None
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -375,9 +383,10 @@ def insert_pay_account(form):
                     deletedsumma=str(summa) + " " + currency.name,
                     number=number,
                     percent=percent,
-                    isexcnahged=False,
+                    isexchanged=False,
                     ismoved=False,
-                    ismodified=False
+                    ismodified=False,
+                    pairidentificator=None
                 )
                 database.session.add(accounts)
                 database.session.commit()

@@ -1,5 +1,6 @@
 import datetime
 import os
+import uuid
 
 import requests
 import sqlalchemy
@@ -59,7 +60,7 @@ def update_summa(
         percent,
         exchanged,
         moved,
-        modified
+        modified, pair
 ) -> None:
     """
     This module updates money in wallet
@@ -87,7 +88,8 @@ def update_summa(
             percent=percent,
             isexchanged=exchanged,
             ismoved=moved,
-            ismodified=modified
+            ismodified=modified,
+            pairidentificator=pair
         )
         database.session.add(accounts)
         database.session.commit()
@@ -105,7 +107,9 @@ def update_summa(
             percent=percent,
             isexchanged=exchanged,
             ismoved=moved,
-            ismodified=modified
+            ismodified=modified,
+            pairidentificator=pair
+
         )
         database.session.add(accounts)
         database.session.commit()
@@ -164,6 +168,7 @@ def exchange_command(form):
     :param form: form
     :return: None
     """
+    pair = uuid.uuid4()
     summa = request.form.get("summa")
 
     from_ = request.form.get("wallet_from")
@@ -207,9 +212,10 @@ def exchange_command(form):
         summa,
         None,
         None,
+        True,
         False,
         False,
-        False
+        pair
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -227,9 +233,10 @@ def exchange_command(form):
                 None,
                 None,
                 None,
+                True,
                 False,
                 False,
-                False
+                pair
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -241,16 +248,20 @@ def exchange_command(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=str(new_entered_summa) + " " + currency_from_name,
+                    addedsumma=str(new_entered_summa) + " " + request.form.get("valuta_buy"),
                     deletedsumma=None,
                     isexchanged=False,
-                    ismoved=False,
+                    ismoved=True,
+                    ismodified=False,
+                    pairidentificator=pair
+
                 )
                 database.session.add(accounts)
                 database.session.commit()
 
 
 def moving_command(form):
+    pair = uuid.uuid4()
     sum_ = float(form.sum_.data)
     from_ = form.from_.data
     currency_from = int(form.currency_from.data)
@@ -278,6 +289,7 @@ def moving_command(form):
             summa_to_delete = get_to_sum(user, int(from_), currency_from)
             for _sum in summa_to_delete:
                 summa_to_delete = _sum
+    print('im here')
     update_summa(
         summa_to_delete,
         final_sum,
@@ -292,13 +304,12 @@ def moving_command(form):
         None,
         False,
         True,
-        False
+        False, pair
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
         for summa_to_add in summa_to_add:
             summa_to_add.moneysum += float(new_entered_summa)
-            print("hbf11111412425")
             update_summa(
                 summa_to_add,
                 summa_to_add.moneysum,
@@ -313,11 +324,12 @@ def moving_command(form):
                 None,
                 False,
                 True,
-                False
+                False, pair
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
         summa_to_update = get_to_sum(user, int(to_), currency_to)
+        currency_name = get_current_currency(currency_to).name
         if summa_to_update:
             for summa_to_update in summa_to_update:
                 money = summa_to_update.id
@@ -325,13 +337,35 @@ def moving_command(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=sum_,
+                    addedsumma=str(new_entered_summa) + ' ' + currency_name,
                     deletedsumma=None,
                     isexchanged=False,
                     ismoved=True,
-                    ismodified=False
+                    ismodified=False,
+                    pairidentificator=pair
                 )
                 database.session.add(accounts)
+                database.session.commit()
+
+
+def get_pair(identifier: int):
+    """
+    This module gets pair identificator
+    :param identifier:
+    :return:
+    """
+    changed = Accountstatus.query.filter_by(id=identifier).first()
+    return changed.pairidentificator
+
+
+def get_by_pair(pairid: str):
+    """
+    To get accounts using pair
+    :param pairid: pair identificator
+    :return: list of accounts
+    """
+    accs = Accountstatus.query.filter_by(pairidentificator=pairid).all()
+    return [p for p in accs]
 
 
 def reset_moneysum(status_id: int, identifier: int, summa: float):
@@ -342,6 +376,7 @@ def reset_moneysum(status_id: int, identifier: int, summa: float):
     :param summa: summa to update
     :return: new inserted data
     """
+
     from financial.service.accounts import delete_accountstatus
 
     changed = Moneysum.query.filter_by(id=identifier).first()
