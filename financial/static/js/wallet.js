@@ -59,14 +59,17 @@ function CreateTable(data) {
 }
 
 function api_delete(identifier) {
-    fetch(`/api/wallets/${identifier}`, {
-        method: 'DELETE'
-    })
-        .then((response) => response.json())
-        .then(() => {
-            window.location.href = `/changewallet`;
+    if (confirm("Вы уверенны, что хотите удалить кошелек?")) {
+        fetch(`/api/wallets/${identifier}`, {
+            method: 'DELETE'
         })
-        .catch(() => {
-            window.location = document.URL;
-        })
+            .then((response) => response.json())
+            .then(() => {
+                window.location.href = `/changewallet`;
+            })
+            .catch(() => {
+                window.location = document.URL;
+            })
+    } else window.location.href = document.URL
+
 }

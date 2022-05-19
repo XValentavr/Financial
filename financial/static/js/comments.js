@@ -22,7 +22,9 @@ function getter(data) {
             'visibility': comments['visibility'],
             'number': comments['number'],
             'moved': comments['moved'],
-            'exchanged': comments['exchanged']
+            'exchanged': comments['exchanged'],
+            'pair': comments['pairs'],
+            'modified': comments['modified']
         }
         com.push(json_comments)
     }
@@ -73,9 +75,17 @@ function printer(element, tb, visibility) {
         if (element['UUID'] === USERID.trim()) {
             add_buttons(element, string.italics(), cell, visibility)
         } else {
-            text = document.createElement('div');
-            text.innerHTML = string.italics()
-            cell.appendChild(text);
+            if (element['modified'] !== null) {
+                text = document.createElement('div');
+                let changed = (' Изменено:' + element['modified']).italics()
+                string = string + ' ' + changed
+                text.innerHTML = string
+                cell.appendChild(text);
+            } else {
+                text = document.createElement('div');
+                text.innerHTML = string.italics()
+                cell.appendChild(text);
+            }
         }
     } else {
         add_buttons(element, string, cell, visibility)
@@ -85,7 +95,7 @@ function printer(element, tb, visibility) {
 
 function add_buttons(element, string, cell, visibility) {
     let a = document.createElement("a");
-    a.setAttribute("href", `/users/edit/${element['UUID']}`);
+    a.setAttribute("href", `/comments/edit/${element['pair']}`);
     let text1 = document.createTextNode("Изменить / ");
     a.appendChild(text1);
     let adel = document.createElement("a");
@@ -93,11 +103,27 @@ function add_buttons(element, string, cell, visibility) {
     let text = document.createTextNode("Отменить");
     adel.appendChild(text);
     if (visibility === 'Общий') {
-        text = document.createElement('div');
-        text.innerHTML = string
+        if (element['modified'] !== null) {
+            text = document.createElement('div');
+            let changed = (' Изменено:' + element['modified']).italics()
+            string = string + ' ' + changed
+            text.innerHTML = string
+        } else {
+            text = document.createElement('div');
+            text.innerHTML = string
+        }
+
     } else {
-        text = document.createElement('div');
-        text.innerHTML = string.replace(/(<([^>]+)>)/ig, '');
+        if (element['modified'] !== null) {
+            text = document.createElement('div');
+            let changed = (' Изменено:' + element['modified']).italics()
+            string.replace(/(<([^>]+)>)/ig, '');
+            string = string + ' ' + changed
+            text.innerHTML = string
+        } else {
+            text = document.createElement('div');
+            text.innerHTML = string.replace(/(<([^>]+)>)/ig, '');
+        }
     }
     cell.appendChild(text);
     cell.appendChild(a);

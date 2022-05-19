@@ -1,5 +1,6 @@
 from flask import render_template, session
 from flask_login import login_required
+
 from financial.service.accounts import insert_account
 from financial.service.currency import get_list_currency
 from financial.views import financial, WTForm
@@ -9,7 +10,7 @@ from financial.views import financial, WTForm
 @login_required
 def income():
     form = WTForm.Income()
-    form.set_choices()
+    form.set_choices('income')
     ths = get_list_currency()
     if form.validate_on_submit():
         insert_account(form)

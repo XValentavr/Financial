@@ -406,4 +406,4 @@ def delete_accountstatus(identifier: int):
     status = Accountstatus.query.get_or_404(identifier)
     database.session.delete(status)
     database.session.commit()
-    # TODO: add alert notifiication
+

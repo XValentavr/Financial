@@ -4,13 +4,14 @@ import uuid
 
 import requests
 import sqlalchemy
-from flask import request, session
+from flask import request, session as s
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.moneysum import Moneysum
+from financial.models.wallet import Accounts
 from financial.service.currency import (
     get_current_currency_by_name,
     get_current_currency,
@@ -179,7 +180,7 @@ def exchange_command(form):
     currency_from = get_current_currency_by_name(currency_from_name).id
     currency_to = get_current_currency_by_name(currency_to).id
 
-    user = get_user_by_UUID(session["UUID"].strip())
+    user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
 
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
@@ -266,7 +267,7 @@ def moving_command(form):
     from_ = form.from_.data
     currency_from = int(form.currency_from.data)
     currency_to = int(form.currency_to.data)
-    user = get_user_by_UUID(session["UUID"].strip())
+    user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
     info = form.info.data
@@ -346,6 +347,26 @@ def moving_command(form):
                 )
                 database.session.add(accounts)
                 database.session.commit()
+
+
+def get_by_account_status(identifier):
+    """
+    this module gets wallet to choice in form
+    :param identifier: id to find
+    :return:
+    """
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    result = (
+        session.query(
+            Accounts.name
+        )
+            .join(Moneysum.accountid)
+            .filter(Moneysum.id == identifier)
+            .first()
+    )
+    return result
 
 
 def get_pair(identifier: int):

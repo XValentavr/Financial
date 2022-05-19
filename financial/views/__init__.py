@@ -23,6 +23,7 @@ from . import moving
 from . import exchange
 from . import adduser
 from . import changeuser
+from . import resetcomments
 from . import moving
 from . import createwallet
 from . import pay

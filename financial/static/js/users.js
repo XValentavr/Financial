@@ -60,14 +60,17 @@ function CreateTable(data) {
 }
 
 function api_delete(identifier) {
-    fetch(`/api/users/${identifier}`, {
-        method: 'DELETE'
-    })
-        .then((response) => response.json())
-        .then(() => {
-            window.location.href = `/change`;
+    if (confirm("Вы уверенны, что хотите удалить пользователя?")) {
+        fetch(`/api/users/${identifier}`, {
+            method: 'DELETE'
         })
-        .catch(() => {
-            window.location = document.URL;
-        })
+            .then((response) => response.json())
+            .then(() => {
+                window.location.href = `/change`;
+            })
+            .catch(() => {
+                window.location = document.URL;
+            })
+    } else window.location.href = document.URL
+
 }
