@@ -83,14 +83,14 @@
     </div>
     <p id="session" hidden>{{ session['UUID'] }}</p>
     <script src="{{ url_for('static', filename='js/purse.js') }}"></script>
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/popper.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-    <script src="static/js/main.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/comments.js') }}"></script>
     <script>
         window.setInterval(function () {
-       document.getElementById('setcomments').scrollTop = message.offsetHeight + message.offsetTop;
+            document.getElementById('setcomments').scrollTop = message.offsetHeight + message.offsetTop;
 
         }, 5000);
     </script>

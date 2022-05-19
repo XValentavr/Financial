@@ -20,6 +20,8 @@ class Accountstatus(database.Model):
     ismoved = database.Column(database.BOOLEAN())
     ismodified = database.Column(database.String())
     pairidentificator = database.Column(database.String())
+    useridentificator =database.Column(database.String())
+
     moneyid = database.relationship("Moneysum", backref="accountstatus")
 
     def json(self):

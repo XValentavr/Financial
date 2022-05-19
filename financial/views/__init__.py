@@ -5,13 +5,15 @@ Register the user blueprint and specify the logic on '/' and '/home' addresses
 Also handle an error status
 """
 # pylint: disable=cyclic-import
-from flask import Blueprint
+from datetime import timedelta
+
+from flask import Blueprint, request
 
 from ..service.currency import get_list_currency
 
 financial = Blueprint("financial", __name__)
 
-from flask import render_template, redirect, session, url_for
+from flask import render_template, redirect, session, url_for, app
 from flask_login import login_user, login_required, logout_user, current_user
 from .WTForm import LoginForm
 from ..models.users import Users
@@ -48,11 +50,14 @@ def login():
     :return: html page
     """
     ths = get_list_currency()
-    session.permanent = True
     if current_user.is_authenticated:
         return redirect(url_for("financial.income"))
     form = LoginForm()
     if form.validate_on_submit():
+        if request.method == "POST":
+            if request.form.get("remember") is not None:
+                session.permanent = True
+                app.permanent_session_lifetime = timedelta(days=14)
         root_user = get_user_by_name(form.username.data, form.password.data)
         superuser = get_super_user_by_name(form.username.data, form.password.data)
         if not root_user and not superuser:

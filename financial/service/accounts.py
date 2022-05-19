@@ -171,7 +171,8 @@ def insert_account(form):
                 False,
                 False,
                 False,
-                identificaator
+                identificaator,
+                session['UUID']
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -190,7 +191,8 @@ def insert_account(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
-                    pairidentificator=identificaator
+                    pairidentificator=identificaator,
+                    useridentificator=session['UUID']
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -230,8 +232,8 @@ def delete_data(form):
                 False,
                 False,
                 False,
-                identificator
-
+                identificator,
+                session['UUID']
             )
     else:
         summa = 0 - int(summa)
@@ -248,7 +250,9 @@ def delete_data(form):
                     deletedsumma=str(abs(summa)) + " " + currency_name,
                     isexchanged=False,
                     ismoved=False,
-                    ismodified=False, pairidentificator=identificator
+                    ismodified=False,
+                    pairidentificator=identificator,
+                    useridentificator=session['UUID']
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -333,7 +337,7 @@ def insert_pay_account(form):
     :param form: get data from form
     :return: none
     """
-    pair= uuid.uuid4()
+    pair = uuid.uuid4()
     number = form.get("number")
     percent = form.get("percent")
     wallet = form.get("wallet")
@@ -368,7 +372,8 @@ def insert_pay_account(form):
                 False,
                 False,
                 False,
-                pair
+                pair,
+                session['UUID']
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -387,7 +392,8 @@ def insert_pay_account(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
-                    pairidentificator=pair
+                    pairidentificator=pair,
+                    useridentificator=session['UUID']
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -407,4 +413,3 @@ def delete_accountstatus(identifier: int):
     status = Accountstatus.query.get_or_404(identifier)
     database.session.delete(status)
     database.session.commit()
-

@@ -24,7 +24,8 @@ function getter(data) {
             'moved': comments['moved'],
             'exchanged': comments['exchanged'],
             'pair': comments['pairs'],
-            'modified': comments['modified']
+            'modified': comments['modified'],
+            'superuser': comments['superuser']
         }
         com.push(json_comments)
     }
@@ -72,7 +73,9 @@ function printer(element, tb, visibility) {
     let cell = row.insertCell();
     let text;
     if (visibility === 'Общий') {
-        if (element['UUID'] === USERID.trim()) {
+        if (element['superuser'] === true) {
+            add_buttons(element, string.italics(), cell, visibility)
+        } else if (element['UUID'] === USERID.trim()) {
             add_buttons(element, string.italics(), cell, visibility)
         } else {
             if (element['modified'] !== null) {
@@ -106,7 +109,7 @@ function add_buttons(element, string, cell, visibility) {
         if (element['modified'] !== null) {
             text = document.createElement('div');
             let changed = (' Изменено:' + element['modified']).italics()
-            string = string+ ' ' + changed
+            string = string + ' ' + changed
             text.innerHTML = string
         } else {
             text = document.createElement('div');

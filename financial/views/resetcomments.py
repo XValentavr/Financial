@@ -19,30 +19,42 @@ def edit_comments(UUID):
             if p.addedsumma is not None and p.number is None:
                 form = WTForm.Income()
                 choices = p.addedsumma
-                choices = choices.split(' ')
+                choices = choices.split(" ")
                 wallet = list(get_by_account_status(p.money))
-                form.set_choices('edit', [[choices[1]], wallet])
+                form.set_choices("edit", [[choices[1]], wallet])
                 ths = get_list_currency()
                 if form.validate_on_submit():
-                    update_comment(form, p.pairidentificator, 'income', float(choices[0]))
+                    update_comment(
+                        form, p.pairidentificator, "income", float(choices[0])
+                    )
                 return render_template(
-                    "income.html", form=form, user=session["user"], superuser=session["superuser"], ths=ths
+                    "income.html",
+                    form=form,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
                 )
             elif p.deletedsumma is not None and p.number is None:
                 form = WTForm.Outcome()
                 choices = p.deletedsumma
-                choices = choices.split(' ')
+                choices = choices.split(" ")
                 wallet = list(get_by_account_status(p.money))
-                form.set_choices('edit', [[choices[1]], wallet])
+                form.set_choices("edit", [[choices[1]], wallet])
                 ths = get_list_currency()
                 if form.validate_on_submit():
-                    update_comment(form, p.pairidentificator, 'outcome', float(choices[0]))
+                    update_comment(
+                        form, p.pairidentificator, "outcome", float(choices[0])
+                    )
                 return render_template(
-                    "outcome.html", form=form, user=session["user"], superuser=session["superuser"], ths=ths
+                    "outcome.html",
+                    form=form,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
                 )
             elif p.number is not None:
                 choices = p.deletedsumma
-                choices = choices.split(' ')
+                choices = choices.split(" ")
                 wallet = list(get_by_account_status(p.money))
                 ths = get_list_currency()
                 valuta = ths
@@ -56,28 +68,46 @@ def edit_comments(UUID):
                         selected = [s]
                         break
                 if request.method == "POST":
-                    update_comment(request.form, p.pairidentificator, 'outcome', float(choices[0]), 'pay')
+                    update_comment(
+                        request.form,
+                        p.pairidentificator,
+                        "outcome",
+                        float(choices[0]),
+                        "pay",
+                    )
                 return render_template(
                     "pay.html",
                     user=session["user"],
                     superuser=session["superuser"],
                     ths=ths,
                     valuta=valuta,
-                    selected=selected
+                    selected=selected,
                 )
     else:
         for p in pairs:
             if p.ismoved == 1:
                 form = WTForm.Move()
                 return render_template(
-                    "move.html", form=form, user=session["user"], superuser=session["superuser"], ths=ths
+                    "move.html",
+                    form=form,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
                 )
             elif p.exchanged == 1:
                 if request.method == "POST":
                     form = request.form
                     return render_template(
-                        "exchange.html", form=form, user=session["user"], superuser=session["superuser"], ths=ths
+                        "exchange.html",
+                        form=form,
+                        user=session["user"],
+                        superuser=session["superuser"],
+                        ths=ths,
                     )
     return render_template(
-        "income.html", form=form, user=session["user"], superuser=session["superuser"], ths=ths
+        "income.html",
+        form=form,
+        user=session["user"],
+        superuser=session["superuser"],
+        ths=ths,
     )

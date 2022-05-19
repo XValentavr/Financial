@@ -2,7 +2,7 @@ import datetime
 import os
 
 import sqlalchemy
-from flask import session
+from flask import session as s
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
 
@@ -12,7 +12,10 @@ from financial.models.moneysum import Moneysum
 from financial.models.users import Users
 from financial.models.wallet import Accounts
 from financial.service.accounts import get_account_status_by_identifier
-from financial.service.currency import get_current_currency, get_current_currency_by_name
+from financial.service.currency import (
+    get_current_currency,
+    get_current_currency_by_name,
+)
 from financial.service.moneysum import reset_moneysum, get_by_pair, get_pair, get_to_sum
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
@@ -41,8 +44,8 @@ def get_all_comments() -> list[dict]:
             Accountstatus.number,
             Accountstatus.isexchanged,
             Accountstatus.ismoved,
-            Accountstatus.pairidentificator, Accountstatus.ismodified
-
+            Accountstatus.pairidentificator,
+            Accountstatus.ismodified,
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -55,7 +58,7 @@ def get_all_comments() -> list[dict]:
             transpone = list(details)
             user = get_user_by_UUID(transpone[13].strip())
             if user is not None:
-                user = user.get('user')
+                user = user.get("user")
             else:
                 user = None
             comments.append(
@@ -71,9 +74,10 @@ def get_all_comments() -> list[dict]:
                     "visibility": transpone[7],
                     "number": transpone[9],
                     "exchanged": transpone[10],
-                    'moved': transpone[11],
-                    'pairs': transpone[12].strip(),
-                    'modified': user
+                    "moved": transpone[11],
+                    "pairs": transpone[12].strip(),
+                    "modified": user,
+                    'superuser': s['superuser']
                 }
             )
         return comments
@@ -107,7 +111,7 @@ def reseted_by_status(status) -> None:
         reset_moneysum(status.id, status.money, float(status.deletedsumma.split()[0]))
 
 
-def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
+def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay=None):
     """
     This module updates income or outcome data
     :param form: form to get info from
@@ -129,24 +133,31 @@ def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
         date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
 
     else:
+        number = None,
+        percent = None,
         wallet = form.wallet.data
         summa = form.sum.data
         info = form.info.data
         currency = form.currency.data
         date = str(form.date.data) + " " + str(datetime.datetime.now().time())
-    user = get_user_by_UUID(session["UUID"].strip())
+    user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
     currency = get_current_currency_by_name(currency).id
     summa_to_update = get_to_sum(user, int(wallet), currency)
+    currency_name = get_current_currency(currency).name
+    user_to_reset = ''
+    if summa_to_update is None:
+        user = Accountstatus.query.filter_by(pairidentificator=uuid).first()
+        summa_to_update = get_to_sum(user.useridentificator, int(wallet), currency)
+        user_to_reset = ser.useridentificator
     if summa_to_update:
         for summa_to_update in summa_to_update:
             status = Accountstatus.query.filter_by(pairidentificator=uuid).first()
             database.session.delete(status)
             database.session.commit()
-            currency_name = get_current_currency(currency).name
             # if from where is income then insert income value
-            if from_where == 'income':
+            if from_where == "income":
                 summa_to_update.moneysum -= summa_changed
                 summa_to_update.moneysum += float(summa)
                 database.session.add(summa_to_update)
@@ -161,8 +172,10 @@ def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
                     percent=percent,
                     isexchanged=0,
                     ismoved=0,
-                    ismodified=session['UUID'],
-                    pairidentificator=uuid
+                    ismodified=s["UUID"],
+                    pairidentificator=uuid,
+                    useridentificator=user_to_reset
+
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -170,7 +183,6 @@ def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
             else:
                 # if from where is outcome then insert outcome value
                 summa_to_update.moneysum += summa_changed
-                print(summa_to_update.moneysum)
                 summa_to_update.moneysum += 0 - float(summa)
                 database.session.add(summa_to_update)
                 database.session.commit()
@@ -184,8 +196,9 @@ def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
                     percent=percent,
                     isexchanged=0,
                     ismoved=0,
-                    ismodified=session['UUID'],
-                    pairidentificator=uuid
+                    ismodified=s["UUID"],
+                    pairidentificator=uuid,
+                    useridentificator=user_to_reset
                 )
                 database.session.add(accounts)
                 database.session.commit()
