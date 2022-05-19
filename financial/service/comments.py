@@ -107,7 +107,7 @@ def reseted_by_status(status) -> None:
         reset_moneysum(status.id, status.money, float(status.deletedsumma.split()[0]))
 
 
-def update_comment(form, uuid: str, from_where: str, summa_changed):
+def update_comment(form, uuid: str, from_where: str, summa_changed, ispay):
     """
     This module updates income or outcome data
     :param form: form to get info from
@@ -115,14 +115,27 @@ def update_comment(form, uuid: str, from_where: str, summa_changed):
     :param from_where: type of transaction
     :return: new changed data
     """
+    if ispay is not None:
+        number = form.get("number")
+        percent = form.get("percent")
+        wallet = form.get("wallet")
+        summa = form.get("summa")
+        if int(percent) > 0:
+            summa = int(summa) - (int(summa) * (int(percent) / 100))
+        else:
+            summa = int(summa)
+        info = form.get("comments")
+        currency = form.get("valuta")
+        date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
 
-    wallet = form.wallet.data
-    info = form.info.data
-    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+    else:
+        wallet = form.wallet.data
+        summa = form.sum.data
+        info = form.info.data
+        currency = form.currency.data
+        date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     user = get_user_by_UUID(session["UUID"].strip())
     user = user.get("id")
-    summa = form.sum.data
-    currency = form.currency.data
     wallet = get_current_wallet_by_name(wallet)
     currency = get_current_currency_by_name(currency).id
     summa_to_update = get_to_sum(user, int(wallet), currency)
@@ -144,8 +157,8 @@ def update_comment(form, uuid: str, from_where: str, summa_changed):
                     comments=info,
                     addedsumma=str(summa) + " " + currency_name if summa else None,
                     deletedsumma=None,
-                    number=None,
-                    percent=None,
+                    number=number,
+                    percent=percent,
                     isexchanged=0,
                     ismoved=0,
                     ismodified=session['UUID'],
@@ -167,8 +180,8 @@ def update_comment(form, uuid: str, from_where: str, summa_changed):
                     comments=info,
                     addedsumma=None,
                     deletedsumma=str(summa) + " " + currency_name if summa else None,
-                    number=None,
-                    percent=None,
+                    number=number,
+                    percent=percent,
                     isexchanged=0,
                     ismoved=0,
                     ismodified=session['UUID'],

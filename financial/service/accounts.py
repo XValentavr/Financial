@@ -333,6 +333,7 @@ def insert_pay_account(form):
     :param form: get data from form
     :return: none
     """
+    pair= uuid.uuid4()
     number = form.get("number")
     percent = form.get("percent")
     wallet = form.get("wallet")
@@ -367,7 +368,7 @@ def insert_pay_account(form):
                 False,
                 False,
                 False,
-                None
+                pair
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -386,7 +387,7 @@ def insert_pay_account(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
-                    pairidentificator=None
+                    pairidentificator=pair
                 )
                 database.session.add(accounts)
                 database.session.commit()

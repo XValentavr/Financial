@@ -78,7 +78,7 @@ function printer(element, tb, visibility) {
             if (element['modified'] !== null) {
                 text = document.createElement('div');
                 let changed = (' Изменено:' + element['modified']).italics()
-                string = string + ' ' + changed
+                string = string.italics() + ' ' + changed
                 text.innerHTML = string
                 cell.appendChild(text);
             } else {
@@ -106,7 +106,7 @@ function add_buttons(element, string, cell, visibility) {
         if (element['modified'] !== null) {
             text = document.createElement('div');
             let changed = (' Изменено:' + element['modified']).italics()
-            string = string + ' ' + changed
+            string = string+ ' ' + changed
             text.innerHTML = string
         } else {
             text = document.createElement('div');

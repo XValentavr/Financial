@@ -38,7 +38,7 @@
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Валюта:</label>
                         <select name="valuta" class="form-control" id='valuta'>
-                            {% for v in ths %}
+                            {% for v in valuta %}
                                 <option value="{{ v.name }}">{{ v.name }}</option>
                             {% endfor %}
                         </select>
@@ -73,7 +73,6 @@
             </div>
         </div>
     </div>
-    <script src="static/js/summapercent.js"></script>
-
+    <script src="{{ url_for('static', filename='js/summapercent.js') }}"></script>
     </body>
 {% endblock %}
