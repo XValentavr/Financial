@@ -1,10 +1,10 @@
 from flask import session, render_template, request
 from flask_login import login_required
 
+from financial.service.accounts import get_by_pair, get_by_account_status
 from financial.service.accounts import get_name_account_checker
-from financial.service.comments import update_comment
+from financial.service.comments import update_comment, update_moving_commands
 from financial.service.currency import get_list_currency
-from financial.service.moneysum import get_by_pair, get_by_account_status
 from financial.views import financial, WTForm
 
 
@@ -84,9 +84,33 @@ def edit_comments(UUID):
                     selected=selected,
                 )
     else:
-        for p in pairs:
-            if p.ismoved == 1:
+        for i in pairs:
+            if i.ismoved == 1:
+                added = pairs[0]
+                deleted = pairs[1]
+
+                choices_add = added.deletedsumma
+                choices_add = choices_add.split(" ")
+                wallet_add = list(get_by_account_status(added.money))
+
+                choices_delete = deleted.addedsumma
+                choices_delete = choices_delete.split(" ")
+                wallet_delete = list(get_by_account_status(deleted.money))
+
+                ths = get_list_currency()
                 form = WTForm.Move()
+                form.set_choices(
+                    "move",
+                    [[choices_add[1]], [choices_delete[1]], wallet_add, wallet_delete],
+                )
+                if form.validate_on_submit():
+                    update_moving_commands(
+                        form,
+                        choices_add[0],
+                        choices_delete[0],
+                        added.pairidentificator,
+                        deleted,
+                    )
                 return render_template(
                     "move.html",
                     form=form,
@@ -94,7 +118,7 @@ def edit_comments(UUID):
                     superuser=session["superuser"],
                     ths=ths,
                 )
-            elif p.exchanged == 1:
+            if i.isexchanged == 1:
                 if request.method == "POST":
                     form = request.form
                     return render_template(

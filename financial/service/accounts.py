@@ -42,14 +42,14 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
                 )
-                    .all()
+                .all()
             )
             if result:
                 for details in sorted(result):
@@ -66,12 +66,12 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
                     Accounts.visibility == check.visibility, Accounts.name == check.name
                 )
-                    .all()
+                .all()
             )
             summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -172,7 +172,7 @@ def insert_account(form):
                 False,
                 False,
                 identificaator,
-                session['UUID']
+                session["UUID"],
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -192,7 +192,7 @@ def insert_account(form):
                     ismoved=False,
                     ismodified=False,
                     pairidentificator=identificaator,
-                    useridentificator=session['UUID']
+                    useridentificator=session["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -233,7 +233,7 @@ def delete_data(form):
                 False,
                 False,
                 identificator,
-                session['UUID']
+                session["UUID"],
             )
     else:
         summa = 0 - int(summa)
@@ -252,7 +252,7 @@ def delete_data(form):
                     ismoved=False,
                     ismodified=False,
                     pairidentificator=identificator,
-                    useridentificator=session['UUID']
+                    useridentificator=session["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -373,7 +373,7 @@ def insert_pay_account(form):
                 False,
                 False,
                 pair,
-                session['UUID']
+                session["UUID"],
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -393,7 +393,7 @@ def insert_pay_account(form):
                     ismoved=False,
                     ismodified=False,
                     pairidentificator=pair,
-                    useridentificator=session['UUID']
+                    useridentificator=session["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -413,3 +413,41 @@ def delete_accountstatus(identifier: int):
     status = Accountstatus.query.get_or_404(identifier)
     database.session.delete(status)
     database.session.commit()
+
+
+def get_by_account_status(identifier):
+    """
+    this module gets wallet to choice in form
+    :param identifier: id to find
+    :return:
+    """
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    result = (
+        session.query(Accounts.name)
+        .join(Moneysum.accountid)
+        .filter(Moneysum.id == identifier)
+        .first()
+    )
+    return result
+
+
+def get_pair(identifier: int):
+    """
+    This module gets pair identificator
+    :param identifier:
+    :return:
+    """
+    changed = Accountstatus.query.filter_by(id=identifier).first()
+    return changed.pairidentificator
+
+
+def get_by_pair(pairid: str):
+    """
+    To get accounts using pair
+    :param pairid: pair identificator
+    :return: list of accounts
+    """
+    accs = Accountstatus.query.filter_by(pairidentificator=pairid).all()
+    return [p for p in accs]

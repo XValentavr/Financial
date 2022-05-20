@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker
 from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.moneysum import Moneysum
-from financial.models.wallet import Accounts
 from financial.service.currency import (
     get_current_currency_by_name,
     get_current_currency,
@@ -48,21 +47,22 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-        summas,
-        summa,
-        user,
-        currency,
-        wallet,
-        date,
-        info,
-        s_add,
-        s_delete,
-        number,
-        percent,
-        exchanged,
-        moved,
-        modified,
-        pair, useridentifier
+    summas,
+    summa,
+    user,
+    currency,
+    wallet,
+    date,
+    info,
+    s_add,
+    s_delete,
+    number,
+    percent,
+    exchanged,
+    moved,
+    modified,
+    pair,
+    useridentifier,
 ) -> None:
     """
     This module updates money in wallet
@@ -92,7 +92,7 @@ def update_summa(
             ismoved=moved,
             ismodified=modified,
             pairidentificator=pair,
-            useridentificator=useridentifier
+            useridentificator=useridentifier,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -112,8 +112,7 @@ def update_summa(
             ismoved=moved,
             ismodified=modified,
             pairidentificator=pair,
-            useridentificator=useridentifier
-
+            useridentificator=useridentifier,
         )
         database.session.add(accounts)
         database.session.commit()
@@ -141,9 +140,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-                .filter_by(wallet=identifier)
-                .group_by(Moneysum.wallet)
-                .all()
+            .filter_by(wallet=identifier)
+            .group_by(Moneysum.wallet)
+            .all()
         )
     res_list = []
     if result:
@@ -253,8 +252,8 @@ def exchange_command(form):
                     date=date,
                     comments=info,
                     addedsumma=str(new_entered_summa)
-                               + " "
-                               + request.form.get("valuta_buy"),
+                    + " "
+                    + request.form.get("valuta_buy"),
                     deletedsumma=None,
                     isexchanged=False,
                     ismoved=True,
@@ -294,7 +293,6 @@ def moving_command(form):
             summa_to_delete = get_to_sum(user, int(from_), currency_from)
             for _sum in summa_to_delete:
                 summa_to_delete = _sum
-    print("im here")
     update_summa(
         summa_to_delete,
         final_sum,
@@ -311,7 +309,7 @@ def moving_command(form):
         True,
         False,
         pair,
-        s['UUID']
+        s["UUID"],
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -333,7 +331,7 @@ def moving_command(form):
                 True,
                 False,
                 pair,
-                s['UUID']
+                s["UUID"],
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -352,48 +350,10 @@ def moving_command(form):
                     ismoved=True,
                     ismodified=False,
                     pairidentificator=pair,
-                    useridentificator=s['UUID']
+                    useridentificator=s["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
-
-
-def get_by_account_status(identifier):
-    """
-    this module gets wallet to choice in form
-    :param identifier: id to find
-    :return:
-    """
-    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
-    session = sessionmaker(bind=engine)
-    session = session()
-    result = (
-        session.query(Accounts.name)
-            .join(Moneysum.accountid)
-            .filter(Moneysum.id == identifier)
-            .first()
-    )
-    return result
-
-
-def get_pair(identifier: int):
-    """
-    This module gets pair identificator
-    :param identifier:
-    :return:
-    """
-    changed = Accountstatus.query.filter_by(id=identifier).first()
-    return changed.pairidentificator
-
-
-def get_by_pair(pairid: str):
-    """
-    To get accounts using pair
-    :param pairid: pair identificator
-    :return: list of accounts
-    """
-    accs = Accountstatus.query.filter_by(pairidentificator=pairid).all()
-    return [p for p in accs]
 
 
 def reset_moneysum(status_id: int, identifier: int, summa: float):
@@ -407,11 +367,13 @@ def reset_moneysum(status_id: int, identifier: int, summa: float):
 
     from financial.service.accounts import delete_accountstatus
 
+    print(identifier)
     changed = Moneysum.query.filter_by(id=identifier).first()
     changed.id = changed.id
     changed.user = changed.user
     changed.currency = changed.currency
     changed.wallet = changed.wallet
+    print(changed.moneysum, "++", summa)
     changed.moneysum = changed.moneysum + summa
     database.session.add(changed)
     database.session.commit()
