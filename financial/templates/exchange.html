@@ -17,7 +17,7 @@
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Продали из:</label>
                         <select name="wallet_from" class="form-control" id='wallet'>
-                            {% for s in selected %}
+                            {% for s in selected_from %}
                                 <option value="{{ s.name }}">{{ s.name }}</option>
                             {% endfor %}
                         </select>
@@ -29,7 +29,7 @@
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Валюта продажи:</label>
                         <select id='currencies_sold' name="valuta_sold" class="form-control" onchange="exchanged()">
-                            {% for v in ths %}
+                            {% for v in ths_from %}
                                 <option value="{{ v.name }}">{{ v.name }}</option>
                             {% endfor %}
                         </select>
@@ -37,7 +37,7 @@
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Перевели в:</label>
                         <select name="wallet_to" class="form-control" id='wallet'>
-                            {% for s in selected %}
+                            {% for s in selected_to %}
                                 <option value="{{ s.name }}">{{ s.name }}</option>
                             {% endfor %}
                         </select>
@@ -45,7 +45,7 @@
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Валюта покупки:</label>
                         <select id='currencies_buy' name="valuta_buy" class="form-control" onchange="exchanged()">
-                            {% for v in ths %}
+                            {% for v in ths_to %}
                                 <option value="{{ v.name }}">{{ v.name }}</option>
                             {% endfor %}
                         </select>
@@ -81,6 +81,6 @@
             </div>
         </div>
     </div>
-    <script src="static/js/exchange.js"></script>
+    <script src="{{ url_for('static', filename='js/exchange.js') }}"></script>
     </body>
 {% endblock %}

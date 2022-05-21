@@ -219,6 +219,7 @@ def exchange_command(form):
         False,
         False,
         pair,
+        s["UUID"],
     )
     summa_to_add = get_to_sum(user, int(to_), currency_to)
     if summa_to_add:
@@ -240,6 +241,7 @@ def exchange_command(form):
                 False,
                 False,
                 pair,
+                s["UUID"],
             )
     else:
         inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
@@ -259,6 +261,7 @@ def exchange_command(form):
                     ismoved=True,
                     ismodified=False,
                     pairidentificator=pair,
+                    useridentificator=s["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -367,13 +370,11 @@ def reset_moneysum(status_id: int, identifier: int, summa: float):
 
     from financial.service.accounts import delete_accountstatus
 
-    print(identifier)
     changed = Moneysum.query.filter_by(id=identifier).first()
     changed.id = changed.id
     changed.user = changed.user
     changed.currency = changed.currency
     changed.wallet = changed.wallet
-    print(changed.moneysum, "++", summa)
     changed.moneysum = changed.moneysum + summa
     database.session.add(changed)
     database.session.commit()

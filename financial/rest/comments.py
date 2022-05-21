@@ -33,14 +33,6 @@ class SingleComment(Resource):
     """
 
     @staticmethod
-    def get(id):
-        """
-        This method is called when GET request is sent
-        :return: the specific department in json format
-        """
-        ...
-
-    @staticmethod
     def delete(identifier):
         """
         This method is called when DELETE request is sent

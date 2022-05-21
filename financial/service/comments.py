@@ -150,7 +150,8 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
     user_to_reset = user_.get("UUID")
     if summa_to_update is None:
         user = Accountstatus.query.filter_by(pairidentificator=uuid).first()
-        summa_to_update = get_to_sum(user.useridentificator, int(wallet), currency)
+        user_ = get_user_by_UUID(user.useridentificator.strip())
+        summa_to_update = get_to_sum(user_.get("id"), int(wallet), currency)
         user_to_reset = user.useridentificator
     if summa_to_update:
         for summa_to_update in summa_to_update:
@@ -204,7 +205,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
                 database.session.commit()
 
 
-def update_moving_commands(form, summa_add, summa_delete, added, deleted):
+def update_moving_commands(form, summa_add, summa_delete, added):
     sum_ = form.sum_.data
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
@@ -286,6 +287,97 @@ def update_moving_commands(form, summa_add, summa_delete, added, deleted):
         number=None,
         percent=None,
         isexchanged=0,
+        ismoved=0,
+        ismodified=s["UUID"],
+        pairidentificator=added,
+        useridentificator=user_to_reset,
+    )
+    database.session.add(accounts)
+    database.session.commit()
+
+
+def update_exchange_commands(form, summa_add, summa_delete, added):
+    sum_ = form.get("summa")
+    user = get_user_by_UUID(s["UUID"].strip())
+    user = user.get("id")
+    user_to_reset = ""
+    info = form.get("comments")
+    date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
+
+    # gets deleted
+    from_ = form.get("wallet_from")
+    from_ = get_current_wallet_by_name(from_)
+    currency_from = form.get("valuta_sold")
+    summa_to_delete = get_to_sum(user, int(from_), currency_from)
+
+    if summa_to_delete is None:
+        currency_from = get_current_currency_by_name(currency_from).id
+        user = Accountstatus.query.filter_by(pairidentificator=added).first()
+        user_sum = get_user_by_UUID(user.useridentificator.strip())
+        summa_to_delete = get_to_sum(user_sum.get("id"), int(from_), currency_from)
+        user_to_reset = user.useridentificator.strip()
+    for summa_to_delete in summa_to_delete:
+        summa_to_delete.moneysum += float(summa_add)
+        summa_to_delete.moneysum += 0 - float(sum_)
+    status = Accountstatus.query.filter_by(pairidentificator=added).all()
+    for ss in status:
+        database.session.delete(ss)
+        database.session.commit()
+
+    # add new data
+    database.session.add(summa_to_delete)
+    database.session.commit()
+    accounts = Accountstatus(
+        money=summa_to_delete.id,
+        date=date,
+        comments=info,
+        addedsumma=None,
+        deletedsumma=str(sum_) + " " + form.get("valuta_sold") if sum_ else None,
+        number=None,
+        percent=None,
+        isexchanged=1,
+        ismoved=0,
+        ismodified=s["UUID"],
+        pairidentificator=added,
+        useridentificator=user_to_reset,
+    )
+    database.session.add(accounts)
+    database.session.commit()
+
+    # get added
+    to_ = form.get("wallet_to")
+    to_ = get_current_wallet_by_name(to_)
+    currency_to = form.get("valuta_buy")
+    summa_to_add = get_to_sum(user.id, int(to_), currency_to)
+    new_entered_summa = get_new_transfered_sum(
+        float(sum_), form.get("valuta_sold"), form.get("valuta_buy")
+    )
+    print(new_entered_summa)
+    # if summa is none then get user
+    if summa_to_add is None:
+        currency_to = get_current_currency_by_name(currency_to).id
+        user = Accountstatus.query.filter_by(pairidentificator=added).first()
+        user_sum = get_user_by_UUID(user.useridentificator.strip())
+        summa_to_add = get_to_sum(user_sum.get("id"), int(to_), currency_to)
+        user_to_reset = user.useridentificator.strip()
+    for summa_to_add in summa_to_add:
+        summa_to_add.moneysum -= float(summa_delete)
+        summa_to_add.moneysum += float(new_entered_summa)
+
+    # add new data
+    database.session.add(summa_to_add)
+    database.session.commit()
+    accounts = Accountstatus(
+        money=summa_to_add.id,
+        date=date,
+        comments=info,
+        addedsumma=str(new_entered_summa) + " " + form.get("valuta_buy")
+        if new_entered_summa
+        else None,
+        deletedsumma=None,
+        number=None,
+        percent=None,
+        isexchanged=1,
         ismoved=0,
         ismodified=s["UUID"],
         pairidentificator=added,

@@ -19,5 +19,8 @@ def exchange():
         user=session["user"],
         superuser=session["superuser"],
         ths=ths,
-        selected=selected,
+        ths_from=ths,
+        selected_from=selected,
+        ths_to=ths,
+        selected_to=selected,
     )
