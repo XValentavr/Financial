@@ -8,7 +8,7 @@ from wtforms import (
     PasswordField,
     SelectField,
     DateField,
-    IntegerField,
+    IntegerField, FloatField
 )
 from wtforms.validators import DataRequired, Length
 
@@ -98,6 +98,7 @@ class Move(FlaskForm):
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Выберите кошелек", choices=[])
     currency_to = SelectField("Валюта", choices=[])
+    rate = FloatField('Введите курс', validators=[DataRequired()])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
 

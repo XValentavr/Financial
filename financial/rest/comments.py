@@ -5,11 +5,12 @@ import re
 import time
 from urllib.parse import unquote
 
-from flask import jsonify, request
-from flask_restful import reqparse, Resource
+from flask import jsonify, request, Response
+from flask_restful import reqparse, Resource, abort
 
 # get the request parser
-from financial.service.comments import get_all_comments, reset_summa, get_comment_by_wallet_name_and_dates
+from financial.service.comments import get_all_comments, reset_summa, get_comment_by_wallet_name_and_dates, \
+    get_comment_by_wallet_name
 
 parser = reqparse.RequestParser()
 
@@ -19,6 +20,7 @@ parser.add_argument("comments")
 parser.add_argument("addedsumma")
 parser.add_argument("deletedsumma")
 parser.add_argument("money")
+parser.add_argument("identifier")
 
 
 def validate_date(date):
@@ -54,15 +56,17 @@ class SingleCommentDate(Resource):
     @staticmethod
     def get(identifier):
         args = request.args
-        start_date = args['start_date'].replace('-', '/')
-        end_date = args['end_date'].replace('-', '/')
-        if validate_date(start_date) and validate_date(end_date):
-            return jsonify(get_comment_by_wallet_name_and_dates(unquote(identifier), start=start_date,
-                                                                end=end_date))
-        elif validate_date(start_date):
-            return jsonify(get_comment_by_wallet_name_and_dates(unquote(identifier), start=start_date))
-        else:
-            return jsonify(get_all_comments())
+        if len(args) == 2 and validate_date(args['start_date'].replace('-', '/')) and validate_date(
+                args['end_date'].replace('-', '/')):
+            return jsonify(
+                get_comment_by_wallet_name_and_dates(unquote(identifier), start=args['start_date'].replace('-', '/'),
+                                                     end=args['end_date'].replace('-', '/')))
+        if len(args) == 1 and validate_date(args['start_date'].replace('-', '/')):
+            return jsonify(
+                get_comment_by_wallet_name_and_dates(unquote(identifier), start=args['start_date'].replace('-', '/')))
+        if len(args) == 0:
+            return jsonify(get_comment_by_wallet_name(unquote(identifier)))
+        return abort(Response("Couldn't perform search. Invalid data", 400))
 
 
 class SingleComment(Resource):

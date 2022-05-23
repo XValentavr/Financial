@@ -1,10 +1,24 @@
 const USERID = document.getElementById("session").textContent
-fetch("/api/comments")
-    .then((response) => response.json())
-    .then((comments) => {
-        displaydata(getter(comments))
-    })
-    .catch((error) => console.log(error))
+let where = document.URL
+if (where.includes('walletinfo')) {
+    let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
+    fetch('/api/wallet/' + page)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.length > 0) {
+                displaydata(getter(data))
+            } else {
+                alert("Ничего не найдено, проверьте данные")
+            }
+        })
+} else {
+    fetch("/api/comments")
+        .then((response) => response.json())
+        .then((comments) => {
+            displaydata(getter(comments))
+        })
+        .catch((error) => console.log(error))
+}
 
 function getter(data) {
     let com = []
@@ -167,4 +181,5 @@ function get_story_date() {
                 alert("Ничего не найдено, проверьте данные")
             }
         })
+
 }

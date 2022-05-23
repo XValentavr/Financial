@@ -150,21 +150,6 @@ def get_count_users(identifier: int):
     return res_list
 
 
-def get_new_transfered_sum(sum_: float, currency_from: str, currency_to: str) -> float:
-    """
-    This module exchange valuta
-    :param sum_: summa to exchange
-    :param currency_from: from exchange
-    :param currency_to: to exchage
-    :return: new summa
-    """
-    rate = exchange_rate(currency_from)
-    exchange = rate["conversion_rates"].get(currency_to)
-    new_entered_summa = round(sum_ * exchange, 2)
-    final_sum = new_entered_summa
-    return final_sum
-
-
 def exchange_command(form):
     """
     This module exchange currencies
@@ -284,7 +269,7 @@ def moving_command(form):
     currency_from = code_from.id
     code_to = get_current_currency(currency_to)
     currency_to = code_to.id
-    new_entered_summa = get_new_transfered_sum(sum_, code_from.name, code_to.name)
+    new_entered_summa = sum_ * float(form.rate.data)
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum

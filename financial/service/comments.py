@@ -17,7 +17,7 @@ from financial.service.currency import (
     get_current_currency,
     get_current_currency_by_name,
 )
-from financial.service.moneysum import reset_moneysum, get_new_transfered_sum
+from financial.service.moneysum import reset_moneysum
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
@@ -396,9 +396,7 @@ def update_moving_commands(form, summa_add, summa_delete, added):
     to_ = get_current_wallet_by_name(to_)
     currency_to = form.currency_to.data
     summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = get_new_transfered_sum(
-        sum_, form.currency_from.data, form.currency_to.data
-    )
+    new_entered_summa = sum_ * 1
 
     # if summa is none then get user
     if summa_to_add is None:
@@ -487,9 +485,7 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
     to_ = get_current_wallet_by_name(to_)
     currency_to = form.get("valuta_buy")
     summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = get_new_transfered_sum(
-        float(sum_), form.get("valuta_sold"), form.get("valuta_buy")
-    )
+    new_entered_summa = float(sum_) * 1
     # if summa is none then get user
     if summa_to_add is None:
         currency_to = get_current_currency_by_name(currency_to).id
