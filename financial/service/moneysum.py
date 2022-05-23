@@ -47,22 +47,22 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-    summas,
-    summa,
-    user,
-    currency,
-    wallet,
-    date,
-    info,
-    s_add,
-    s_delete,
-    number,
-    percent,
-    exchanged,
-    moved,
-    modified,
-    pair,
-    useridentifier,
+        summas,
+        summa,
+        user,
+        currency,
+        wallet,
+        date,
+        info,
+        s_add,
+        s_delete,
+        number,
+        percent,
+        exchanged,
+        moved,
+        modified,
+        pair,
+        useridentifier,
 ) -> None:
     """
     This module updates money in wallet
@@ -140,9 +140,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-            .filter_by(wallet=identifier)
-            .group_by(Moneysum.wallet)
-            .all()
+                .filter_by(wallet=identifier)
+                .group_by(Moneysum.wallet)
+                .all()
         )
     res_list = []
     if result:
@@ -254,11 +254,11 @@ def exchange_command(form):
                     date=date,
                     comments=info,
                     addedsumma=str(new_entered_summa)
-                    + " "
-                    + request.form.get("valuta_buy"),
+                               + " "
+                               + request.form.get("valuta_buy"),
                     deletedsumma=None,
-                    isexchanged=False,
-                    ismoved=True,
+                    isexchanged=True,
+                    ismoved=False,
                     ismodified=False,
                     pairidentificator=pair,
                     useridentificator=s["UUID"],

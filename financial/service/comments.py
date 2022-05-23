@@ -22,6 +22,144 @@ from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
 
+def get_comment_by_wallet_name_and_dates(name, start, end=None):
+    """
+    This module gets comments by wallet and date
+    :param name: name of wallet
+    :param start: start date
+    :param end: finish date
+    :return: result of searching
+    """
+    if end is None:
+        now = datetime.datetime.today().replace(microsecond=0)
+        end = now.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        end = str(end) + ' ' + str(datetime.datetime.now().time().isoformat('seconds'))
+        end = datetime.datetime.strptime(end.strip(), '%Y/%m/%d %H:%M:%S')
+
+    start = str(start) + ' ' + str(datetime.datetime.now().time().isoformat('seconds'))
+    start = datetime.datetime.strptime(start.strip(), '%Y/%m/%d %H:%M:%S')
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    comments = []
+    result = (
+        session.query(
+            Accountstatus.date,
+            Accountstatus.comments,
+            Accountstatus.addedsumma,
+            Accountstatus.deletedsumma,
+            Users.name,
+            Accounts.name,
+            Users.UUID,
+            Accounts.visibility,
+            Accountstatus.id,
+            Accountstatus.number,
+            Accountstatus.isexchanged,
+            Accountstatus.ismoved,
+            Accountstatus.pairidentificator,
+            Accountstatus.ismodified,
+        )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+            .order_by(desc(Accountstatus.id))
+            .all()
+    )
+    if result:
+        for details in result:
+            transpone = list(details)
+            user = get_user_by_UUID(transpone[13].strip())
+            if user is not None:
+                user = user.get("user")
+            else:
+                user = None
+            comments.append(
+                {
+                    "id": transpone[8],
+                    "date": transpone[0],
+                    "comment": transpone[1],
+                    "addedsumma": transpone[2],
+                    "deletedsumma": transpone[3],
+                    "user": transpone[4],
+                    "wallet": transpone[5],
+                    "UUID": transpone[6],
+                    "visibility": transpone[7],
+                    "number": transpone[9],
+                    "exchanged": transpone[10],
+                    "moved": transpone[11],
+                    "pairs": transpone[12].strip(),
+                    "modified": user,
+                    "superuser": s["superuser"],
+                }
+            )
+    return comments
+
+
+def get_comment_by_wallet_name(name) -> list[dict]:
+    """
+    This module gets comment by wallet name
+    :return:
+    """
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    comments = []
+    result = (
+        session.query(
+            Accountstatus.date,
+            Accountstatus.comments,
+            Accountstatus.addedsumma,
+            Accountstatus.deletedsumma,
+            Users.name,
+            Accounts.name,
+            Users.UUID,
+            Accounts.visibility,
+            Accountstatus.id,
+            Accountstatus.number,
+            Accountstatus.isexchanged,
+            Accountstatus.ismoved,
+            Accountstatus.pairidentificator,
+            Accountstatus.ismodified,
+        )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .filter(Accounts.name == name)
+            .order_by(desc(Accountstatus.id))
+            .all()
+    )
+    if result:
+        for details in result:
+            transpone = list(details)
+            user = get_user_by_UUID(transpone[13].strip())
+            if user is not None:
+                user = user.get("user")
+            else:
+                user = None
+            comments.append(
+                {
+                    "id": transpone[8],
+                    "date": transpone[0],
+                    "comment": transpone[1],
+                    "addedsumma": transpone[2],
+                    "deletedsumma": transpone[3],
+                    "user": transpone[4],
+                    "wallet": transpone[5],
+                    "UUID": transpone[6],
+                    "visibility": transpone[7],
+                    "number": transpone[9],
+                    "exchanged": transpone[10],
+                    "moved": transpone[11],
+                    "pairs": transpone[12].strip(),
+                    "modified": user,
+                    "superuser": s["superuser"],
+                }
+            )
+        return comments
+
+
 def get_all_comments() -> list[dict]:
     """
     This module gets all comments from database to show
@@ -48,11 +186,11 @@ def get_all_comments() -> list[dict]:
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     if result:
         for details in result:
@@ -352,7 +490,6 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
     new_entered_summa = get_new_transfered_sum(
         float(sum_), form.get("valuta_sold"), form.get("valuta_buy")
     )
-    print(new_entered_summa)
     # if summa is none then get user
     if summa_to_add is None:
         currency_to = get_current_currency_by_name(currency_to).id

@@ -8,13 +8,13 @@ fetch(`/api/purse/${session}`)
 
 function GetData(data) {
     let information = []
+
     for (let i = 0; i < data.length; i++) {
         let banker = data[i];
         let json_departments = {
             'bank': banker['account'],
             'usd': parseFloat(banker['USD']).toFixed(1),
             'eur': parseFloat(banker['EUR']).toFixed(1),
-            'rub': parseFloat(banker['RUB']).toFixed(1),
             'uah': parseFloat(banker['UAH']).toFixed(1),
             'pln': parseFloat(banker['PLN']).toFixed(1),
         }
@@ -33,7 +33,13 @@ function CreateTable(data) {
     for (let i = 0; i < data.length; i++) {
         let element = data[i];
         let row = table.insertRow();
-        for (let j = 0; j < keys.length; j++) {
+        let cell = row.insertCell();
+        let a = document.createElement("a");
+        a.setAttribute("href", `/walletinfo/${element[keys[0]]}`);
+        let text = document.createTextNode(element[keys[0]]);
+        a.appendChild(text);
+        cell.appendChild(a);
+        for (let j = 1; j < keys.length; j++) {
             let cell = row.insertCell();
             let text = document.createTextNode(element[keys[j]]);
             cell.appendChild(text);

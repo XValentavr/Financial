@@ -29,6 +29,7 @@ from . import resetcomments
 from . import moving
 from . import createwallet
 from . import pay
+from . import wallets
 
 
 @login_manager.user_loader

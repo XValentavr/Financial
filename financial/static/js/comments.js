@@ -51,22 +51,22 @@ function displaydata(data) {
 function printer(element, tb, visibility) {
     let string
     if (element['exchanged'] === true && element['deletedsumma'] != null) {
-        string = ('Пользователь ' + element['user'] + ' обменял ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' обменял ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['exchanged'] === true && element['deletedsumma'] === null) {
-        string = ('Пользователь ' + element['user'] + ' получил ' + element['addedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' получил ' + element['addedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['moved'] === true && element['deletedsumma'] != null) {
-        string = ('Пользователь ' + element['user'] + ' перевел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' перевел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['number'] != null) {
-        string = ('Пользователь ' + element['user'] + ' оплатил ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' оплатил ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['addedsumma'] != null) {
-        string = ('Пользователь ' + element['user'] + ' добавил ' + element['addedsumma'] + ' в кошелек \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' добавил ' + element['addedsumma'] + ' в кошелек \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     } else if (element['addedsumma'] === null) {
-        string = ('Пользователь ' + element['user'] + ' вывел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        string = (element['user'] + ' вывел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
     }
     let row = tb.insertRow();
@@ -147,4 +147,24 @@ function api_delete(identifier) {
             })
     } else window.location.href = document.URL
 
+}
+
+function get_story_date() {
+    let table = document.getElementById("userstory");
+    let rowCount = table.rows.length;
+    for (let i = rowCount - 1; i >= 0; i--) {
+        table.deleteRow(i);
+    }
+    let start_date = document.getElementById('start_date').value
+    let finish_date = document.getElementById('finish_date').value
+    let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
+    fetch('/api/wallet/' + page + '?start_date=' + start_date + "&end_date=" + finish_date)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.length > 0) {
+                displaydata(getter(data))
+            } else {
+                alert("Ничего не найдено, проверьте данные")
+            }
+        })
 }

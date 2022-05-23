@@ -24,5 +24,5 @@ def create_api(application):
     # for comments
     api.add_resource(comments.AllComments, "/api/comments")
     api.add_resource(comments.SingleComment, "/api/reset/<identifier>")
-
+    api.add_resource(comments.SingleCommentDate, "/api/wallet/<identifier>")
     return api

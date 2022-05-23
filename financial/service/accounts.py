@@ -73,20 +73,18 @@ def get_account_money(UUID: str):
                 )
                 .all()
             )
-            summa_usd = summa_eur = summa_rub = summa_uah = summa_zlt = 0
+            summa_usd = summa_eur = summa_uah = summa_zlt = 0
             for details in sorted(result):
                 transpone = list(details)
                 if transpone[3] == "USD":
                     summa_usd += transpone[2]
                 if transpone[3] == "EUR":
                     summa_eur += transpone[2]
-                if transpone[3] == "RUB":
-                    summa_rub += transpone[2]
                 if transpone[3] == "UAH":
                     summa_uah += transpone[2]
                 if transpone[3] == "PLN":
                     summa_zlt += transpone[2]
-            count_usd = count_uah = count_rub = count_eur = count_pln = count_zlt = 0
+            count_usd = count_uah = count_eur = count_pln = count_zlt = 0
             for details in sorted(result):
                 transpone = list(details)
                 if transpone[3] == "USD" and count_usd == 0:
@@ -105,15 +103,6 @@ def get_account_money(UUID: str):
                             "id": transpone[0],
                             "account": transpone[1],
                             "money": str(summa_eur) + " " + transpone[3],
-                        }
-                    )
-                if transpone[3] == "RUB" and count_rub == 0:
-                    count_rub += 1
-                    dct_lst.append(
-                        {
-                            "id": transpone[0],
-                            "account": transpone[1],
-                            "money": str(summa_rub) + " " + transpone[3],
                         }
                     )
                 if transpone[3] == "UAH" and count_uah == 0:
