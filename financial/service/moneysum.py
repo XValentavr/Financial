@@ -61,6 +61,7 @@ def update_summa(
         exchanged,
         moved,
         modified,
+        deleted,
         pair,
         useridentifier,
 ) -> None:
@@ -91,6 +92,7 @@ def update_summa(
             isexchanged=exchanged,
             ismoved=moved,
             ismodified=modified,
+            isdeleted=deleted,
             pairidentificator=pair,
             useridentificator=useridentifier,
         )
@@ -111,6 +113,7 @@ def update_summa(
             isexchanged=exchanged,
             ismoved=moved,
             ismodified=modified,
+            isdeleted=deleted,
             pairidentificator=pair,
             useridentificator=useridentifier,
         )
@@ -176,7 +179,7 @@ def exchange_command(form):
     to_ = request.form.get("wallet_to")
     to_ = get_current_wallet_by_name(to_)
     final_sum = 0
-    new_entered_summa = request.form.get("changed_summa")
+    new_entered_summa = float(summa) * float(request.form.get("rate_exchange"))
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
@@ -203,6 +206,7 @@ def exchange_command(form):
         True,
         False,
         False,
+        False,
         pair,
         s["UUID"],
     )
@@ -225,6 +229,7 @@ def exchange_command(form):
                 True,
                 False,
                 False,
+                False,
                 pair,
                 s["UUID"],
             )
@@ -245,6 +250,7 @@ def exchange_command(form):
                     isexchanged=True,
                     ismoved=False,
                     ismodified=False,
+                    isdeleted=False,
                     pairidentificator=pair,
                     useridentificator=s["UUID"],
                 )
@@ -296,6 +302,7 @@ def moving_command(form):
         False,
         True,
         False,
+        False,
         pair,
         s["UUID"],
     )
@@ -318,6 +325,7 @@ def moving_command(form):
                 False,
                 True,
                 False,
+                False,
                 pair,
                 s["UUID"],
             )
@@ -337,6 +345,7 @@ def moving_command(form):
                     isexchanged=False,
                     ismoved=True,
                     ismodified=False,
+                    isdeleted=False,
                     pairidentificator=pair,
                     useridentificator=s["UUID"],
                 )

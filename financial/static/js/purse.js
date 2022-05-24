@@ -13,10 +13,10 @@ function GetData(data) {
         let banker = data[i];
         let json_departments = {
             'bank': banker['account'],
-            'usd': parseFloat(banker['USD']).toFixed(1),
-            'eur': parseFloat(banker['EUR']).toFixed(1),
-            'uah': parseFloat(banker['UAH']).toFixed(1),
-            'pln': parseFloat(banker['PLN']).toFixed(1),
+            'usd': parseFloat(banker['USD']).toFixed(1).toString()+' USD',
+            'eur': parseFloat(banker['EUR']).toFixed(1).toString()+' EUR',
+            'uah': parseFloat(banker['UAH']).toFixed(1).toString()+' UAH',
+            'pln': parseFloat(banker['PLN']).toFixed(1).toString()+' PLN',
         }
         information.push(json_departments)
     }

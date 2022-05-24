@@ -19,6 +19,7 @@ class Accountstatus(database.Model):
     isexchanged = database.Column(database.BOOLEAN())
     ismoved = database.Column(database.BOOLEAN())
     ismodified = database.Column(database.String())
+    isdeleted = database.Column(database.String())
     pairidentificator = database.Column(database.String())
     useridentificator = database.Column(database.String())
 

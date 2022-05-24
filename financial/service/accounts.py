@@ -42,14 +42,15 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
+                    Moneysum.moneysum != 0.0
                 )
-                .all()
+                    .all()
             )
             if result:
                 for details in sorted(result):
@@ -66,12 +67,12 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
-                    Accounts.visibility == check.visibility, Accounts.name == check.name
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
+                    Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
                 )
-                .all()
+                    .all()
             )
             summa_usd = summa_eur = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -84,7 +85,7 @@ def get_account_money(UUID: str):
                     summa_uah += transpone[2]
                 if transpone[3] == "PLN":
                     summa_zlt += transpone[2]
-            count_usd = count_uah = count_eur = count_pln = count_zlt = 0
+            count_usd = count_uah = count_eur = count_pln = 0
             for details in sorted(result):
                 transpone = list(details)
                 if transpone[3] == "USD" and count_usd == 0:
@@ -160,6 +161,7 @@ def insert_account(form):
                 False,
                 False,
                 False,
+                False,
                 identificaator,
                 session["UUID"],
             )
@@ -180,6 +182,7 @@ def insert_account(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
+                    isdeleted=False,
                     pairidentificator=identificaator,
                     useridentificator=session["UUID"],
                 )
@@ -221,6 +224,7 @@ def delete_data(form):
                 False,
                 False,
                 False,
+                False,
                 identificator,
                 session["UUID"],
             )
@@ -240,6 +244,7 @@ def delete_data(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
+                    isdeleted=False,
                     pairidentificator=identificator,
                     useridentificator=session["UUID"],
                 )
@@ -317,7 +322,7 @@ def check_keys(dct: list[dict]) -> None:
     for c in cur:
         for d in dct:
             if c.name not in d.keys():
-                d[c.name] = "0.0"
+                continue
 
 
 def insert_pay_account(form):
@@ -361,6 +366,7 @@ def insert_pay_account(form):
                 False,
                 False,
                 False,
+                False,
                 pair,
                 session["UUID"],
             )
@@ -381,6 +387,7 @@ def insert_pay_account(form):
                     isexchanged=False,
                     ismoved=False,
                     ismodified=False,
+                    isdeleted=False,
                     pairidentificator=pair,
                     useridentificator=session["UUID"],
                 )
@@ -400,7 +407,9 @@ def delete_accountstatus(identifier: int):
     :return: new changed database
     """
     status = Accountstatus.query.get_or_404(identifier)
-    database.session.delete(status)
+    status.isdeleted = True
+    status.ismodified = session["UUID"]
+    database.session.add(status)
     database.session.commit()
 
 
@@ -415,9 +424,9 @@ def get_by_account_status(identifier):
     session = session()
     result = (
         session.query(Accounts.name)
-        .join(Moneysum.accountid)
-        .filter(Moneysum.id == identifier)
-        .first()
+            .join(Moneysum.accountid)
+            .filter(Moneysum.id == identifier)
+            .first()
     )
     return result
 

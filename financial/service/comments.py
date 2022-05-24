@@ -185,6 +185,7 @@ def get_all_comments() -> list[dict]:
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
+            Accountstatus.isdeleted,
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -216,6 +217,7 @@ def get_all_comments() -> list[dict]:
                     "moved": transpone[11],
                     "pairs": transpone[12].strip(),
                     "modified": user,
+                    'deleted':transpone[14],
                     "superuser": s["superuser"],
                 }
             )
@@ -313,6 +315,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
                     isexchanged=0,
                     ismoved=0,
                     ismodified=s["UUID"],
+                    isdeleted=False,
                     pairidentificator=uuid,
                     useridentificator=user_to_reset,
                 )
@@ -335,6 +338,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
                     percent=percent,
                     isexchanged=0,
                     ismoved=0,
+                    isdeleted=False,
                     ismodified=s["UUID"],
                     pairidentificator=uuid,
                     useridentificator=user_to_reset,
@@ -353,6 +357,7 @@ def update_moving_commands(form, summa_add, summa_delete, added):
 
     # gets deleted
     from_ = form.from_.data
+    rate = form.rate.data
     from_ = get_current_wallet_by_name(from_)
     currency_from = form.currency_from.data
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
@@ -383,8 +388,9 @@ def update_moving_commands(form, summa_add, summa_delete, added):
         number=None,
         percent=None,
         isexchanged=0,
-        ismoved=0,
+        ismoved=1,
         ismodified=s["UUID"],
+        isdeleted=False,
         pairidentificator=added,
         useridentificator=user_to_reset,
     )
@@ -396,7 +402,7 @@ def update_moving_commands(form, summa_add, summa_delete, added):
     to_ = get_current_wallet_by_name(to_)
     currency_to = form.currency_to.data
     summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = sum_ * 1
+    new_entered_summa = sum_ * rate
 
     # if summa is none then get user
     if summa_to_add is None:
@@ -423,8 +429,9 @@ def update_moving_commands(form, summa_add, summa_delete, added):
         number=None,
         percent=None,
         isexchanged=0,
-        ismoved=0,
+        ismoved=1,
         ismodified=s["UUID"],
+        isdeleted=False,
         pairidentificator=added,
         useridentificator=user_to_reset,
     )
@@ -474,6 +481,7 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
         isexchanged=1,
         ismoved=0,
         ismodified=s["UUID"],
+        isdeleted=False,
         pairidentificator=added,
         useridentificator=user_to_reset,
     )
@@ -485,7 +493,7 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
     to_ = get_current_wallet_by_name(to_)
     currency_to = form.get("valuta_buy")
     summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = float(sum_) * 1
+    new_entered_summa = float(sum_) * form.get("rate_exchange")
     # if summa is none then get user
     if summa_to_add is None:
         currency_to = get_current_currency_by_name(currency_to).id
@@ -513,6 +521,7 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
         isexchanged=1,
         ismoved=0,
         ismodified=s["UUID"],
+        isdeleted=False,
         pairidentificator=added,
         useridentificator=user_to_reset,
     )

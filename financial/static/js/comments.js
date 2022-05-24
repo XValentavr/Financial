@@ -39,6 +39,7 @@ function getter(data) {
             'exchanged': comments['exchanged'],
             'pair': comments['pairs'],
             'modified': comments['modified'],
+            'deleted': comments['deleted'],
             'superuser': comments['superuser']
         }
         com.push(json_comments)
@@ -87,7 +88,13 @@ function printer(element, tb, visibility) {
     let cell = row.insertCell();
     let text;
     if (visibility === 'Общий') {
-        if (element['superuser'] === true) {
+        if (element['deleted'] !== '0') {
+            text = document.createElement('div');
+            let changed = (' Отменено:' + element['modified']).italics()
+            string = string.italics() + ' ' + changed
+            text.innerHTML = string
+            cell.appendChild(text);
+        } else if (element['superuser'] === true) {
             add_buttons(element, string.italics(), cell, visibility)
         } else if (element['UUID'] === USERID.trim()) {
             add_buttons(element, string.italics(), cell, visibility)
@@ -120,7 +127,12 @@ function add_buttons(element, string, cell, visibility) {
     let text = document.createTextNode("Отменить");
     adel.appendChild(text);
     if (visibility === 'Общий') {
-        if (element['modified'] !== null) {
+        if (element['deleted'] !== '0') {
+            text = document.createElement('div');
+            let changed = (' Отменено:' + element['modified']).italics()
+            string = string + ' ' + changed
+            text.innerHTML = string
+        } else if (element['modified'] !== null) {
             text = document.createElement('div');
             let changed = (' Изменено:' + element['modified']).italics()
             string = string + ' ' + changed
