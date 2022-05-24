@@ -1136,3 +1136,21 @@ td {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
+table.restTbl {
+    table-layout: fixed;
+    width: 100%;
+}
+
+table.restTbl td.place {
+    vertical-align: top;
+    width: 60%;
+    border: none;
+}
+
+table.restTbl td.amount {
+    vertical-align: top;
+    width: 40%;
+    padding: 1px 0px 5px 0px;
+    border: none;
+}
