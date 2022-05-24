@@ -217,7 +217,7 @@ def get_all_comments() -> list[dict]:
                     "moved": transpone[11],
                     "pairs": transpone[12].strip(),
                     "modified": user,
-                    'deleted':transpone[14],
+                    'deleted': transpone[14],
                     "superuser": s["superuser"],
                 }
             )

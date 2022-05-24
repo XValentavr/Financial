@@ -61,9 +61,13 @@ class SingleCommentDate(Resource):
             return jsonify(
                 get_comment_by_wallet_name_and_dates(unquote(identifier), start=args['start_date'].replace('-', '/'),
                                                      end=args['end_date'].replace('-', '/')))
-        if len(args) == 1 and validate_date(args['start_date'].replace('-', '/')):
+        if len(args) == 2 and validate_date(args['start_date'].replace('-', '/')) and not validate_date(
+                args['end_date'].replace('-', '/')):
             return jsonify(
                 get_comment_by_wallet_name_and_dates(unquote(identifier), start=args['start_date'].replace('-', '/')))
+        if len(args) == 2 and not validate_date(args['start_date'].replace('-', '/')) and not validate_date(
+                args['end_date'].replace('-', '/')):
+            return jsonify(get_comment_by_wallet_name(unquote(identifier)))
         if len(args) == 0:
             return jsonify(get_comment_by_wallet_name(unquote(identifier)))
         return abort(Response("Couldn't perform search. Invalid data", 400))
