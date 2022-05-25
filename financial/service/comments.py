@@ -59,6 +59,7 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
+            Accountstaus.isdeleted
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -91,6 +92,7 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
                     "moved": transpone[11],
                     "pairs": transpone[12].strip(),
                     "modified": user,
+                    'deleted': transpone[14],
                     "superuser": s["superuser"],
                 }
             )
@@ -122,6 +124,7 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
+            Accountstatus.isdeleted
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -154,6 +157,7 @@ def get_comment_by_wallet_name(name) -> list[dict]:
                     "moved": transpone[11],
                     "pairs": transpone[12].strip(),
                     "modified": user,
+                    "deleted": transpone[14],
                     "superuser": s["superuser"],
                 }
             )

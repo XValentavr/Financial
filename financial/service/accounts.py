@@ -291,7 +291,6 @@ def merge_dict(dct_list: list[dict]) -> list[dict]:
             else:
                 res_dict.append(dct)
     restrict_dict(res_dict)
-    check_keys(res_dict)
     return res_dict
 
 

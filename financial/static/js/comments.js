@@ -6,7 +6,8 @@ if (where.includes('walletinfo')) {
         .then((response) => response.json())
         .then((data) => {
             if (data.length > 0) {
-                displaydata(getter(data))
+                let flag = false
+                displaydata(getter(data), flag)
             } else {
                 alert("Ничего не найдено, проверьте данные")
             }
@@ -15,7 +16,8 @@ if (where.includes('walletinfo')) {
     fetch("/api/comments")
         .then((response) => response.json())
         .then((comments) => {
-            displaydata(getter(comments))
+            let flag = true
+            displaydata(getter(comments), flag)
         })
         .catch((error) => console.log(error))
 }
@@ -49,40 +51,68 @@ function getter(data) {
 }
 
 
-function displaydata(data) {
+function displaydata(data, flag) {
     let tb = document.getElementById('userstory')
+
     for (let i = 0; i < data.length; i++) {
         let element = data[i];
-        if (element['visibility'] === 'Общий') {
-            printer(element, tb, element['visibility'])
-        } else if (element['visibility'] !== 'Общий') {
-            if (element['UUID'] === USERID.trim()) {
-                printer(element, tb, element['visibility'])
+        let unique_pair = element['pair']
+        let count = 0
+        for (let j = 0; j < data.length; j++) {
+            let element_check = data[j];
+            if (unique_pair === element_check['pair']) {
+                if (count >= 1) {
+                    if (element_check['moved'] === true) {
+                        if (element['addedsumma'] != null) {
+                            let string = (element['user'] + ' перевел ' + element_check['deletedsumma'] + ' с кошелька \"' + element_check['wallet'] + '\" в кошелек \"' + element['wallet'] + '\" и получил ' + element['addedsumma'] + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+                            printer(element, tb, element['visibility'], string, flag)
+                        }
+                    } else if (element_check['exchanged'] === true) {
+                        if (element['addedsumma'] != null) {
+                            let string = (element['user'] + ' обменял ' + element_check['deletedsumma'] + ' с кошелька \"' + element_check['wallet'] + '\" в кошелек \"' + element['wallet'] + '\" и получил ' + element['addedsumma'] + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+                            printer(element, tb, element['visibility'], string, flag)
+                        }
+                    }
+                }
+                count++;
+            }
+        }
+        if (count <= 1) {
+            if (element['visibility'] === 'Общий') {
+                printer(element, tb, element['visibility'], 'undefined', flag)
+            } else if (element['visibility'] !== 'Общий') {
+                if (element['UUID'] === USERID.trim()) {
+                    printer(element, tb, element['visibility'], 'undefined', flag)
+                }
             }
         }
     }
 }
 
-function printer(element, tb, visibility) {
+function printer(element, tb, visibility, str, flag) {
     let string
-    if (element['exchanged'] === true && element['deletedsumma'] != null) {
-        string = (element['user'] + ' обменял ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+    if (str === 'undefined') {
+        if (element['exchanged'] === true && element['deletedsumma'] != null) {
+            string = (element['user'] + ' обменял ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
-    } else if (element['exchanged'] === true && element['deletedsumma'] === null) {
-        string = (element['user'] + ' получил ' + element['addedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        } else if (element['exchanged'] === true && element['deletedsumma'] === null) {
+            string = (element['user'] + ' получил ' + element['addedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
-    } else if (element['moved'] === true && element['deletedsumma'] != null) {
-        string = (element['user'] + ' перевел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        } else if (element['moved'] === true && element['deletedsumma'] != null) {
+            string = (element['user'] + ' перевел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
-    } else if (element['number'] != null) {
-        string = (element['user'] + ' оплатил ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        } else if (element['number'] != null) {
+            string = (element['user'] + ' оплатил ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
-    } else if (element['addedsumma'] != null) {
-        string = (element['user'] + ' добавил ' + element['addedsumma'] + ' в кошелек \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        } else if (element['addedsumma'] != null) {
+            string = (element['user'] + ' добавил ' + element['addedsumma'] + ' в кошелек \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
-    } else if (element['addedsumma'] === null) {
-        string = (element['user'] + ' вывел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
+        } else if (element['addedsumma'] === null) {
+            string = (element['user'] + ' вывел ' + element['deletedsumma'] + ' с кошелька \"' + element['wallet'] + '\"' + '. Дата: ' + element['date'] + '. ' + element['comment'] + '. ')
 
+        }
+    } else {
+        string = str
     }
     let row = tb.insertRow();
     let cell = row.insertCell();
@@ -90,14 +120,14 @@ function printer(element, tb, visibility) {
     if (visibility === 'Общий') {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
-            let changed = (' Отменено:' + element['modified']).italics()
+            let changed = (' Отменено: ' + element['modified']).italics()
             string = string.italics() + ' ' + changed
             text.innerHTML = string
             cell.appendChild(text);
         } else if (element['superuser'] === true) {
-            add_buttons(element, string.italics(), cell, visibility)
+            add_buttons(element, string.italics(), cell, visibility, flag)
         } else if (element['UUID'] === USERID.trim()) {
-            add_buttons(element, string.italics(), cell, visibility)
+            add_buttons(element, string.italics(), cell, visibility, flag)
         } else {
             if (element['modified'] !== null) {
                 text = document.createElement('div');
@@ -112,12 +142,19 @@ function printer(element, tb, visibility) {
             }
         }
     } else {
-        add_buttons(element, string, cell, visibility)
+        if (element['deleted'] !== '0') {
+            text = document.createElement('div');
+            let changed = (' Отменено: ' + element['modified']).italics()
+            string = string.italics() + ' ' + changed
+            text.innerHTML = string
+            cell.appendChild(text);
+        } else
+            add_buttons(element, string, cell, visibility, flag)
     }
 
 }
 
-function add_buttons(element, string, cell, visibility) {
+function add_buttons(element, string, cell, visibility, flag) {
     let a = document.createElement("a");
     a.setAttribute("href", `/comments/edit/${element['pair']}`);
     let text1 = document.createTextNode("Изменить / ");
@@ -129,7 +166,7 @@ function add_buttons(element, string, cell, visibility) {
     if (visibility === 'Общий') {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
-            let changed = (' Отменено:' + element['modified']).italics()
+            let changed = (' Отменено: ' + element['modified']).italics()
             string = string + ' ' + changed
             text.innerHTML = string
         } else if (element['modified'] !== null) {
@@ -152,11 +189,15 @@ function add_buttons(element, string, cell, visibility) {
         } else {
             text = document.createElement('div');
             text.innerHTML = string.replace(/(<([^>]+)>)/ig, '');
+
         }
     }
     cell.appendChild(text);
-    cell.appendChild(a);
-    cell.appendChild(adel);
+    if (flag === true) {
+        cell.appendChild(a);
+        cell.appendChild(adel);
+
+    }
 }
 
 function api_delete(identifier) {
