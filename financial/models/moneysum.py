@@ -13,7 +13,7 @@ class Moneysum(database.Model):
     user = database.Column(database.Integer(), nullable=False)
     currency = database.Column(database.Integer(), nullable=False)
     wallet = database.Column(database.Integer(), nullable=False)
-    isgeneral = database.Column(database.Boolean, nullable=False)
+    isgeneral = database.Column(database.Integer(), nullable=False)
 
     userid = database.relationship(
         "Users", backref="money_sum", lazy="dynamic", cascade="all,delete"
@@ -26,4 +26,7 @@ class Moneysum(database.Model):
     )
     accountinfo = database.relationship(
         "Accountstatus", backref="money_sum", lazy="dynamic", cascade="all,delete"
+    )
+    roots = database.relationship(
+        "Userroot", backref="money_sum"
     )

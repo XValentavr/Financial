@@ -15,6 +15,7 @@ from financial.service.currency import (
     get_current_currency_by_name,
     get_current_currency,
 )
+from financial.service.userroot import get_user_root_id
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
@@ -27,7 +28,8 @@ def inser_into_money_sum(money: float, user: int, currency: int, wallet: int):
     :param currency: currency of transaction
     :return:
     """
-    money = Moneysum(wallet=wallet, moneysum=money, user=user, currency=currency)
+    general = get_user_root_id(wallet, user)
+    money = Moneysum(wallet=wallet, moneysum=money, user=user, currency=currency,isgeneral=general)
     database.session.add(money)
     database.session.commit()
 

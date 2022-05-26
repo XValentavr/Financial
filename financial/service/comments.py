@@ -59,7 +59,7 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
-            Accountstaus.isdeleted
+            Accountstatus.isdeleted
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -133,6 +133,7 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             .order_by(desc(Accountstatus.id))
             .all()
     )
+
     if result:
         for details in result:
             transpone = list(details)
@@ -173,6 +174,7 @@ def get_all_comments() -> list[dict]:
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
+    # TODO закончить комментарии по видимости
     result = (
         session.query(
             Accountstatus.date,
@@ -225,7 +227,8 @@ def get_all_comments() -> list[dict]:
                     "superuser": s["superuser"],
                 }
             )
-        return comments
+    print(comments)
+    return comments
 
 
 def reset_summa(identifier) -> None:

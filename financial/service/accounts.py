@@ -3,13 +3,14 @@ import os
 import uuid
 
 import sqlalchemy
-from flask import session
+from flask import session as s
 from sqlalchemy.orm import sessionmaker
 
 from financial import database
 from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
+from financial.models.userroot import Userroot
 from financial.models.wallet import Accounts
 from financial.service.currency import (
     get_list_currency,
@@ -17,6 +18,7 @@ from financial.service.currency import (
     get_current_currency,
 )
 from financial.service.moneysum import inser_into_money_sum, get_to_sum, update_summa
+from financial.service.userroot import get_user_root
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
@@ -63,17 +65,37 @@ def get_account_money(UUID: str):
                         }
                     )
         elif check.visibility == "Общий":
-            result = (
-                session.query(
-                    Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+            user = get_user_by_UUID(s['UUID'].strip()).get('id')
+            wallet = get_current_wallet_by_name(check.name)
+            roots = get_user_root(user, wallet)
+            if roots.isgeneral:
+                result = (
+                    session.query(
+                        Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                    )
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
+                        Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
+                        , Moneysum.user == Userroot.username, Moneysum.wallet == Userroot.walletname,
+                        Userroot.isgeneral == 1)
+                        .all()
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
-                    Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
+            elif not roots.isgeneral:
+                result = (
+                    session.query(
+                        Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                    )
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
+                        Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
+                        , Moneysum.user == Userroot.username, Moneysum.wallet == Userroot.walletname,
+                        Userroot.isgeneral == 0)
+                        .all()
                 )
-                    .all()
-            )
             summa_usd = summa_eur = summa_uah = summa_zlt = 0
             for details in sorted(result):
                 transpone = list(details)
@@ -137,7 +159,7 @@ def insert_account(form):
     wallet = form.wallet.data
     info = form.info.data
     date = str(form.date.data) + " " + str(datetime.datetime.now().time())
-    user = get_user_by_UUID(session["UUID"].strip())
+    user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     summa = form.sum.data
     currency = form.currency.data
@@ -163,7 +185,7 @@ def insert_account(form):
                 False,
                 False,
                 identificaator,
-                session["UUID"],
+                s["UUID"],
             )
     else:
         inser_into_money_sum(summa, user, currency, int(wallet))
@@ -184,7 +206,7 @@ def insert_account(form):
                     ismodified=False,
                     isdeleted=False,
                     pairidentificator=identificaator,
-                    useridentificator=session["UUID"],
+                    useridentificator=s["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -200,7 +222,7 @@ def delete_data(form):
     wallet = form.wallet.data
     info = form.info.data
     date = str(form.date.data) + " " + str(datetime.datetime.now().time())
-    user = get_user_by_UUID(session["UUID"].strip()).get("id")
+    user = get_user_by_UUID(s["UUID"].strip()).get("id")
     summa = form.sum.data
     currency = form.currency.data
     currency_name = get_current_currency(currency).name
@@ -226,7 +248,7 @@ def delete_data(form):
                 False,
                 False,
                 identificator,
-                session["UUID"],
+                s["UUID"],
             )
     else:
         summa = 0 - int(summa)
@@ -246,7 +268,7 @@ def delete_data(form):
                     ismodified=False,
                     isdeleted=False,
                     pairidentificator=identificator,
-                    useridentificator=session["UUID"],
+                    useridentificator=s["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -339,7 +361,7 @@ def insert_pay_account(form):
     currency = form.get("valuta")
     currency = get_current_currency_by_name(currency)
     date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
-    user = get_user_by_UUID(session["UUID"].strip())
+    user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
     if int(percent) > 0:
@@ -367,7 +389,7 @@ def insert_pay_account(form):
                 False,
                 False,
                 pair,
-                session["UUID"],
+                s["UUID"],
             )
     else:
         inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
@@ -388,7 +410,7 @@ def insert_pay_account(form):
                     ismodified=False,
                     isdeleted=False,
                     pairidentificator=pair,
-                    useridentificator=session["UUID"],
+                    useridentificator=s["UUID"],
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -407,7 +429,7 @@ def delete_accountstatus(identifier: int):
     """
     status = Accountstatus.query.get_or_404(identifier)
     status.isdeleted = True
-    status.ismodified = session["UUID"]
+    status.ismodified = s["UUID"]
     database.session.add(status)
     database.session.commit()
 
