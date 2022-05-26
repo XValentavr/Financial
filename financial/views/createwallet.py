@@ -1,6 +1,8 @@
-from flask import render_template, session, flash
+from flask import render_template, session, flash, request
 from flask_login import login_required
 
+from financial.service.userroot import add_all_possible_pairs
+from financial.service.users import get_all_user
 from financial.service.wallet import get_wallets, insert_wallet, update_wallet
 from financial.views import financial, WTForm
 
@@ -9,9 +11,14 @@ from financial.views import financial, WTForm
 @login_required
 def wallet():
     form = WTForm.Wallet()
+    users = get_all_user()
     if not session["superuser"]:
         return render_template("404.html"), 404
     else:
+        if request.method == "POST":
+            print(request.form)
+            if request.form.get('All') == 'on':
+                ...
         if form.validate_on_submit():
             name = form.wallet.data
             visibility = form.visibility.data
@@ -25,14 +32,17 @@ def wallet():
                         form=form,
                         user=session["user"],
                         superuser=session["superuser"],
+                        variant=users
                     )
             else:
                 insert_wallet(identifier, name, visibility)
+                add_all_possible_pairs()
         return render_template(
             "wallet.html",
             form=form,
             user=session["user"],
             superuser=session["superuser"],
+            variant=users
         )
 
 
@@ -59,6 +69,9 @@ def edit_wallet(identifier):
         return render_template("404.html")
     else:
         form = WTForm.Wallet()
+        if request.method == "POST":
+            print(request.form)
+        users = get_all_user()
         if form.validate_on_submit():
             update_wallet(
                 identifier,
@@ -68,9 +81,10 @@ def edit_wallet(identifier):
             return render_template(
                 "changewallet.html",
                 user=session["user"],
-                superuser=session["superuser"],
+                superuser=session["superuser"]
             )
 
     return render_template(
-        "wallet.html", form=form, user=session["user"], superuser=session["superuser"]
+        "wallet.html", form=form, user=session["user"], superuser=session["superuser"],
+        variant=users
     )

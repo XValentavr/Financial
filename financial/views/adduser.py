@@ -1,8 +1,9 @@
 from flask import render_template, session, flash, redirect, url_for
 from flask_login import login_required
 
-from financial.views import financial, WTForm
+from financial.service.userroot import add_all_possible_pairs
 from financial.service.users import add_user, get_user_by_enter_name
+from financial.views import financial, WTForm
 
 
 @financial.route("/add", methods=["POST", "GET"])
@@ -21,6 +22,7 @@ def add():
             )
         else:
             add_user(form.username.data, form.password.data)
+            add_all_possible_pairs()
             return redirect(url_for("financial.income"))
     return render_template(
         "add.html", form=form, user=session["user"], superuser=session["superuser"]

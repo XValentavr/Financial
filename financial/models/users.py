@@ -31,6 +31,7 @@ class Users(UserMixin, database.Model):
 
     UUID = database.Column(database.String(length=255), nullable=False)
 
+
     def __init__(self, name, password, UUID):
         self.name = name
         self.password = password

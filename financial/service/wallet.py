@@ -1,4 +1,5 @@
 from financial import database
+from financial.models.userroot import Userroot
 from financial.models.wallet import Accounts
 
 
@@ -9,6 +10,15 @@ def get_wallets():
     """
     wallets = Accounts.query.all()
     return [wallet.json() for wallet in wallets]
+
+
+def get_wallet_list():
+    """
+    This module gets all wallets in database
+    :return: list of wallets
+    """
+    wallets = Accounts.query.all()
+    return [wallet for wallet in wallets]
 
 
 def get_current_wallet(identifier):
@@ -34,6 +44,7 @@ def delete_wallet(identifier):
     This module gets all wallets in database
     :return: list of wallets
     """
+    Userroot.query.filter_by(walletname=identifier).delete()
     wallet = Accounts.query.get_or_404(identifier)
     database.session.delete(wallet)
     database.session.commit()
@@ -47,9 +58,9 @@ def insert_wallet(identifier: int, name: str, visibility: str):
     :return:
     """
     if visibility.strip() == "Да":
-        visibility = "Приватный"
-    else:
         visibility = "Общий"
+    else:
+        visibility = "Приватный"
     wallet = Accounts(identifier=identifier, name=name, visibility=visibility)
     database.session.add(wallet)
     database.session.commit()

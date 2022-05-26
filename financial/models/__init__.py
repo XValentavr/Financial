@@ -5,5 +5,6 @@ Imports the department of hospital, admin and employee submodules
 from . import accountstatus
 from . import currency
 from . import moneysum
+from . import userroot
 from . import users
 from . import wallet

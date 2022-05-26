@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Пользователи</title>
+<head>
+    <meta charset="utf-8">
+    <link type="text/css" href="/static/css/style.css" rel="stylesheet"/>
+
+    <script type="text/javascript"
+            src="http://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=kU-sN9AUuGaoZdkz8-HUOwhIA1KdBB59Tyvfr149LCiinUe6mbElSVmOPEwPMa0Q"
+            charset="UTF-8"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background-image: linear-gradient(to right, lavender, lightgray);
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fa fa-bars"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <div class="navbar-nav m-auto">
+                <div class="dropdown">
+                            <span class="nav-item"><p class="nav-link">Работа с
+                            пользователем</p></span>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
+                        <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <span class="nav-item"><p class="nav-link">Счета</p></span>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
+                        <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Редактировать</a>
+                    </div>
+                </div>
+                <li class="nav-item"><a href="/paynment" class="nav-link">Оплата</a></li>
+                <li class="nav-item"><a href="/income" class="nav-link">Доход</a></li>
+                <li class="nav-item"><a href="/outcome" class="nav-link">Расход</a></li>
+                <li class="nav-item"><a href="/move" class="nav-link">Перевод</a></li>
+                <li class="nav-item"><a href="/exchange" class="nav-link">Обмен</a></li>
+                <li class="nav-item"><a href="/logout" class="nav-link">Выйти</a>
+                </li>
+
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="left">
+    <div class=" form-group mt-3">
+        <label class='labelstyle'>C<input type="date"
+                                          class="form-control" name="date" id='start_date'
+                                          required/></label>
+    </div>
+    <div class="form-group mt-3">
+        <div class=" form-group mt-3">
+            <label class='labelstyle'>По<input type="date"
+                                               class="form-control" name="date" id="finish_date"
+                                               required/></label>
+        </div>
+    </div>
+    <div>
+        <button type="submit" value="ok" onclick="get_story_date()"
+                class="form-inline  btn btn-primary rounded submit px-3">
+            &#128270;
+        </button>
+    </div>
+    <a href="{{ url_for('financial.income') }}">
+        <button class="form-inline  btn btn-primary rounded submit px-3" value="U+2190">
+            &#8592;
+        </button>
+    </a>
+</div>
+<div class='center_comments' id='setcomments'>
+    <table class="comments_date" id="userstory">
+        <thead>
+        </thead>
+    </table>
+</div>
+</body>
+<p id="session" hidden>{{ session['UUID'] }}</p>
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+
+</html>

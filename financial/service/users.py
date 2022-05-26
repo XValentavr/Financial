@@ -7,6 +7,7 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from financial import database
+from financial.models.userroot import Userroot
 from financial.models.users import Users, SuperUser, OwnUser
 
 
@@ -18,7 +19,6 @@ def get_user_by_enter_name(username: str):
     """
     user = Users.query.filter_by(name=username).all()
     users = [user for user in user]
-    print(users)
     for usr in users:
         return usr
 
@@ -118,6 +118,7 @@ def delete_user(identifier: int) -> None:
     This function is used to delete an existing department
     :param identifier: the id of the department of hospital to delete
     """
+    Userroot.query.filter_by(username=identifier).delete()
     user = Users.query.get_or_404(identifier)
     database.session.delete(user)
     database.session.commit()
