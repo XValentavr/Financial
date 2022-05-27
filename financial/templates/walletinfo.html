@@ -27,25 +27,26 @@
                 aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="fa fa-bars"></span> Menu
         </button>
-
         <div class="collapse navbar-collapse" id="ftco-nav">
             <div class="navbar-nav m-auto">
-                <div class="dropdown">
+                {% if superuser %}
+                    <div class="dropdown">
                             <span class="nav-item"><p class="nav-link">Работа с
                             пользователем</p></span>
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
-                        <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
+                            <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                        </div>
                     </div>
-                </div>
-                <div class="dropdown">
-                    <span class="nav-item"><p class="nav-link">Счета</p></span>
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
-                        <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Редактировать</a>
+                    <div class="dropdown">
+                        <span class="nav-item"><p class="nav-link">Счета</p></span>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
+                            <a href="{{ url_for('financial.changewallet') }}" class="nav-link">Редактировать</a>
+                        </div>
                     </div>
-                </div>
-                <li class="nav-item"><a href="/paynment" class="nav-link">Оплата</a></li>
+                    <li class="nav-item"><a href="/paynment" class="nav-link">Оплата</a></li>
+                {% endif %}
                 <li class="nav-item"><a href="/income" class="nav-link">Доход</a></li>
                 <li class="nav-item"><a href="/outcome" class="nav-link">Расход</a></li>
                 <li class="nav-item"><a href="/move" class="nav-link">Перевод</a></li>

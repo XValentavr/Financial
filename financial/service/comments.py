@@ -20,7 +20,7 @@ from financial.service.currency import (
 )
 from financial.service.moneysum import reset_moneysum
 from financial.service.userroot import get_user_root
-from financial.service.users import get_user_by_UUID, get_user_by_enter_name
+from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
 
 
@@ -61,44 +61,17 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
-            Accountstatus.isdeleted
+            Accountstatus.isdeleted,
+            Userroot.isgeneral
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
             .join(Moneysum.accountid)
+            .join(Moneysum.roots)
             .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-            .order_by(desc(Accountstatus.id))
-            .all()
+            .order_by(desc(Accountstatus.id)).all()
     )
-    if result:
-        for details in result:
-            transpone = list(details)
-            user = get_user_by_UUID(transpone[13].strip())
-            if user is not None:
-                user = user.get("user")
-            else:
-                user = None
-            comments.append(
-                {
-                    "id": transpone[8],
-                    "date": transpone[0],
-                    "comment": transpone[1],
-                    "addedsumma": transpone[2],
-                    "deletedsumma": transpone[3],
-                    "user": transpone[4],
-                    "wallet": transpone[5],
-                    "UUID": transpone[6],
-                    "visibility": transpone[7],
-                    "number": transpone[9],
-                    "exchanged": transpone[10],
-                    "moved": transpone[11],
-                    "pairs": transpone[12].strip(),
-                    "modified": user,
-                    'deleted': transpone[14],
-                    "superuser": s["superuser"],
-                }
-            )
-    return comments
+    return create_result_comments(result, comments)
 
 
 def get_comment_by_wallet_name(name) -> list[dict]:
@@ -126,45 +99,18 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.ismoved,
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
-            Accountstatus.isdeleted
+            Accountstatus.isdeleted,
+            Userroot.isgeneral
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
             .join(Moneysum.accountid)
+            .join(Moneysum.roots)
             .filter(Accounts.name == name)
             .order_by(desc(Accountstatus.id))
             .all()
     )
-
-    if result:
-        for details in result:
-            transpone = list(details)
-            user = get_user_by_UUID(transpone[13].strip())
-            if user is not None:
-                user = user.get("user")
-            else:
-                user = None
-            comments.append(
-                {
-                    "id": transpone[8],
-                    "date": transpone[0],
-                    "comment": transpone[1],
-                    "addedsumma": transpone[2],
-                    "deletedsumma": transpone[3],
-                    "user": transpone[4],
-                    "wallet": transpone[5],
-                    "UUID": transpone[6],
-                    "visibility": transpone[7],
-                    "number": transpone[9],
-                    "exchanged": transpone[10],
-                    "moved": transpone[11],
-                    "pairs": transpone[12].strip(),
-                    "modified": user,
-                    "deleted": transpone[14],
-                    "superuser": s["superuser"],
-                }
-            )
-        return comments
+    return create_result_comments(result, comments)
 
 
 def get_all_comments() -> list[dict]:
@@ -202,65 +148,7 @@ def get_all_comments() -> list[dict]:
             .order_by(desc(Accountstatus.id))
             .all()
     )
-    if result:
-        for details in result:
-            transpone = list(details)
-            user = get_user_by_UUID(transpone[13].strip())
-            if user is not None:
-                user = user.get("user")
-            else:
-                user = None
-            if s['superuser']:
-                comments.append(
-                    {
-                        "id": transpone[8],
-                        "date": transpone[0],
-                        "comment": transpone[1],
-                        "addedsumma": transpone[2],
-                        "deletedsumma": transpone[3],
-                        "user": transpone[4],
-                        "wallet": transpone[5],
-                        "UUID": transpone[6],
-                        "visibility": transpone[7],
-                        "number": transpone[9],
-                        "exchanged": transpone[10],
-                        "moved": transpone[11],
-                        "pairs": transpone[12].strip(),
-                        "modified": user,
-                        'deleted': transpone[14],
-                        "superuser": s["superuser"],
-                        "general": transpone[15]
-                    }
-                )
-            else:
-                wallet = get_current_wallet_by_name(transpone[5])
-                usr = get_user_by_enter_name(transpone[4]).id
-                root = get_user_root(usr, wallet).isgeneral
-                if not root and transpone[6] == s['UUID']:
-                    comments.append(
-                        {
-                            "id": transpone[8],
-                            "date": transpone[0],
-                            "comment": transpone[1],
-                            "addedsumma": transpone[2],
-                            "deletedsumma": transpone[3],
-                            "user": transpone[4],
-                            "wallet": transpone[5],
-                            "UUID": transpone[6],
-                            "visibility": transpone[7],
-                            "number": transpone[9],
-                            "exchanged": transpone[10],
-                            "moved": transpone[11],
-                            "pairs": transpone[12].strip(),
-                            "modified": user,
-                            'deleted': transpone[14],
-                            "superuser": s["superuser"],
-                            "general": transpone[15]
-                        }
-                    )
-                #TODO here if root if true
-
-    return comments
+    return create_result_comments(result, comments)
 
 
 def reset_summa(identifier) -> None:
@@ -568,9 +456,72 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
     database.session.commit()
 
 
-def create_dict(lst):
+def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
     """
     This module create dict of current list
-    :param lst: list to change
+    :param comments: list to change
+    :param transpone: tuple to transpone into list
+    :param user: current user
     :return: new created dict
     """
+    comments.append(
+        {
+            "id": transpone[8],
+            "date": transpone[0],
+            "comment": transpone[1],
+            "addedsumma": transpone[2],
+            "deletedsumma": transpone[3],
+            "user": transpone[4],
+            "wallet": transpone[5],
+            "UUID": transpone[6],
+            "visibility": transpone[7],
+            "number": transpone[9],
+            "exchanged": transpone[10],
+            "moved": transpone[11],
+            "pairs": transpone[12].strip(),
+            "modified": user,
+            'deleted': transpone[14],
+            "superuser": s["superuser"],
+            "general": transpone[15]
+        }
+    )
+    return comments
+
+
+def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
+    """
+    This module creates list of comments to show user
+    :param result: result of query database
+    :param comments: list to add new data
+    :return: list of dicts of comments
+    """
+    if result:
+        for details in result:
+            transpone = list(details)
+            user = get_user_by_UUID(transpone[13].strip())
+            if user is not None:
+                user = user.get("user")
+            else:
+                user = None
+            if s['superuser']:
+                # if superuser then check only with user roots
+                wallet = get_current_wallet_by_name(transpone[5])
+                usr = get_user_by_UUID(transpone[6].strip()).get('id')
+                root = get_user_root(usr, wallet).isgeneral
+                if root:
+                    create_dict(comments, transpone, user)
+            else:
+                # check current user roots
+                wallet = get_current_wallet_by_name(transpone[5])
+                usr = get_user_by_UUID(s['UUID'].strip()).get('id')
+                root = get_user_root(usr, wallet).isgeneral
+                if not root and transpone[6] == s['UUID']:
+                    create_dict(comments, transpone, user)
+                elif root and (transpone[6] == s['UUID'] or transpone[6] != s['UUID']):
+                    # if if general then check each user root
+                    wallet = get_current_wallet_by_name(transpone[5])
+                    usr = get_user_by_UUID(transpone[6].strip()).get('id')
+                    root = get_user_root(usr, wallet).isgeneral
+                    if root:
+                        create_dict(comments, transpone, user)
+    return comments
