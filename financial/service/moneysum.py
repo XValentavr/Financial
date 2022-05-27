@@ -29,7 +29,9 @@ def inser_into_money_sum(money: float, user: int, currency: int, wallet: int):
     :return:
     """
     general = get_user_root_id(wallet, user)
-    money = Moneysum(wallet=wallet, moneysum=money, user=user, currency=currency,isgeneral=general)
+    money = Moneysum(
+        wallet=wallet, moneysum=money, user=user, currency=currency, isgeneral=general
+    )
     database.session.add(money)
     database.session.commit()
 
@@ -49,23 +51,23 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-        summas,
-        summa,
-        user,
-        currency,
-        wallet,
-        date,
-        info,
-        s_add,
-        s_delete,
-        number,
-        percent,
-        exchanged,
-        moved,
-        modified,
-        deleted,
-        pair,
-        useridentifier,
+    summas,
+    summa,
+    user,
+    currency,
+    wallet,
+    date,
+    info,
+    s_add,
+    s_delete,
+    number,
+    percent,
+    exchanged,
+    moved,
+    modified,
+    deleted,
+    pair,
+    useridentifier,
 ) -> None:
     """
     This module updates money in wallet
@@ -145,9 +147,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-                .filter_by(wallet=identifier)
-                .group_by(Moneysum.wallet)
-                .all()
+            .filter_by(wallet=identifier)
+            .group_by(Moneysum.wallet)
+            .all()
         )
     res_list = []
     if result:
@@ -246,8 +248,8 @@ def exchange_command(form):
                     date=date,
                     comments=info,
                     addedsumma=str(new_entered_summa)
-                               + " "
-                               + request.form.get("valuta_buy"),
+                    + " "
+                    + request.form.get("valuta_buy"),
                     deletedsumma=None,
                     isexchanged=True,
                     ismoved=False,

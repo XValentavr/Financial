@@ -17,7 +17,7 @@ def wallet():
     else:
         if request.method == "POST":
             print(request.form)
-            if request.form.get('All') == 'on':
+            if request.form.get("All") == "on":
                 ...
         if form.validate_on_submit():
             name = form.wallet.data
@@ -32,7 +32,7 @@ def wallet():
                         form=form,
                         user=session["user"],
                         superuser=session["superuser"],
-                        variant=users
+                        variant=users,
                     )
             else:
                 insert_wallet(identifier, name, visibility)
@@ -42,7 +42,7 @@ def wallet():
             form=form,
             user=session["user"],
             superuser=session["superuser"],
-            variant=users
+            variant=users,
         )
 
 
@@ -71,13 +71,13 @@ def edit_wallet(identifier):
     else:
 
         form = WTForm.Wallet()
-        if form.visibility.data == 'Да':
+        if form.visibility.data == "Да":
             if request.method == "POST":
-                if request.form.get('All') == 'on':
+                if request.form.get("All") == "on":
                     update_roots(identifier, 1)
                 else:
                     for u in users:
-                        if request.form.get(u.name) == 'on':
+                        if request.form.get(u.name) == "on":
                             usr = get_user_by_enter_name(u.name)
                             update_roots(identifier, 1, usr.id)
         else:
@@ -91,10 +91,13 @@ def edit_wallet(identifier):
             return render_template(
                 "changewallet.html",
                 user=session["user"],
-                superuser=session["superuser"]
+                superuser=session["superuser"],
             )
 
     return render_template(
-        "wallet.html", form=form, user=session["user"], superuser=session["superuser"],
-        variant=users
+        "wallet.html",
+        form=form,
+        user=session["user"],
+        superuser=session["superuser"],
+        variant=users,
     )

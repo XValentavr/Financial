@@ -9,7 +9,6 @@ from financial.views import financial
 @login_required
 def walletinfo(wallet):
     ths = get_list_currency()
-    return render_template('walletinfo.html', user=session["user"],
-                           superuser=session["superuser"],
-                           ths=ths
-                           )
+    return render_template(
+        "walletinfo.html", user=session["user"], superuser=session["superuser"], ths=ths
+    )

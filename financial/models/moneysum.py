@@ -27,6 +27,4 @@ class Moneysum(database.Model):
     accountinfo = database.relationship(
         "Accountstatus", backref="money_sum", lazy="dynamic", cascade="all,delete"
     )
-    roots = database.relationship(
-        "Userroot", backref="money_sum"
-    )
+    roots = database.relationship("Userroot", backref="money_sum")

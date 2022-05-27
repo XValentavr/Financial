@@ -36,11 +36,11 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
         now = datetime.datetime.today().replace(microsecond=0)
         end = now.strftime("%Y-%m-%d %H:%M:%S")
     else:
-        end = str(end) + ' ' + str(datetime.datetime.now().time().isoformat('seconds'))
-        end = datetime.datetime.strptime(end.strip(), '%Y/%m/%d %H:%M:%S')
+        end = str(end) + " " + str(datetime.datetime.now().time().isoformat("seconds"))
+        end = datetime.datetime.strptime(end.strip(), "%Y/%m/%d %H:%M:%S")
 
-    start = str(start) + ' ' + str(datetime.datetime.now().time().isoformat('seconds'))
-    start = datetime.datetime.strptime(start.strip(), '%Y/%m/%d %H:%M:%S')
+    start = str(start) + " " + str(datetime.datetime.now().time().isoformat("seconds"))
+    start = datetime.datetime.strptime(start.strip(), "%Y/%m/%d %H:%M:%S")
     engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
     session = sessionmaker(bind=engine)
     session = session()
@@ -62,14 +62,15 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
-            Userroot.isgeneral
+            Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-            .order_by(desc(Accountstatus.id)).all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -100,15 +101,15 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
-            Userroot.isgeneral
+            Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -139,14 +140,14 @@ def get_all_comments() -> list[dict]:
             Accountstatus.pairidentificator,
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
-            Userroot.isgeneral
+            Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -480,9 +481,9 @@ def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
             "moved": transpone[11],
             "pairs": transpone[12].strip(),
             "modified": user,
-            'deleted': transpone[14],
+            "deleted": transpone[14],
             "superuser": s["superuser"],
-            "general": transpone[15]
+            "general": transpone[15],
         }
     )
     return comments
@@ -503,24 +504,24 @@ def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
                 user = user.get("user")
             else:
                 user = None
-            if s['superuser']:
+            if s["superuser"]:
                 # if superuser then check only with user roots
                 wallet = get_current_wallet_by_name(transpone[5])
-                usr = get_user_by_UUID(transpone[6].strip()).get('id')
+                usr = get_user_by_UUID(transpone[6].strip()).get("id")
                 root = get_user_root(usr, wallet).isgeneral
                 if root:
                     create_dict(comments, transpone, user)
             else:
                 # check current user roots
                 wallet = get_current_wallet_by_name(transpone[5])
-                usr = get_user_by_UUID(s['UUID'].strip()).get('id')
+                usr = get_user_by_UUID(s["UUID"].strip()).get("id")
                 root = get_user_root(usr, wallet).isgeneral
-                if not root and transpone[6] == s['UUID']:
+                if not root and transpone[6] == s["UUID"]:
                     create_dict(comments, transpone, user)
-                elif root and (transpone[6] == s['UUID'] or transpone[6] != s['UUID']):
+                elif root and (transpone[6] == s["UUID"] or transpone[6] != s["UUID"]):
                     # if if general then check each user root
                     wallet = get_current_wallet_by_name(transpone[5])
-                    usr = get_user_by_UUID(transpone[6].strip()).get('id')
+                    usr = get_user_by_UUID(transpone[6].strip()).get("id")
                     root = get_user_root(usr, wallet).isgeneral
                     if root:
                         create_dict(comments, transpone, user)

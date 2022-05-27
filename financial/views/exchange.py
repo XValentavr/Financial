@@ -13,7 +13,7 @@ def exchange():
     ths = get_list_currency()
     selected = get_name_account_checker()
     if request.method == "POST":
-        exchange_command(request.form.getlist(''))
+        exchange_command(request.form.getlist(""))
     return render_template(
         "exchange.html",
         user=session["user"],

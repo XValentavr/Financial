@@ -5,7 +5,7 @@ from financial.service.wallet import get_wallet_list
 
 
 def add_all_possible_pairs():
-    """"
+    """ "
     This module add all possible combination of users and wallets
     """
     database.session.query(Userroot).delete()

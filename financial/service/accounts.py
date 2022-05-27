@@ -44,15 +44,15 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid)
+                .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
-                    Moneysum.moneysum != 0.0
+                    Moneysum.moneysum != 0.0,
                 )
-                    .all()
+                .all()
             )
             if result:
                 for details in sorted(result):
@@ -65,7 +65,7 @@ def get_account_money(UUID: str):
                         }
                     )
         elif check.visibility == "Общий":
-            user = get_user_by_UUID(s['UUID'].strip()).get('id')
+            user = get_user_by_UUID(s["UUID"].strip()).get("id")
             wallet = get_current_wallet_by_name(check.name)
             roots = get_user_root(user, wallet)
             if roots.isgeneral:
@@ -73,28 +73,36 @@ def get_account_money(UUID: str):
                     session.query(
                         Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                     )
-                        .join(Moneysum.accountid)
-                        .join(Moneysum.currencyid)
-                        .join(Moneysum.roots)
-                        .filter(
-                        Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
-                        , Moneysum.user == Userroot.username, Moneysum.wallet == Userroot.walletname,
-                        Userroot.isgeneral == 1)
-                        .all()
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .join(Moneysum.roots)
+                    .filter(
+                        Accounts.visibility == check.visibility,
+                        Accounts.name == check.name,
+                        Moneysum.moneysum != 0.0,
+                        Moneysum.user == Userroot.username,
+                        Moneysum.wallet == Userroot.walletname,
+                        Userroot.isgeneral == 1,
+                    )
+                    .all()
                 )
             elif not roots.isgeneral:
                 result = (
                     session.query(
                         Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                     )
-                        .join(Moneysum.accountid)
-                        .join(Moneysum.currencyid)
-                        .join(Moneysum.roots)
-                        .filter(
-                        Accounts.visibility == check.visibility, Accounts.name == check.name, Moneysum.moneysum != 0.0
-                        , Moneysum.user == Userroot.username, Moneysum.wallet == Userroot.walletname,
-                        Userroot.isgeneral == 0)
-                        .all()
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .join(Moneysum.roots)
+                    .filter(
+                        Accounts.visibility == check.visibility,
+                        Accounts.name == check.name,
+                        Moneysum.moneysum != 0.0,
+                        Moneysum.user == Userroot.username,
+                        Moneysum.wallet == Userroot.walletname,
+                        Userroot.isgeneral == 0,
+                    )
+                    .all()
                 )
             summa_usd = summa_eur = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -445,9 +453,9 @@ def get_by_account_status(identifier):
     session = session()
     result = (
         session.query(Accounts.name)
-            .join(Moneysum.accountid)
-            .filter(Moneysum.id == identifier)
-            .first()
+        .join(Moneysum.accountid)
+        .filter(Moneysum.id == identifier)
+        .first()
     )
     return result
 

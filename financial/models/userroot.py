@@ -13,14 +13,22 @@ class Userroot(UserMixin, database.Model):
     __tablename__ = "user_root"
 
     #: admin's database id
-    id = database.Column(database.Integer(), database.ForeignKey("money_sum.isgeneral"), primary_key=True)
+    id = database.Column(
+        database.Integer(), database.ForeignKey("money_sum.isgeneral"), primary_key=True
+    )
 
     #: admin's name
-    username = database.Column(database.Integer(), database.ForeignKey("user.id"), nullable=False,
-                               unique=True, )
+    username = database.Column(
+        database.Integer(),
+        database.ForeignKey("user.id"),
+        nullable=False,
+        unique=True,
+    )
 
     #: admin's full name
-    walletname = database.Column(database.Integer(), database.ForeignKey("accounts.id"), nullable=False)
+    walletname = database.Column(
+        database.Integer(), database.ForeignKey("accounts.id"), nullable=False
+    )
 
     #: admin's avatar
     isgeneral = database.Column(database.BOOLEAN, nullable=False)
