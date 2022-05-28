@@ -8,12 +8,13 @@ def add_all_possible_pairs():
     """ "
     This module add all possible combination of users and wallets
     """
-    database.session.query(Userroot).delete()
-    database.session.commit()
     users = get_all_user()
     wallets = get_wallet_list()
     for us in users:
         for wa in wallets:
+            rts = Userroot.query.filter_by(username=us.id, walletname=wa.id).all()
+            if rts:
+                continue
             roots = Userroot(username=us.id, walletname=wa.id, isgeneral=0)
             database.session.add(roots)
             database.session.commit()

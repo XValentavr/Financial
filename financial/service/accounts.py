@@ -87,6 +87,7 @@ def get_account_money(UUID: str):
                     .all()
                 )
             elif not roots.isgeneral:
+                usr = get_user_by_UUID(s["UUID"].strip()).get("id")
                 result = (
                     session.query(
                         Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
@@ -98,7 +99,7 @@ def get_account_money(UUID: str):
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
                         Moneysum.moneysum != 0.0,
-                        Moneysum.user == Userroot.username,
+                        Moneysum.user == usr,
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 0,
                     )

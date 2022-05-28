@@ -64,13 +64,13 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -103,13 +103,13 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .filter(Accounts.name == name)
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accounts.name == name)
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -142,12 +142,12 @@ def get_all_comments() -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -421,7 +421,8 @@ def update_exchange_commands(form, summa_add, summa_delete, added):
     to_ = get_current_wallet_by_name(to_)
     currency_to = form.get("valuta_buy")
     summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = float(sum_) * form.get("rate_exchange")
+    print(form.get("rate_exchange"))
+    new_entered_summa = float(sum_) * float(form.get("rate_exchange"))
     # if summa is none then get user
     if summa_to_add is None:
         currency_to = get_current_currency_by_name(currency_to).id
@@ -483,7 +484,7 @@ def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
             "modified": user,
             "deleted": transpone[14],
             "superuser": s["superuser"],
-            "general": transpone[15],
+            "general": transpone[15]
         }
     )
     return comments
@@ -506,11 +507,11 @@ def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
                 user = None
             if s["superuser"]:
                 # if superuser then check only with user roots
-                wallet = get_current_wallet_by_name(transpone[5])
+                '''wallet = get_current_wallet_by_name(transpone[5])
                 usr = get_user_by_UUID(transpone[6].strip()).get("id")
                 root = get_user_root(usr, wallet).isgeneral
-                if root:
-                    create_dict(comments, transpone, user)
+                if root:'''
+                create_dict(comments, transpone, user)
             else:
                 # check current user roots
                 wallet = get_current_wallet_by_name(transpone[5])

@@ -68,9 +68,8 @@ def login():
             session["superuser"] = False
             session["user"] = True
             session["UUID"] = root_user.UUID
-            return render_template(
-                "base.html", superuser=False, user=True, session=session, ths=ths
-            )
+            return redirect(url_for("financial.income"))
+
 
         elif root_user and superuser:
             login_user(superuser)
@@ -78,10 +77,9 @@ def login():
             session["superuser"] = True
             session["user"] = False
 
-            return render_template(
-                "base.html", superuser=True, user=False, session=session, ths=ths
-            )
+            return redirect(url_for("financial.income"))
 
+        return redirect(url_for("financial.income"))
     return render_template("login.html", form=form)
 
 

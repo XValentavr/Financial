@@ -78,7 +78,9 @@ function displaydata(data, flag) {
             }
         }
         if (count <= 1) {
-            if (element['visibility'] === 'Общий') {
+            if (element['superuser'] === true) {
+                printer(element, tb, element['visibility'], 'undefined', flag)
+            } else if (element['visibility'] === 'Общий') {
                 printer(element, tb, element['visibility'], 'undefined', flag)
             } else if (element['visibility'] !== 'Общий') {
                 if (element['UUID'] === USERID.trim()) {
@@ -117,15 +119,22 @@ function printer(element, tb, visibility, str, flag) {
     let row = tb.insertRow();
     let cell = row.insertCell();
     let text;
-    if (visibility === 'Общий') {
+    if (element['superuser'] === true) {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
             let changed = (' Отменено: ' + element['modified']).italics()
             string = string.italics() + ' ' + changed
             text.innerHTML = string
             cell.appendChild(text);
-        } else if (element['superuser'] === true) {
-            add_buttons(element, string.italics(), cell, visibility, flag)
+        } else
+            add_buttons(element, string, cell, visibility, flag)
+    } else if (visibility === 'Общий') {
+        if (element['deleted'] !== '0') {
+            text = document.createElement('div');
+            let changed = (' Отменено: ' + element['modified']).italics()
+            string = string.italics() + ' ' + changed
+            text.innerHTML = string
+            cell.appendChild(text)
         } else if (element['UUID'] === USERID.trim()) {
             add_buttons(element, string.italics(), cell, visibility, flag)
         } else {

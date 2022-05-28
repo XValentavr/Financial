@@ -14,7 +14,7 @@ class Userroot(UserMixin, database.Model):
 
     #: admin's database id
     id = database.Column(
-        database.Integer(), database.ForeignKey("money_sum.isgeneral"), primary_key=True
+        database.Integer(), database.ForeignKey("money_sum.isgeneral"), primary_key=True, autoincrement=True
     )
 
     #: admin's name
@@ -34,10 +34,10 @@ class Userroot(UserMixin, database.Model):
     isgeneral = database.Column(database.BOOLEAN, nullable=False)
 
     userid = database.relationship(
-        "Users", foreign_keys=[username], backref="user_root"
+        "Users", foreign_keys=[username], backref="user_root", cascade="all,delete"
     )
     walletid = database.relationship(
-        "Accounts", foreign_keys=[walletname], backref="user_root"
+        "Accounts", foreign_keys=[walletname], backref="user_root", cascade="all,delete"
     )
 
     def __init__(self, username, walletname, isgeneral):
