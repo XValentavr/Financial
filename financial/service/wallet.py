@@ -35,8 +35,17 @@ def get_current_wallet_by_name(name):
     This module gets all wallets in database
     :return: list of wallets
     """
-    wallet = Accounts.query.filter_by(name=name).first()
+    wallet = Accounts.query.filter_by(name=name.strip()).first()
     return wallet.id
+
+
+def get_current_wallet_by_id(id):
+    """
+    This module gets all wallets in database
+    :return: list of wallets
+    """
+    wallet = Accounts.query.filter_by(id=id).first()
+    return wallet.name
 
 
 def delete_wallet(identifier):

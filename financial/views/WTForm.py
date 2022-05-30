@@ -68,13 +68,9 @@ class Income(FlaskForm):
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
 
-    def set_choices(self, where, ch=None):
-        if where == "edit":
-            self.currency.choices = ch[0]
-            self.wallet.choices = ch[1]
-        else:
-            self.currency.choices = get_currency()
-            self.wallet.choices = get_name_account()
+    def set_choices(self):
+        self.currency.choices = get_currency()
+        self.wallet.choices = get_name_account()
 
 
 class Outcome(FlaskForm):
@@ -84,13 +80,9 @@ class Outcome(FlaskForm):
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
 
-    def set_choices(self, where, ch=None):
-        if where == "edit":
-            self.currency.choices = ch[0]
-            self.wallet.choices = ch[1]
-        else:
-            self.currency.choices = get_currency()
-            self.wallet.choices = get_name_account()
+    def set_choices(self):
+        self.currency.choices = get_currency()
+        self.wallet.choices = get_name_account()
 
 
 class Move(FlaskForm):

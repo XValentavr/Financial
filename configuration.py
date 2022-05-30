@@ -9,7 +9,7 @@ class Config(object):
     Base configuration
     """
 
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+    PERMANENT_SESSION_LIFETIME = timedelta(days=24)
     MAX_CONTENT_LENGTH = 1024 * 1024
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")

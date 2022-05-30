@@ -10,7 +10,7 @@ from financial.views import financial, WTForm
 @login_required
 def move():
     form = WTForm.Move()
-    form.set_choices("not move")
+    form.set_choices()
     if form.validate_on_submit():
         moving_command(form)
     ths = get_list_currency()

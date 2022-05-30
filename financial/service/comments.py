@@ -18,7 +18,7 @@ from financial.service.currency import (
     get_current_currency,
     get_current_currency_by_name,
 )
-from financial.service.moneysum import reset_moneysum
+from financial.service.moneysum import reset_moneysum, inser_into_money_sum
 from financial.service.userroot import get_user_root
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
@@ -64,13 +64,13 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -103,13 +103,13 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -142,12 +142,12 @@ def get_all_comments() -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -180,7 +180,15 @@ def reseted_by_status(status) -> None:
         reset_moneysum(status.id, status.money, float(status.deletedsumma.split()[0]))
 
 
-def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay=None):
+def update_comment(
+    form,
+    uuid: str,
+    from_where: str,
+    summa_changed: float,
+    cur_wallet,
+    cur_currency,
+    ispay=None,
+):
     """
     This module updates income or outcome data
     :param form: form to get info from
@@ -191,7 +199,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
     if ispay is not None:
         number = form.get("number")
         percent = form.get("percent")
-        wallet = form.get("wallet")
+        wallet_ = form.get("wallet")
         summa = form.get("summa")
         if int(percent) > 0:
             summa = int(summa) - (int(summa) * (int(percent) / 100))
@@ -199,29 +207,118 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
             summa = int(summa)
         info = form.get("comments")
         currency = form.get("valuta")
+        currency = get_current_currency_by_name(currency).id
         date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
 
     else:
         number = (None,)
         percent = (None,)
-        wallet = form.wallet.data
+        wallet_ = form.wallet.data
         summa = form.sum.data
         info = form.info.data
         currency = form.currency.data
         date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     user_ = get_user_by_UUID(s["UUID"].strip())
     user = user_.get("id")
-    wallet = get_current_wallet_by_name(wallet)
-    currency = get_current_currency_by_name(currency).id
-    summa_to_update = get_to_sum(user, int(wallet), currency)
-    currency_name = get_current_currency(currency).name
+    currency = get_current_currency(currency)
+    try:
+        wallet_ = get_current_wallet_by_name(wallet_)
+    except Exception:
+        wallet_ = wallet_
+    summa_to_update = get_to_sum(user, int(wallet_), currency.id)
     user_to_reset = user_.get("UUID")
+    new_summa_to_update_or_delete = flag = False
     if summa_to_update is None:
         user = Accountstatus.query.filter_by(pairidentificator=uuid).first()
         user_ = get_user_by_UUID(user.useridentificator.strip())
-        summa_to_update = get_to_sum(user_.get("id"), int(wallet), currency)
+        summa_to_update = get_to_sum(user_.get("id"), int(wallet_), currency.id)
         user_to_reset = user.useridentificator
-    if summa_to_update:
+    if summa_to_update is None:
+        cur_wallet = get_current_wallet_by_name(*cur_wallet)
+        cur_currency = get_current_currency_by_name(cur_currency)
+        new_summa_to_update_or_delete = get_to_sum(
+            user_.get("id"), cur_wallet, cur_currency.id
+        )
+        for new_summa_to_update_or_delete in new_summa_to_update_or_delete:
+            if from_where == "income":
+                new_summa_to_update_or_delete.moneysum -= summa_changed
+            elif from_where == "outcome":
+                new_summa_to_update_or_delete.moneysum -= 0 - summa_changed
+            database.session.add(new_summa_to_update_or_delete)
+            database.session.commit()
+            money = Moneysum.query.filter_by(
+                user=user_.get("id"), wallet=wallet_, currency=currency.id
+            ).all()
+            if money:
+                for money in money:
+                    if float(money.moneysum) == 0.0:
+                        if from_where == "income":
+                            money.moneysum += summa
+                        elif from_where == "outcome":
+                            money.moneysum -= summa
+                        database.session.add(money)
+                        database.session.commit()
+            else:
+                if from_where == "income":
+                    inser_into_money_sum(
+                        money=summa,
+                        user=user_.get("id"),
+                        currency=currency.id,
+                        wallet=wallet_,
+                    )
+                elif from_where == "outcome":
+                    inser_into_money_sum(
+                        money=0 - summa,
+                        user=user_.get("id"),
+                        currency=currency.id,
+                        wallet=wallet_,
+                    )
+            identifier = get_to_sum(user_.get("id"), int(wallet_), currency.id)
+            status = Accountstatus.query.filter_by(pairidentificator=uuid).first()
+            database.session.delete(status)
+            database.session.commit()
+            for id in identifier:
+                if from_where == "income":
+                    accounts = Accountstatus(
+                        money=id.id,
+                        date=date,
+                        comments=info,
+                        addedsumma=str(summa) + " " + currency.name if summa else None,
+                        deletedsumma=None,
+                        number=number,
+                        percent=percent,
+                        isexchanged=0,
+                        ismoved=0,
+                        ismodified=s["UUID"],
+                        isdeleted=False,
+                        pairidentificator=uuid,
+                        useridentificator=user.useridentificator,
+                    )
+                elif from_where == "outcome":
+                    accounts = Accountstatus(
+                        money=id.id,
+                        date=date,
+                        comments=info,
+                        addedsumma=None,
+                        deletedsumma=str(summa) + " " + currency.name
+                        if summa
+                        else None,
+                        number=number,
+                        percent=percent,
+                        isexchanged=0,
+                        ismoved=0,
+                        ismodified=s["UUID"],
+                        isdeleted=False,
+                        pairidentificator=uuid,
+                        useridentificator=user.useridentificator,
+                    )
+                database.session.add(accounts)
+                database.session.commit()
+    if new_summa_to_update_or_delete:
+        flag = False
+    else:
+        flag = True
+    if flag:
         for summa_to_update in summa_to_update:
             status = Accountstatus.query.filter_by(pairidentificator=uuid).first()
             database.session.delete(status)
@@ -236,7 +333,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
                     money=summa_to_update.id,
                     date=date,
                     comments=info,
-                    addedsumma=str(summa) + " " + currency_name if summa else None,
+                    addedsumma=str(summa) + " " + currency.name if summa else None,
                     deletedsumma=None,
                     number=number,
                     percent=percent,
@@ -252,8 +349,8 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
 
             else:
                 # if from where is outcome then insert outcome value
-                summa_to_update.moneysum += summa_changed
-                summa_to_update.moneysum += 0 - float(summa)
+                summa_to_update.moneysum -= summa_changed
+                summa_to_update.moneysum -= 0 - float(summa)
                 database.session.add(summa_to_update)
                 database.session.commit()
                 accounts = Accountstatus(
@@ -261,7 +358,7 @@ def update_comment(form, uuid: str, from_where: str, summa_changed: float, ispay
                     date=date,
                     comments=info,
                     addedsumma=None,
-                    deletedsumma=str(summa) + " " + currency_name if summa else None,
+                    deletedsumma=str(summa) + " " + currency.name if summa else None,
                     number=number,
                     percent=percent,
                     isexchanged=0,
@@ -484,7 +581,7 @@ def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
             "modified": user,
             "deleted": transpone[14],
             "superuser": s["superuser"],
-            "general": transpone[15]
+            "general": transpone[15],
         }
     )
     return comments
@@ -507,10 +604,10 @@ def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
                 user = None
             if s["superuser"]:
                 # if superuser then check only with user roots
-                '''wallet = get_current_wallet_by_name(transpone[5])
+                """wallet = get_current_wallet_by_name(transpone[5])
                 usr = get_user_by_UUID(transpone[6].strip()).get("id")
                 root = get_user_root(usr, wallet).isgeneral
-                if root:'''
+                if root:"""
                 create_dict(comments, transpone, user)
             else:
                 # check current user roots

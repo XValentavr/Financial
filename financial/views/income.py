@@ -10,7 +10,7 @@ from financial.views import financial, WTForm
 @login_required
 def income():
     form = WTForm.Income()
-    form.set_choices("income")
+    form.set_choices()
     ths = get_list_currency()
     if form.validate_on_submit():
         insert_account(form)

@@ -173,7 +173,9 @@ def insert_account(form):
     summa = form.sum.data
     currency = form.currency.data
     currency_name = get_current_currency(currency).name
-    summa_to_update = get_to_sum(user, int(wallet), currency)
+    summa_to_update = Moneysum.query.filter_by(
+        user=user, wallet=int(wallet), currency=currency
+    ).all()
     if summa_to_update:
         for summa_to_update in summa_to_update:
             summa_to_update.moneysum += float(summa)
@@ -235,7 +237,9 @@ def delete_data(form):
     summa = form.sum.data
     currency = form.currency.data
     currency_name = get_current_currency(currency).name
-    summa_to_update = get_to_sum(user, int(wallet), currency)
+    summa_to_update = Moneysum.query.filter_by(
+        user=user, wallet=int(wallet), currency=currency
+    ).all()
     if summa_to_update:
         for summa_to_update in summa_to_update:
             summa_to_update.moneysum -= float(summa)
@@ -377,7 +381,9 @@ def insert_pay_account(form):
         summa = int(summa) - (int(summa) * (int(percent) / 100))
     else:
         summa = int(summa)
-    summa_to_update = get_to_sum(user, int(wallet), currency.id)
+    summa_to_update = Moneysum.query.filter_by(
+        user=user, wallet=int(wallet), currency=currency.id
+    ).all()
     if summa_to_update:
         for summa_to_update in summa_to_update:
             summa_to_update.moneysum -= float(summa)

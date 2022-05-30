@@ -10,7 +10,7 @@ from financial.views import financial, WTForm
 @login_required
 def outcome():
     form = WTForm.Outcome()
-    form.set_choices("outcome")
+    form.set_choices()
     if form.validate_on_submit():
         delete_data(form)
     ths = get_list_currency()

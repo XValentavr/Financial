@@ -45,8 +45,11 @@ def get_to_sum(user: int, wallet: int, currency: int):
     :return:
     """
     money = Moneysum.query.filter_by(user=user, wallet=wallet, currency=currency).all()
+
     if money:
-        return money
+        for m in money:
+            if float(m.moneysum) != 0.0:
+                return money
     return None
 
 

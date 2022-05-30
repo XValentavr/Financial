@@ -25,11 +25,16 @@ def edit_comments(UUID):
                 choices = p.addedsumma
                 choices = choices.split(" ")
                 wallet = list(get_by_account_status(p.money))
-                form.set_choices("edit", [[choices[1]], wallet])
+                form.set_choices()
                 ths = get_list_currency()
                 if form.validate_on_submit():
                     update_comment(
-                        form, p.pairidentificator, "income", float(choices[0])
+                        form,
+                        p.pairidentificator,
+                        "income",
+                        float(choices[0]),
+                        wallet,
+                        choices[1],
                     )
                 return render_template(
                     "income.html",
@@ -43,11 +48,16 @@ def edit_comments(UUID):
                 choices = p.deletedsumma
                 choices = choices.split(" ")
                 wallet = list(get_by_account_status(p.money))
-                form.set_choices("edit", [[choices[1]], wallet])
+                form.set_choices()
                 ths = get_list_currency()
                 if form.validate_on_submit():
                     update_comment(
-                        form, p.pairidentificator, "outcome", float(choices[0])
+                        form,
+                        p.pairidentificator,
+                        "outcome",
+                        float(choices[0]),
+                        wallet,
+                        choices[1],
                     )
                 return render_template(
                     "outcome.html",
@@ -63,20 +73,14 @@ def edit_comments(UUID):
                 ths = get_list_currency()
                 valuta = ths
                 selected = get_name_account_checker()
-                for v in valuta:
-                    if v.name in choices[1]:
-                        valuta = [v]
-                        break
-                for s in selected:
-                    if s.name in wallet:
-                        selected = [s]
-                        break
                 if request.method == "POST":
                     update_comment(
                         request.form,
                         p.pairidentificator,
                         "outcome",
                         float(choices[0]),
+                        wallet,
+                        choices[1],
                         "pay",
                     )
                 return render_template(
