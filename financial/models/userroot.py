@@ -14,7 +14,10 @@ class Userroot(UserMixin, database.Model):
 
     #: admin's database id
     id = database.Column(
-        database.Integer(), database.ForeignKey("money_sum.isgeneral"), primary_key=True, autoincrement=True
+        database.Integer(),
+        database.ForeignKey("money_sum.isgeneral"),
+        primary_key=True,
+        autoincrement=True,
     )
 
     #: admin's name

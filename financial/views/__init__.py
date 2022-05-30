@@ -70,7 +70,6 @@ def login():
             session["UUID"] = root_user.UUID
             return redirect(url_for("financial.income"))
 
-
         elif root_user and superuser:
             login_user(superuser)
             session["UUID"] = superuser.UUID
