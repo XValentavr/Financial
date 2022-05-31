@@ -95,17 +95,11 @@ class Move(FlaskForm):
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
     date = DateField("Выберите дату", validators=[DataRequired()])
 
-    def set_choices(self, where, ch=None):
-        if where == "move":
-            self.currency_from.choices = ch[0]
-            self.currency_to.choices = ch[1]
-            self.from_.choices = ch[2]
-            self.to_.choices = ch[3]
-        else:
-            self.currency_from.choices = get_currency()
-            self.currency_to.choices = get_currency()
-            self.from_.choices = get_name_account()
-            self.to_.choices = get_name_account()
+    def set_choices(self):
+        self.currency_from.choices = get_currency()
+        self.currency_to.choices = get_currency()
+        self.from_.choices = get_name_account()
+        self.to_.choices = get_name_account()
 
 
 class Wallet(FlaskForm):

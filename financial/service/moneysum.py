@@ -45,32 +45,32 @@ def get_to_sum(user: int, wallet: int, currency: int):
     :return:
     """
     money = Moneysum.query.filter_by(user=user, wallet=wallet, currency=currency).all()
-
     if money:
         for m in money:
             if float(m.moneysum) != 0.0:
                 return money
+        return money
     return None
 
 
 def update_summa(
-    summas,
-    summa,
-    user,
-    currency,
-    wallet,
-    date,
-    info,
-    s_add,
-    s_delete,
-    number,
-    percent,
-    exchanged,
-    moved,
-    modified,
-    deleted,
-    pair,
-    useridentifier,
+        summas,
+        summa,
+        user,
+        currency,
+        wallet,
+        date,
+        info,
+        s_add,
+        s_delete,
+        number,
+        percent,
+        exchanged,
+        moved,
+        modified,
+        deleted,
+        pair,
+        useridentifier,
 ) -> None:
     """
     This module updates money in wallet
@@ -150,9 +150,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-            .filter_by(wallet=identifier)
-            .group_by(Moneysum.wallet)
-            .all()
+                .filter_by(wallet=identifier)
+                .group_by(Moneysum.wallet)
+                .all()
         )
     res_list = []
     if result:
@@ -251,8 +251,8 @@ def exchange_command(form):
                     date=date,
                     comments=info,
                     addedsumma=str(new_entered_summa)
-                    + " "
-                    + request.form.get("valuta_buy"),
+                               + " "
+                               + request.form.get("valuta_buy"),
                     deletedsumma=None,
                     isexchanged=True,
                     ismoved=False,
@@ -273,7 +273,9 @@ def moving_command(form):
     currency_to = int(form.currency_to.data)
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
-    summa_to_delete = get_to_sum(user, int(from_), currency_from)
+    summa_to_delete = Moneysum.query.filter_by(
+        user=user, wallet=int(from_), currency=currency_from
+    ).all()
     info = form.info.data
     date = str(form.date.data) + " " + str(datetime.datetime.now().time())
     to_ = form.to_.data
@@ -313,7 +315,9 @@ def moving_command(form):
         pair,
         s["UUID"],
     )
-    summa_to_add = get_to_sum(user, int(to_), currency_to)
+    summa_to_add = Moneysum.query.filter_by(
+        user=user, wallet=int(to_), currency=currency_to
+    ).all()
     if summa_to_add:
         for summa_to_add in summa_to_add:
             summa_to_add.moneysum += float(new_entered_summa)

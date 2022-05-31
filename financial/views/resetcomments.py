@@ -4,9 +4,7 @@ from flask_login import login_required
 from financial.service.accounts import get_by_pair, get_by_account_status
 from financial.service.accounts import get_name_account_checker
 from financial.service.comments import (
-    update_comment,
-    update_moving_commands,
-    update_exchange_commands,
+    update_comment, update_moving_and_exchange_commands,
 )
 from financial.service.currency import get_list_currency
 from financial.views import financial, WTForm
@@ -107,15 +105,16 @@ def edit_comments(UUID):
 
                 ths = get_list_currency()
                 form = WTForm.Move()
-                form.set_choices(
-                    "move",
-                    [[choices_add[1]], [choices_delete[1]], wallet_add, wallet_delete],
-                )
+                form.set_choices()
                 if form.validate_on_submit():
-                    update_moving_commands(
+                    update_moving_and_exchange_commands(
                         form,
                         choices_add[0],
                         choices_delete[0],
+                        wallet_add,
+                        wallet_delete,
+                        choices_add[1],
+                        choices_delete[1],
                         added.pairidentificator,
                     )
                 return render_template(
@@ -142,28 +141,16 @@ def edit_comments(UUID):
                 ths = get_list_currency()
                 valuta_delete = valuta_add = ths
                 selected_add = selected_delete = get_name_account_checker()
-                for v in valuta_delete:
-                    if v.name in choices_add[1]:
-                        valuta_delete = [v]
-                        break
-                for v in valuta_add:
-                    if v.name in choices_delete[1]:
-                        valuta_add = [v]
-                        break
-                for s in selected_delete:
-                    if s.name in wallet_delete:
-                        selected_delete = [s]
-                        break
-                for s in selected_add:
-                    if s.name in wallet_add:
-                        selected_add = [s]
-                        break
                 if request.method == "POST":
-                    update_exchange_commands(
+                    update_moving_and_exchange_commands(
                         request.form,
                         choices_add[0],
                         choices_delete[0],
-                        added.pairidentificator,
+                        wallet_add,
+                        wallet_delete,
+                        choices_add[1],
+                        choices_delete[1],
+                        added.pairidentificator
                     )
                 return render_template(
                     "exchange.html",

@@ -64,13 +64,13 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -103,13 +103,13 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .filter(Accounts.name == name)
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accounts.name == name)
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -142,12 +142,12 @@ def get_all_comments() -> list[dict]:
             Accountstatus.isdeleted,
             Userroot.isgeneral,
         )
-        .join(Moneysum.userid)
-        .join(Moneysum.accountinfo)
-        .join(Moneysum.accountid)
-        .join(Moneysum.roots)
-        .order_by(desc(Accountstatus.id))
-        .all()
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .order_by(desc(Accountstatus.id))
+            .all()
     )
     return create_result_comments(result, comments)
 
@@ -181,13 +181,13 @@ def reseted_by_status(status) -> None:
 
 
 def update_comment(
-    form,
-    uuid: str,
-    from_where: str,
-    summa_changed: float,
-    cur_wallet,
-    cur_currency,
-    ispay=None,
+        form,
+        uuid: str,
+        from_where: str,
+        summa_changed: float,
+        cur_wallet,
+        cur_currency,
+        ispay=None,
 ):
     """
     This module updates income or outcome data
@@ -228,11 +228,22 @@ def update_comment(
     summa_to_update = get_to_sum(user, int(wallet_), currency.id)
     user_to_reset = user_.get("UUID")
     new_summa_to_update_or_delete = flag = False
+    if summa_to_update is not None:
+        for s1 in summa_to_update:
+            if float(s1.moneysum) == 0.0:
+                summa_to_update = None
+
     if summa_to_update is None:
         user = Accountstatus.query.filter_by(pairidentificator=uuid).first()
         user_ = get_user_by_UUID(user.useridentificator.strip())
         summa_to_update = get_to_sum(user_.get("id"), int(wallet_), currency.id)
         user_to_reset = user.useridentificator
+
+    if summa_to_update is not None:
+        for s1 in summa_to_update:
+            if float(s1.moneysum) == 0.0:
+                summa_to_update = None
+
     if summa_to_update is None:
         cur_wallet = get_current_wallet_by_name(*cur_wallet)
         cur_currency = get_current_currency_by_name(cur_currency)
@@ -372,187 +383,11 @@ def update_comment(
                 database.session.commit()
 
 
-def update_moving_commands(form, summa_add, summa_delete, added):
-    sum_ = form.sum_.data
-    user = get_user_by_UUID(s["UUID"].strip())
-    user = user.get("id")
-    user_to_reset = ""
-    info = form.info.data
-    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
-
-    # gets deleted
-    from_ = form.from_.data
-    rate = form.rate.data
-    from_ = get_current_wallet_by_name(from_)
-    currency_from = form.currency_from.data
-    summa_to_delete = get_to_sum(user, int(from_), currency_from)
-
-    if summa_to_delete is None:
-        currency_from = get_current_currency_by_name(currency_from).id
-        user = Accountstatus.query.filter_by(pairidentificator=added).first()
-        user_sum = get_user_by_UUID(user.useridentificator.strip())
-        summa_to_delete = get_to_sum(user_sum.get("id"), int(from_), currency_from)
-        user_to_reset = user.useridentificator.strip()
-    for summa_to_delete in summa_to_delete:
-        summa_to_delete.moneysum += float(summa_add)
-        summa_to_delete.moneysum += 0 - float(sum_)
-    status = Accountstatus.query.filter_by(pairidentificator=added).all()
-    for ss in status:
-        database.session.delete(ss)
-        database.session.commit()
-
-    # add new data
-    database.session.add(summa_to_delete)
-    database.session.commit()
-    accounts = Accountstatus(
-        money=summa_to_delete.id,
-        date=date,
-        comments=info,
-        addedsumma=None,
-        deletedsumma=str(sum_) + " " + form.currency_from.data if sum_ else None,
-        number=None,
-        percent=None,
-        isexchanged=0,
-        ismoved=1,
-        ismodified=s["UUID"],
-        isdeleted=False,
-        pairidentificator=added,
-        useridentificator=user_to_reset,
-    )
-    database.session.add(accounts)
-    database.session.commit()
-
-    # get added
-    to_ = form.to_.data
-    to_ = get_current_wallet_by_name(to_)
-    currency_to = form.currency_to.data
-    summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    new_entered_summa = sum_ * rate
-
-    # if summa is none then get user
-    if summa_to_add is None:
-        currency_to = get_current_currency_by_name(currency_to).id
-        user = Accountstatus.query.filter_by(pairidentificator=added).first()
-        user_sum = get_user_by_UUID(user.useridentificator.strip())
-        summa_to_add = get_to_sum(user_sum.get("id"), int(to_), currency_to)
-        user_to_reset = user.useridentificator.strip()
-    for summa_to_add in summa_to_add:
-        summa_to_add.moneysum -= float(summa_delete)
-        summa_to_add.moneysum += float(new_entered_summa)
-
-    # add new data
-    database.session.add(summa_to_add)
-    database.session.commit()
-    accounts = Accountstatus(
-        money=summa_to_add.id,
-        date=date,
-        comments=info,
-        addedsumma=str(new_entered_summa) + " " + form.currency_to.data
-        if new_entered_summa
-        else None,
-        deletedsumma=None,
-        number=None,
-        percent=None,
-        isexchanged=0,
-        ismoved=1,
-        ismodified=s["UUID"],
-        isdeleted=False,
-        pairidentificator=added,
-        useridentificator=user_to_reset,
-    )
-    database.session.add(accounts)
-    database.session.commit()
+def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_delete, wallet_add, cur_currency_delete,
+                                        cur_currency_add, added):
 
 
-def update_exchange_commands(form, summa_add, summa_delete, added):
-    sum_ = form.get("summa")
-    user = get_user_by_UUID(s["UUID"].strip())
-    user = user.get("id")
-    user_to_reset = ""
-    info = form.get("comments")
-    date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
-
-    # gets deleted
-    from_ = form.get("wallet_from")
-    from_ = get_current_wallet_by_name(from_)
-    currency_from = form.get("valuta_sold")
-    summa_to_delete = get_to_sum(user, int(from_), currency_from)
-
-    if summa_to_delete is None:
-        currency_from = get_current_currency_by_name(currency_from).id
-        user = Accountstatus.query.filter_by(pairidentificator=added).first()
-        user_sum = get_user_by_UUID(user.useridentificator.strip())
-        summa_to_delete = get_to_sum(user_sum.get("id"), int(from_), currency_from)
-        user_to_reset = user.useridentificator.strip()
-    for summa_to_delete in summa_to_delete:
-        summa_to_delete.moneysum += float(summa_add)
-        summa_to_delete.moneysum += 0 - float(sum_)
-    status = Accountstatus.query.filter_by(pairidentificator=added).all()
-    for ss in status:
-        database.session.delete(ss)
-        database.session.commit()
-
-    # add new data
-    database.session.add(summa_to_delete)
-    database.session.commit()
-    accounts = Accountstatus(
-        money=summa_to_delete.id,
-        date=date,
-        comments=info,
-        addedsumma=None,
-        deletedsumma=str(sum_) + " " + form.get("valuta_sold") if sum_ else None,
-        number=None,
-        percent=None,
-        isexchanged=1,
-        ismoved=0,
-        ismodified=s["UUID"],
-        isdeleted=False,
-        pairidentificator=added,
-        useridentificator=user_to_reset,
-    )
-    database.session.add(accounts)
-    database.session.commit()
-
-    # get added
-    to_ = form.get("wallet_to")
-    to_ = get_current_wallet_by_name(to_)
-    currency_to = form.get("valuta_buy")
-    summa_to_add = get_to_sum(user.id, int(to_), currency_to)
-    print(form.get("rate_exchange"))
-    new_entered_summa = float(sum_) * float(form.get("rate_exchange"))
-    # if summa is none then get user
-    if summa_to_add is None:
-        currency_to = get_current_currency_by_name(currency_to).id
-        user = Accountstatus.query.filter_by(pairidentificator=added).first()
-        user_sum = get_user_by_UUID(user.useridentificator.strip())
-        summa_to_add = get_to_sum(user_sum.get("id"), int(to_), currency_to)
-        user_to_reset = user.useridentificator.strip()
-    for summa_to_add in summa_to_add:
-        summa_to_add.moneysum -= float(summa_delete)
-        summa_to_add.moneysum += float(new_entered_summa)
-
-    # add new data
-    database.session.add(summa_to_add)
-    database.session.commit()
-    accounts = Accountstatus(
-        money=summa_to_add.id,
-        date=date,
-        comments=info,
-        addedsumma=str(new_entered_summa) + " " + form.get("valuta_buy")
-        if new_entered_summa
-        else None,
-        deletedsumma=None,
-        number=None,
-        percent=None,
-        isexchanged=1,
-        ismoved=0,
-        ismodified=s["UUID"],
-        isdeleted=False,
-        pairidentificator=added,
-        useridentificator=user_to_reset,
-    )
-    database.session.add(accounts)
-    database.session.commit()
+    ...
 
 
 def create_dict(comments: list, transpone: list, user: int) -> list[dict]:

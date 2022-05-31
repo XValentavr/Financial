@@ -50,7 +50,6 @@ def login():
 
     :return: html page
     """
-    ths = get_list_currency()
     if current_user.is_authenticated:
         return redirect(url_for("financial.income"))
     form = LoginForm()

@@ -53,7 +53,6 @@ function getter(data) {
 
 function displaydata(data, flag) {
     let tb = document.getElementById('userstory')
-
     for (let i = 0; i < data.length; i++) {
         let element = data[i];
         let unique_pair = element['pair']
