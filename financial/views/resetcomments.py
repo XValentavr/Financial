@@ -114,7 +114,7 @@ def edit_comments(UUID):
                         wallet_add,
                         wallet_delete,
                         choices_add[1],
-                        choices_delete[1],
+                        choices_delete[1],'moving',
                         added.pairidentificator,
                     )
                 return render_template(
@@ -149,7 +149,7 @@ def edit_comments(UUID):
                         wallet_add,
                         wallet_delete,
                         choices_add[1],
-                        choices_delete[1],
+                        choices_delete[1],'exchange',
                         added.pairidentificator
                     )
                 return render_template(

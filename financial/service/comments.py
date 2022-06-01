@@ -384,10 +384,154 @@ def update_comment(
 
 
 def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_delete, wallet_add, cur_currency_delete,
-                                        cur_currency_add, added):
+                                        cur_currency_add, from_where, added):
+    if from_where == 'moving':
+        sum_ = form.sum_.data
 
+        # get from data
+        from_ = form.from_.data
+        currency_from = form.currency_from.data
 
-    ...
+        # get to data
+        to_ = form.to_.data
+        currency_to = form.currency_to.data
+
+        rate = form.rate.data
+        info = form.info.data
+        date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+        moved = True
+
+    elif from_where == 'exchange':
+        sum_ = form.get('summa')
+
+        # get from data
+        from_ = form.get('wallet_from')
+        from_ = get_current_wallet_by_name(from_)
+        currency_from = form.get('valuta_sold')
+        currency_from = get_current_currency_by_name(currency_from).id
+
+        # get to data
+        to_ = form.get('wallet_to')
+        to_ = get_current_wallet_by_name(to_)
+        currency_to = form.get('valuta_buy')
+        currency_to = get_current_currency_by_name(currency_to).id
+
+        rate = form.get('rate_exchange')
+        info = form.get('comments')
+        date = str(form.get('date')) + " " + str(datetime.datetime.now().time())
+        moved = False
+    # work with delete data
+    cur_currency_delete_id = get_current_currency_by_name(cur_currency_delete).id
+    wallet_delete_id = get_current_wallet_by_name(*wallet_delete)
+    user = get_user_by_UUID(s['UUID'].strip())
+    user_to_reset = user.get('UUID')
+    user = user.get('id')
+
+    # del comments
+    other_user = Accountstatus.query.filter_by(pairidentificator=added).first()
+    status = Accountstatus.query.filter_by(pairidentificator=added).all()
+    for ss in status:
+        database.session.delete(ss)
+        database.session.commit()
+
+    # get user if change other user transaction
+    summa_to_update_delete_part = get_to_sum(user, wallet_delete_id, cur_currency_delete_id)
+    # get summa to update when move or exchange from
+    if summa_to_update_delete_part is not None:
+        for summa_to_update_delete_part in summa_to_update_delete_part:
+            if float(summa_to_update_delete_part.moneysum) >= 0.0:
+                summa_to_update_delete_part.moneysum -= float(summa_delete)
+            elif float(summa_to_update_delete_part.moneysum) < 0.0:
+                summa_to_update_delete_part.moneysum += float(summa_delete)
+            database.session.add(summa_to_update_delete_part)
+            database.session.commit()
+    elif summa_to_update_delete_part is None:
+
+        # if try to change other user transaction then get his identifier
+
+        user = get_user_by_UUID(other_user.useridentificator.strip())
+        user_to_reset = user.get('UUID').strip()
+        user = user.get('id')
+        summa_to_update_delete_part = get_to_sum(user, wallet_delete_id, cur_currency_delete_id)
+        for summa_to_update_delete_part in summa_to_update_delete_part:
+            if float(summa_to_update_delete_part.moneysum) >= 0.0:
+                summa_to_update_delete_part.moneysum -= float(summa_delete)
+            elif float(summa_to_update_delete_part.moneysum) < 0.0:
+                summa_to_update_delete_part.moneysum += float(summa_delete)
+            database.session.add(summa_to_update_delete_part)
+            database.session.commit()
+            insert_single_comm_delete(added, summa_to_update_delete_part.id, date, info,
+                                      get_current_currency(currency_from).name, sum_,
+                                      user_to_reset, moved)
+
+    new_summa_add_or_update_from_part = get_to_sum(user, from_, currency_from)
+    # if summa to move from is not exists then minus data
+    if new_summa_add_or_update_from_part is not None:
+        for new_summa_add_or_update_from_part in new_summa_add_or_update_from_part:
+            new_summa_add_or_update_from_part.moneysum -= float(sum_)
+            database.session.add(new_summa_add_or_update_from_part)
+            database.session.commit()
+            insert_single_comm_delete(added, new_summa_add_or_update_from_part.id, date, info,
+                                      get_current_currency(currency_from).name, sum_, user_to_reset, moved)
+    # if summa to move doest not exist then create new
+    elif new_summa_add_or_update_from_part is None:
+        inser_into_money_sum(0 - float(sum_), user, currency_from, from_)
+        new_inserted = get_to_sum(user, from_, currency_from)
+        for n_s in new_inserted:
+            insert_single_comm_delete(added, n_s.id, date, info, get_current_currency(currency_from).name, sum_,
+                                      user_to_reset, moved)
+
+    # work with adding data
+    cur_currency_add_id = get_current_currency_by_name(cur_currency_add).id
+    wallet_add_id = get_current_wallet_by_name(*wallet_add)
+    summa_to_update_add_part = get_to_sum(user, wallet_add_id, cur_currency_add_id)
+    # get summa to update when move or exchange from
+    if summa_to_update_add_part is not None:
+        for summa_to_update_add_part in summa_to_update_add_part:
+            if float(summa_to_update_add_part.moneysum) >= 0.0:
+                summa_to_update_add_part.moneysum -= float(summa_add)
+            elif float(summa_to_update_add_part.moneysum) < 0.0:
+                summa_to_update_add_part.moneysum += float(summa_add)
+            database.session.add(summa_to_update_add_part)
+            database.session.commit()
+
+    elif summa_to_update_add_part is None:
+
+        # if try to change other user transaction then get his identifier
+        user = get_user_by_UUID(other_user.useridentificator.strip())
+        user_to_reset = user.get('UUID').strip()
+        user = user.get('id')
+        summa_to_update_add_part = get_to_sum(user, wallet_add_id, cur_currency_add_id)
+        for summa_to_update_add_part in summa_to_update_add_part:
+            if float(summa_to_update_add_part.moneysum) >= 0.0:
+                summa_to_update_add_part.moneysum -= float(summa_add)
+            elif float(summa_to_update_add_part.moneysum) < 0.0:
+                summa_to_update_add_part.moneysum += float(summa_add)
+            database.session.add(summa_to_update_add_part)
+            database.session.commit()
+            insert_single_comm_add(added, summa_to_update_add_part.id, date, info,
+                                   get_current_currency(currency_to).name,
+                                   float(sum_) * float(rate),
+                                   user_to_reset, moved)
+
+    new_summa_add_or_update_to_part = get_to_sum(user, to_, currency_to)
+    # if summa to move from is not exists then minus data
+    if new_summa_add_or_update_to_part is not None:
+        for new_summa_add_or_update_to_part in new_summa_add_or_update_to_part:
+            new_summa_add_or_update_to_part.moneysum += float(sum_) * float(rate)
+            database.session.add(new_summa_add_or_update_to_part)
+            database.session.commit()
+            insert_single_comm_add(added, new_summa_add_or_update_to_part.id, date, info,
+                                   get_current_currency(currency_to).name, float(sum_) * float(rate), user_to_reset,
+                                   moved)
+    # if summa to move doest not exist then create new
+    elif new_summa_add_or_update_to_part is None:
+        inser_into_money_sum(float(sum_) * float(rate), user, currency_to, to_)
+        new_inserted = get_to_sum(user, to_, currency_to)
+        for n_s in new_inserted:
+            insert_single_comm_add(added, n_s.id, date, info, get_current_currency(currency_to).name,
+                                   float(sum_) * float(rate),
+                                   user_to_reset, moved)
 
 
 def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
@@ -459,3 +603,77 @@ def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
                     if root:
                         create_dict(comments, transpone, user)
     return comments
+
+
+def insert_single_comm_delete(added, summa_id, date, info, currency, sum_, user, moved):
+    """
+    Thi module adds single comment while try to change move from transaction
+    :param added: user identifier
+    :param summa_id: summa th chain
+    :param date: date of transaction
+    :param info: comment to transaction
+    :param currency: valuta
+    :param sum_:summa
+    :param user:user identifier
+    :return:None
+    """
+    if moved:
+        ismoved = 1
+        isexchanged = 0
+    else:
+        ismoved = 0
+        isexchanged = 1
+    accounts = Accountstatus(
+        money=summa_id,
+        date=date,
+        comments=info,
+        addedsumma=None,
+        deletedsumma=str(sum_) + " " + currency if sum_ else None,
+        number=None,
+        percent=None,
+        isexchanged=isexchanged,
+        ismoved=ismoved,
+        ismodified=s["UUID"],
+        isdeleted=False,
+        pairidentificator=added,
+        useridentificator=user,
+    )
+    database.session.add(accounts)
+    database.session.commit()
+
+
+def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, moved):
+    """
+    Thi module adds single comment while try to change move from transaction
+    :param added: user identifier
+    :param summa_id: summa th chain
+    :param date: date of transaction
+    :param info: comment to transaction
+    :param currency: valuta
+    :param sum_:summa
+    :param user:user identifier
+    :return:None
+    """
+    if moved:
+        ismoved = 1
+        isexchanged = 0
+    else:
+        ismoved = 0
+        isexchanged = 1
+    accounts = Accountstatus(
+        money=summa_id,
+        date=date,
+        comments=info,
+        addedsumma=str(sum_) + " " + currency if sum_ else None,
+        deletedsumma=None,
+        number=None,
+        percent=None,
+        isexchanged=isexchanged,
+        ismoved=ismoved,
+        ismodified=s["UUID"],
+        isdeleted=False,
+        pairidentificator=added,
+        useridentificator=user,
+    )
+    database.session.add(accounts)
+    database.session.commit()
