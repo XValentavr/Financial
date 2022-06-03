@@ -37,7 +37,10 @@ class SingleWallet(Resource):
         This method is called when GET request is sent
         :return: the specific department in json format
         """
-        return jsonify(get_current_wallet(identifier))
+        wallet = get_current_wallet(identifier)
+        if wallet is not None:
+            return jsonify()
+        return 'No such wallet', 404
 
     @staticmethod
     def delete(identifier):

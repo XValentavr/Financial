@@ -433,7 +433,6 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
     for ss in status:
         database.session.delete(ss)
         database.session.commit()
-
     # get user if change other user transaction
     summa_to_update_delete_part = get_to_sum(user, wallet_delete_id, cur_currency_delete_id)
     # get summa to update when move or exchange from
@@ -460,9 +459,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
                 summa_to_update_delete_part.moneysum += float(summa_delete)
             database.session.add(summa_to_update_delete_part)
             database.session.commit()
-            insert_single_comm_delete(added, summa_to_update_delete_part.id, date, info,
-                                      get_current_currency(currency_from).name, sum_,
-                                      user_to_reset, moved)
+
 
     new_summa_add_or_update_from_part = get_to_sum(user, from_, currency_from)
     # if summa to move from is not exists then minus data

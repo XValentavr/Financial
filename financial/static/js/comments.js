@@ -233,7 +233,7 @@ function get_story_date() {
     let start_date = document.getElementById('start_date').value
     let finish_date = document.getElementById('finish_date').value
     let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
-    fetch('/api/wallet/' + page + '?start_date=' + start_date + "&end_date=" + finish_date)
+    fetch('/api/comments/' + page + '?start_date=' + start_date + "&end_date=" + finish_date)
         .then((response) => response.json())
         .then((data) => {
             if (data.length > 0) {

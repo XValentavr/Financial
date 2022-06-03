@@ -104,4 +104,4 @@ class Move(FlaskForm):
 
 class Wallet(FlaskForm):
     wallet = StringField("Введите название кошелька", validators=[DataRequired()])
-    visibility = SelectField("Сделать видимым для всех?", choices=["Да", "Нет"])
+    visibility = SelectField("Сделать видимым?", choices=["Да", "Нет"])
