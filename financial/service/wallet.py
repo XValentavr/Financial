@@ -21,6 +21,8 @@ def get_wallet_list():
     return [wallet for wallet in wallets]
 
 
+
+
 def get_current_wallet(identifier):
     """
     This module gets all wallets in database

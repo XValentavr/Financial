@@ -49,4 +49,4 @@ class SingleWallet(Resource):
         :return: the empty response with status code 204
         """
         delete_wallet(identifier)
-        return "User deleted", 200
+        return "Wallet deleted", 200

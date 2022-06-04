@@ -2,7 +2,7 @@ const USERID = document.getElementById("session").textContent
 let where = document.URL
 if (where.includes('walletinfo')) {
     let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
-    fetch('/api/wallet/' + page)
+    fetch('/api/comments/' + page)
         .then((response) => response.json())
         .then((data) => {
             if (data.length > 0) {

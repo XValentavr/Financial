@@ -3,7 +3,7 @@ from flask_login import login_required
 
 from financial.service.userroot import add_all_possible_pairs, update_roots
 from financial.service.users import get_all_user, get_user_by_enter_name
-from financial.service.wallet import get_wallets, insert_wallet, update_wallet, get_current_wallet
+from financial.service.wallet import get_wallets, insert_wallet, update_wallet
 from financial.views import financial, WTForm
 
 
@@ -62,39 +62,38 @@ def edit_wallet(identifier):
 
     # load employee.html template
     users = get_all_user()
-    if get_current_wallet(identifier):
-        if not session["superuser"]:
-            return render_template("404.html")
-        else:
-            form = WTForm.Wallet()
-            if form.visibility.data == "Да":
-                if request.method == "POST":
-                    if request.form.get("All") == "on":
-                        update_roots(identifier, 1)
-                    else:
-                        for u in users:
-                            if request.form.get(u.name) == "on":
-                                usr = get_user_by_enter_name(u.name)
-                                update_roots(identifier, 1, usr.id)
-            else:
-                update_roots(identifier, 0)
-            if form.validate_on_submit():
-                update_wallet(
-                    identifier,
-                    form.wallet.data,
-                    form.visibility.data,
-                )
-                return render_template(
-                    "changewallet.html",
-                    user=session["user"],
-                    superuser=session["superuser"],
-                )
+    if not session["superuser"]:
+        return render_template("404.html")
+    else:
 
-        return render_template(
-            "wallet.html",
-            form=form,
-            user=session["user"],
-            superuser=session["superuser"],
-            variant=users,
-        )
-    return render_template('404.html')
+        form = WTForm.Wallet()
+        if form.visibility.data == "Да":
+            if request.method == "POST":
+                if request.form.get("All") == "on":
+                    update_roots(identifier, 1)
+                else:
+                    for u in users:
+                        if request.form.get(u.name) == "on":
+                            usr = get_user_by_enter_name(u.name)
+                            update_roots(identifier, 1, usr.id)
+        else:
+            update_roots(identifier, 0)
+        if form.validate_on_submit():
+            update_wallet(
+                identifier,
+                form.wallet.data,
+                form.visibility.data,
+            )
+            return render_template(
+                "changewallet.html",
+                user=session["user"],
+                superuser=session["superuser"],
+            )
+
+    return render_template(
+        "wallet.html",
+        form=form,
+        user=session["user"],
+        superuser=session["superuser"],
+        variant=users,
+    )

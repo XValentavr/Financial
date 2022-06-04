@@ -2,24 +2,20 @@ from financial import create_app
 from financial.tests.ConfigTests import ConfigurationTest
 
 
-class TestPayView(ConfigurationTest):
+class TestChangeUserView(ConfigurationTest):
 
-    def test_pay_401(self):
+    def test_changeuser_401(self):
         app = create_app()
         # specify the database connection string
         self.app = app.test_client()
-        response = self.app.get('/pay')
+        response = self.app.get('/change')
         self.assertEqual(401, response.status_code)
 
-    def test_pay_200(self):
-        app = create_app()
-        app.config['LOGIN_DISABLED'] = True
-        app.login_manager.init_app(app)
-        self.app = app.test_client()
-        response = self.app.get('/outcome')
-        self.assertEqual(200, response.status_code)
+    def test_changeuser_200(self):
+        response = self.app.get('/users/edit/3df4f7c3-4863-46f9-85bf-41aeb669c70f')
+        self.assertEqual(401, response.status_code)
 
-    def test_pay_404(self):
+    def test_changeuser_404(self):
         """
         Assert if page is not found
         :return: None
