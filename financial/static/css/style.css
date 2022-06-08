@@ -830,6 +830,12 @@ body {
 
 }
 
+.flex_end {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
 .center_comments {
     width: 100%;
     position: relative;
@@ -947,6 +953,21 @@ body {
     .labelstyle {
         font-size: xx-small;
     }
+
+    .openChatBtn {
+        background-color: black;
+        color: white;
+        padding: 16px 20px;
+        border: none;
+        font-weight: 500;
+        font-size: 18px;
+        cursor: pointer;
+        opacity: 0.8;
+        position: relative;
+        bottom: 23px;
+        right: 28px;
+        width: 280px;
+    }
 }
 
 @media screen and (max-width: 400px) {
@@ -1001,6 +1022,7 @@ body {
     .labelstyle {
         font-size: xx-small;
     }
+
 
 }
 
@@ -1153,4 +1175,80 @@ table.restTbl td.amount {
     width: 40%;
     padding: 1px 0px 5px 0px;
     border: none;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.openChatBtn {
+    background-color: gray;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    font-weight: 500;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.8;
+    position: relative;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+}
+
+.openChat {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 15px;
+    border: 3px solid black;
+    z-index: 9;
+}
+
+.formpopup {
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+}
+
+.formpopup textarea {
+    width: 100%;
+    font-size: 18px;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    font-weight: 500;
+    background: #d5e7ff;
+    color: rgb(0, 0, 0);
+    resize: none;
+    min-height: 200px;
+}
+
+.formpopup textarea:focus {
+    background-color: rgb(219, 255, 252);
+    outline: none;
+}
+
+.formpopup .btn {
+    background-color: gray;
+    color: white;
+    padding: 16px 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.formpopup .close {
+    background-color: black;
+}
+
+.formpopup .btn:hover, .openChatBtn:hover {
+    opacity: 1;
 }

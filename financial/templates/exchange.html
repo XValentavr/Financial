@@ -13,7 +13,7 @@
         </div>
         <div class="wrap">
             <div class="login-wrap p-4 p-md-5">
-                <form action="" method="post" class="form-contact">
+                <form action="" method="post" class="form-contact" name="popup">
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Продали из:</label>
                         <select name="wallet_from" class="form-control" id='wallet'>
@@ -85,6 +85,31 @@
                 </form>
             </div>
         </div>
+    </div>
+       <div class='flex_end' style="padding-top: 20px">
+        <button class="openChatBtn" onclick="openForm()">Техподдержка</button>
+        <div class="openChat">
+            <form class="formpopup"  method="post">
+                <label for="msg"><b>Введите сообщение</b></label>
+                <textarea placeholder="Сообщение..." name="errormessage" required></textarea>
+                <button type="submit" class="btn" name='popup'>Отправить</button>
+                <button type="button" class="btn close" onclick="closeForm()">
+                    Закрыть
+                </button>
+            </form>
+        </div>
+        <script>
+            document.querySelector(".openChatBtn").addEventListener("click", openForm);
+            document.querySelector(".close").addEventListener("click", closeForm);
+
+            function openForm() {
+                document.querySelector(".openChat").style.display = "block";
+            }
+
+            function closeForm() {
+                document.querySelector(".openChat").style.display = "none";
+            }
+        </script>
     </div>
     <script src="{{ url_for('static', filename='js/exchange.js') }}"></script>
     </body>

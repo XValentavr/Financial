@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from financial.service.accounts import insert_pay_account, get_name_account_checker
 from financial.service.currency import get_list_currency
+from financial.service.error import add_error
 from financial.views import financial
 
 
@@ -15,7 +16,18 @@ def paynment():
     valuta = get_list_currency()
     selected = get_name_account_checker()
     if request.method == "POST":
-        insert_pay_account(request.form)
+        if "popup" in request.form:
+            add_error(request.form)
+            return render_template(
+                "pay.html",
+                user=session["user"],
+                superuser=session["superuser"],
+                ths=ths,
+                valuta=valuta,
+                selected=selected,
+            )
+        else:
+            insert_pay_account(request.form)
 
     return render_template(
         "pay.html",

@@ -45,6 +45,30 @@
             </div>
         </div>
     </div>
+    <div class='flex_end' style="padding-top: 20px">
+        <button class="openChatBtn" onclick="openForm()">Техподдержка</button>
+        <div class="openChat">
+            <form class="formpopup" id='popup' method="post">
+                <label for="msg"><b>Введите сообщение</b></label>
+                <textarea placeholder="Сообщение..." name="errormessage" required></textarea>
+                <button type="submit" class="btn">Отправить</button>
+                <button type="button" class="btn close" onclick="closeForm()">
+                    Закрыть
+                </button>
+            </form>
+        </div>
+        <script>
+            document.querySelector(".openChatBtn").addEventListener("click", openForm);
+            document.querySelector(".close").addEventListener("click", closeForm);
+
+            function openForm() {
+                document.querySelector(".openChat").style.display = "block";
+            }
+
+            function closeForm() {
+                document.querySelector(".openChat").style.display = "none";
+            }
+        </script>
     </div>
     </body>
     </html>

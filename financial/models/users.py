@@ -81,14 +81,13 @@ class SuperUser(UserMixin, database.Model):
 
     user = database.Column(database.Integer, database.ForeignKey("user.id"))
 
-    def __init__(self, name, password, UUID, user):
+    def __init__(self, name, password, UUID):
         #: admin's name
         self.name = name
         #: admin's date of birth
         self.password = password
         #: admin's uuid
         self.UUID = UUID
-        self.user = user
 
 
 class OwnUser(UserMixin, database.Model):

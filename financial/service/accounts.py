@@ -453,7 +453,6 @@ def get_by_account_status(identifier):
     """
     this module gets wallet to choice in form
     :param identifier: id to find
-    :return:
     """
     engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
     session = sessionmaker(bind=engine)
