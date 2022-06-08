@@ -10,7 +10,7 @@ from financial.views import financial
 @login_required
 def walletinfo(wallet):
     if Accounts.query.filter_by(name=wallet.strip()).first() is None:
-        return render_template('404.html')
+        return render_template("404.html")
     ths = get_list_currency()
     return render_template(
         "walletinfo.html", user=session["user"], superuser=session["superuser"], ths=ths

@@ -4,7 +4,8 @@ from flask_login import login_required
 from financial.service.accounts import get_by_pair, get_by_account_status
 from financial.service.accounts import get_name_account_checker
 from financial.service.comments import (
-    update_comment, update_moving_and_exchange_commands,
+    update_comment,
+    update_moving_and_exchange_commands,
 )
 from financial.service.currency import get_list_currency
 from financial.views import financial, WTForm
@@ -114,7 +115,8 @@ def edit_comments(UUID):
                         wallet_add,
                         wallet_delete,
                         choices_add[1],
-                        choices_delete[1],'moving',
+                        choices_delete[1],
+                        "moving",
                         added.pairidentificator,
                     )
                 return render_template(
@@ -149,8 +151,9 @@ def edit_comments(UUID):
                         wallet_add,
                         wallet_delete,
                         choices_add[1],
-                        choices_delete[1],'exchange',
-                        added.pairidentificator
+                        choices_delete[1],
+                        "exchange",
+                        added.pairidentificator,
                     )
                 return render_template(
                     "exchange.html",

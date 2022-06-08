@@ -10,16 +10,15 @@ from financial.tests.ConfigTests import ConfigurationTest
 
 
 class TestUserrootService(ConfigurationTest):
-
     def test_get_user_root_by_name_for_comments(self):
         """
         This module test get_user_root_by_name_for_comments(name:str) function
         """
-        wallet = Accounts(1, 'Мой кошелек', 'Общий')
+        wallet = Accounts(1, "Мой кошелек", "Общий")
         database.session.add(wallet)
         database.session.commit()
 
-        user = Users('Valentyn', generate_password_hash('1234'), uuid.uuid4())
+        user = Users("Valentyn", generate_password_hash("1234"), uuid.uuid4())
         database.session.add(user)
         database.session.commit()
 
@@ -29,7 +28,7 @@ class TestUserrootService(ConfigurationTest):
 
         roots = Userroot.query.filter_by(username=98).first()
 
-        self.assertEqual('<Userroot 32>', repr(roots))
+        self.assertEqual("<Userroot 32>", repr(roots))
 
         database.session.query(Accounts).delete()
         database.session.query(Userroot).delete()
@@ -41,11 +40,11 @@ class TestUserrootService(ConfigurationTest):
         """
         This module test get_user_root(username:str,walletname:str) function
         """
-        wallet = Accounts(1, 'Мой кошелек', 'Общий')
+        wallet = Accounts(1, "Мой кошелек", "Общий")
         database.session.add(wallet)
         database.session.commit()
 
-        user = Users('Valentyn', generate_password_hash('1234'), uuid.uuid4())
+        user = Users("Valentyn", generate_password_hash("1234"), uuid.uuid4())
         database.session.add(user)
         database.session.commit()
 
@@ -55,7 +54,7 @@ class TestUserrootService(ConfigurationTest):
 
         roots = Userroot.query.filter_by(username=99, walletname=1).first()
 
-        self.assertEqual('<Userroot 33>', repr(roots))
+        self.assertEqual("<Userroot 33>", repr(roots))
 
         database.session.query(Accounts).delete()
         database.session.query(Userroot).delete()
@@ -67,11 +66,11 @@ class TestUserrootService(ConfigurationTest):
         """
         This module test get_user_root_id(username:str,wallentame:str) function
         """
-        wallet = Accounts(1, 'Мой кошелек', 'Общий')
+        wallet = Accounts(1, "Мой кошелек", "Общий")
         database.session.add(wallet)
         database.session.commit()
 
-        user = Users('Valentyn', generate_password_hash('1234'), uuid.uuid4())
+        user = Users("Valentyn", generate_password_hash("1234"), uuid.uuid4())
         database.session.add(user)
         database.session.commit()
 
@@ -93,11 +92,11 @@ class TestUserrootService(ConfigurationTest):
         """
         This module test update_roots(identifier: int, general: int, username=None) function
         """
-        wallet = Accounts(1, 'Мой кошелек', 'Общий')
+        wallet = Accounts(1, "Мой кошелек", "Общий")
         database.session.add(wallet)
         database.session.commit()
 
-        user = Users('Valentyn', generate_password_hash('1234'), uuid.uuid4())
+        user = Users("Valentyn", generate_password_hash("1234"), uuid.uuid4())
         database.session.add(user)
         database.session.commit()
 

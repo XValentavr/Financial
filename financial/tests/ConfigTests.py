@@ -20,7 +20,9 @@ class ConfigurationTest(unittest.TestCase):
         app = create_app()
         app.config.from_object(TestingConfig)
         # specify the database connection string
-        app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/test_financialapp"
+        app.config[
+            "SQLALCHEMY_DATABASE_URI"
+        ] = "mysql+pymysql://root:root@localhost:3306/test_financialapp"
         database.init_app(app)
         with app.app_context():
             database.create_all()

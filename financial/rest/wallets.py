@@ -40,7 +40,7 @@ class SingleWallet(Resource):
         wallet = get_current_wallet(identifier)
         if wallet is not None:
             return jsonify()
-        return 'No such wallet', 404
+        return "No such wallet", 404
 
     @staticmethod
     def delete(identifier):

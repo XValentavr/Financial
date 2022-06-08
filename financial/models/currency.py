@@ -7,7 +7,10 @@ class Currency(database.Model):
 
     #: admin's database id
     id = database.Column(
-        database.Integer(), database.ForeignKey("money_sum.currency"), primary_key=True, autoincrement=True
+        database.Integer(),
+        database.ForeignKey("money_sum.currency"),
+        primary_key=True,
+        autoincrement=True,
     )
 
     #: admin's name

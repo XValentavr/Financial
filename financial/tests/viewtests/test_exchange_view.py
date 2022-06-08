@@ -3,7 +3,6 @@ from financial.tests.ConfigTests import ConfigurationTest
 
 
 class TestExchangeView(ConfigurationTest):
-
     def setUp(self):
         super(TestExchangeView, self).setUp()
 
@@ -11,5 +10,5 @@ class TestExchangeView(ConfigurationTest):
         app = create_app()
         # specify the database connection string
         self.app = app.test_client()
-        response = self.app.get('/exchange')
+        response = self.app.get("/exchange")
         self.assertEqual(401, response.status_code)
