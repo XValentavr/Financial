@@ -18,11 +18,11 @@ login_manager = LoginManager()
 
 def create_app():
     # create app
+
     app = Flask(__name__)
     app.config.from_object(Config)
     # to create an api and register the routes
     from .rest import create_api
-
     create_api(app)
 
     database.init_app(app)

@@ -99,7 +99,7 @@ def handle_404(err):
     """
     Handel 404 error and redirect to 404.html page
     """
-    return render_template("404.html"), 404
+    return render_template("404.html"), err
 
 
 @financial.app_errorhandler(401)
@@ -107,4 +107,4 @@ def handle_401(err):
     """
     Handel 401 error and redirect to 401.html page
     """
-    return render_template("401.html"), 401
+    return render_template("401.html"), err
