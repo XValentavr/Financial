@@ -24,8 +24,6 @@ class ConfigurationTest(unittest.TestCase):
             "SQLALCHEMY_DATABASE_URI"
         ] = "mysql+pymysql://root:root@localhost:3306/test_financialapp"
         database.init_app(app)
-        with app.app_context():
-            database.create_all()
         app.app_context().push()
         self.app = app.test_client()
 

@@ -14,8 +14,8 @@ def exchange():
     ths = get_list_currency()
     selected = get_name_account_checker()
     if request.method == "POST":
-        if "popup" in request.form:
-            add_error(request.form)
+        if "errormessage" in request.form:
+            add_error(request.form.get('errormessage'))
             return render_template(
                 "exchange.html",
                 user=session["user"],

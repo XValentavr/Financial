@@ -10,23 +10,34 @@ from financial.views import financial, WTForm
 @financial.route("/income", methods=["POST", "GET"])
 @login_required
 def income():
-    form = WTForm.Income()
-    form.set_choices()
+    wtform = WTForm.Income()
+    wtform.set_choices()
     ths = get_list_currency()
     if request.method == "POST":
-        add_error(request.form)
-        return render_template(
-            "income.html",
-            form=form,
-            user=session["user"],
-            superuser=session["superuser"],
-            ths=ths,
-        )
-    if form.validate_on_submit():
-        insert_account(form)
+        form = request.form
+        message = form.get("errormessage")
+        if message is None:
+            if wtform.validate_on_submit():
+                insert_account(wtform)
+                return render_template(
+                    "income.html",
+                    form=wtform,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
+                )
+        else:
+            add_error(message)
+            return render_template(
+                "income.html",
+                form=wtform,
+                user=session["user"],
+                superuser=session["superuser"],
+                ths=ths,
+            )
     return render_template(
         "income.html",
-        form=form,
+        form=wtform,
         user=session["user"],
         superuser=session["superuser"],
         ths=ths,

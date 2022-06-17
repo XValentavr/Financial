@@ -10,23 +10,34 @@ from financial.views import financial, WTForm
 @financial.route("/move", methods=["POST", "GET"])
 @login_required
 def move():
-    form = WTForm.Move()
-    form.set_choices()
+    wtform = WTForm.Move()
+    wtform.set_choices()
     ths = get_list_currency()
     if request.method == "POST":
-        add_error(request.form)
-        return render_template(
-            "move.html",
-            form=form,
-            user=session["user"],
-            superuser=session["superuser"],
-            ths=ths,
-        )
-    if form.validate_on_submit():
-        moving_command(form)
+        form = request.form
+        message = form.get("errormessage")
+        if message is None:
+            if wtform.validate_on_submit():
+                moving_command(wtform)
+                return render_template(
+                    "move.html",
+                    form=wtform,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
+                )
+        else:
+            add_error(message)
+            return render_template(
+                "move.html",
+                form=wtform,
+                user=session["user"],
+                superuser=session["superuser"],
+                ths=ths,
+            )
     return render_template(
         "move.html",
-        form=form,
+        form=wtform,
         user=session["user"],
         superuser=session["superuser"],
         ths=ths,

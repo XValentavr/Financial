@@ -34,6 +34,8 @@ def edit_comments(UUID):
                         float(choices[0]),
                         wallet,
                         choices[1],
+                        p.useridentificator
+
                     )
                 return render_template(
                     "income.html",
@@ -57,6 +59,8 @@ def edit_comments(UUID):
                         float(choices[0]),
                         wallet,
                         choices[1],
+                        p.useridentificator
+
                     )
                 return render_template(
                     "outcome.html",
@@ -80,6 +84,7 @@ def edit_comments(UUID):
                         float(choices[0]),
                         wallet,
                         choices[1],
+                        p.useridentificator,
                         "pay",
                     )
                 return render_template(
@@ -91,8 +96,8 @@ def edit_comments(UUID):
                     selected=selected,
                 )
     else:
-        for i in pairs:
-            if i.ismoved == 1:
+        for p in pairs:
+            if p.ismoved == 1:
                 added = pairs[0]
                 deleted = pairs[1]
 
@@ -118,6 +123,7 @@ def edit_comments(UUID):
                         choices_delete[1],
                         "moving",
                         added.pairidentificator,
+                        p.useridentificator
                     )
                 return render_template(
                     "move.html",
@@ -126,7 +132,7 @@ def edit_comments(UUID):
                     superuser=session["superuser"],
                     ths=ths,
                 )
-            if i.isexchanged == 1:
+            if pisexchanged == 1:
 
                 added = pairs[0]
                 deleted = pairs[1]
@@ -154,6 +160,7 @@ def edit_comments(UUID):
                         choices_delete[1],
                         "exchange",
                         added.pairidentificator,
+                        p.useridentificator
                     )
                 return render_template(
                     "exchange.html",

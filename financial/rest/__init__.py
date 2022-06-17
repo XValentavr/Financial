@@ -19,7 +19,7 @@ def create_api(application):
 
     # for wallets
     api.add_resource(wallets.AllWallets, "/api/wallets")
-    api.add_resource(wallets.SingleWallet, "/api/wallet/<identifier>")
+    api.add_resource(wallets.SingleWallet, "/api/wallets/<identifier>")
 
     # for comments
     api.add_resource(comments.AllComments, "/api/comments")

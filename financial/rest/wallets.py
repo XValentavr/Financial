@@ -48,5 +48,6 @@ class SingleWallet(Resource):
         This method is called when DELETE request is sent
         :return: the empty response with status code 204
         """
+        print(identifier)
         delete_wallet(identifier)
         return "Wallet deleted", 200

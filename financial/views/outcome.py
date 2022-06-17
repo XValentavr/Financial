@@ -10,24 +10,35 @@ from financial.views import financial, WTForm
 @financial.route("/outcome", methods=["POST", "GET"])
 @login_required
 def outcome():
-    form = WTForm.Outcome()
-    form.set_choices()
+    wtform = WTForm.Outcome()
+    wtform.set_choices()
     ths = get_list_currency()
     if request.method == "POST":
-        add_error(request.form)
-        return render_template(
-            "outcome.html",
-            user=session["user"],
-            superuser=session["superuser"],
-            form=form,
-            ths=ths,
-        )
-    if form.validate_on_submit():
-        delete_data(form)
+        form = request.form
+        message = form.get("errormessage")
+        if message is None:
+            if wtform.validate_on_submit():
+                delete_data(wtform)
+                return render_template(
+                    "outcome.html",
+                    form=wtform,
+                    user=session["user"],
+                    superuser=session["superuser"],
+                    ths=ths,
+                )
+        else:
+            add_error(message)
+            return render_template(
+                "outcome.html",
+                form=wtform,
+                user=session["user"],
+                superuser=session["superuser"],
+                ths=ths,
+            )
     return render_template(
         "outcome.html",
+        form=wtform,
         user=session["user"],
         superuser=session["superuser"],
-        form=form,
         ths=ths,
     )

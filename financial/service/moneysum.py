@@ -54,23 +54,23 @@ def get_to_sum(user: int, wallet: int, currency: int):
 
 
 def update_summa(
-    summas,
-    summa,
-    user,
-    currency,
-    wallet,
-    date,
-    info,
-    s_add,
-    s_delete,
-    number,
-    percent,
-    exchanged,
-    moved,
-    modified,
-    deleted,
-    pair,
-    useridentifier,
+        summas,
+        summa,
+        user,
+        currency,
+        wallet,
+        date,
+        info,
+        s_add,
+        s_delete,
+        number,
+        percent,
+        exchanged,
+        moved,
+        modified,
+        deleted,
+        pair,
+        useridentifier,
 ) -> None:
     """
     This module updates money in wallet
@@ -128,16 +128,6 @@ def update_summa(
         database.session.commit()
 
 
-def exchange_rate(valuta: str):
-    """
-    This module gets currency rate onlina
-    :param valuta: valluta to get rate
-    :return: dict of acrual currency
-    """
-    url = f"https://v6.exchangerate-api.com/v6/727a8cafbfa682e3187bc8ab/latest/{valuta}"
-    response = requests.get(url)
-    return response.json()
-
 
 def get_count_users(identifier: int):
     """
@@ -150,9 +140,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-            .filter_by(wallet=identifier)
-            .group_by(Moneysum.wallet)
-            .all()
+                .filter_by(wallet=identifier)
+                .group_by(Moneysum.wallet)
+                .all()
         )
     res_list = []
     if result:
@@ -251,8 +241,8 @@ def exchange_command(form):
                     date=date,
                     comments=info,
                     addedsumma=str(new_entered_summa)
-                    + " "
-                    + request.form.get("valuta_buy"),
+                               + " "
+                               + request.form.get("valuta_buy"),
                     deletedsumma=None,
                     isexchanged=True,
                     ismoved=False,
