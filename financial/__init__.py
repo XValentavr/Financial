@@ -19,20 +19,20 @@ login_manager = LoginManager()
 def create_app():
     # create app
 
-    app = Flask(__name__)
-    app.config.from_object(Config)
+    application = Flask(__name__)
+    application.config.from_object(Config)
     # to create an api and register the routes
     from .rest import create_api
-    create_api(app)
+    create_api(application)
 
-    database.init_app(app)
-    login_manager.init_app(app)
+    database.init_app(application)
+    login_manager.init_app(application)
     # migrate database
-    Migrate(app, database, directory=os.path.join("financial", "migrations"))
+    Migrate(application, database, directory=os.path.join("financial", "migrations"))
     from .views import financial as financial_blueprint
 
-    login_manager.init_app(app)
+    login_manager.init_app(application)
     from .models.users import Users
 
-    app.register_blueprint(financial_blueprint)
-    return app
+    application.register_blueprint(financial_blueprint)
+    return application
