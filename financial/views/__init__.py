@@ -8,7 +8,6 @@ Also handle an error status
 from datetime import timedelta
 
 from flask import Blueprint, request
-from getmac import get_mac_address
 
 financial = Blueprint("financial", __name__)
 

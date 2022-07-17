@@ -132,7 +132,7 @@ def edit_comments(UUID):
                     superuser=session["superuser"],
                     ths=ths,
                 )
-            if pisexchanged == 1:
+            if p.isexchanged == 1:
 
                 added = pairs[0]
                 deleted = pairs[1]

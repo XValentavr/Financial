@@ -308,7 +308,7 @@ def get_name_account_checker():
     return [result for result in result]
 
 
-def merge_dict(dct_list: list[dict]) -> list[dict]:
+def merge_dict(dct_list: list) -> list:
     """
     This module merges valuta on the sample wallet
     :param dct_list: dict to check and merge
@@ -329,7 +329,7 @@ def merge_dict(dct_list: list[dict]) -> list[dict]:
     return res_dict
 
 
-def restrict_dict(dct: list[dict]):
+def restrict_dict(dct):
     """
     Thid module changes data in money key
     :param dct: dict to change
@@ -346,7 +346,7 @@ def restrict_dict(dct: list[dict]):
                     final.append(d)
 
 
-def check_keys(dct: list[dict]) -> None:
+def check_keys(dct) -> None:
     """
     This module adds needed keys to yser dict
     :param dct: dict to add keys

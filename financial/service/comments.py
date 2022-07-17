@@ -75,7 +75,7 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
     return create_result_comments(result, comments)
 
 
-def get_comment_by_wallet_name(name) -> list[dict]:
+def get_comment_by_wallet_name(name):
     """
     This module gets comment by wallet name
     :return:
@@ -114,7 +114,7 @@ def get_comment_by_wallet_name(name) -> list[dict]:
     return create_result_comments(result, comments)
 
 
-def get_all_comments() -> list[dict]:
+def get_all_comments():
     """
     This module gets all comments from database to show
     :return: json of get data
@@ -532,7 +532,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
                                    user_to_reset, moved)
 
 
-def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
+def create_dict(comments: list, transpone: list, user: int):
     """
     This module create dict of current list
     :param comments: list to change
@@ -564,7 +564,7 @@ def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
     return comments
 
 
-def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
+def create_result_comments(result, comments: list):
     """
     This module creates list of comments to show user
     :param result: result of query database
