@@ -44,15 +44,15 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                .join(Moneysum.accountid)
-                .join(Moneysum.currencyid)
-                .filter(
+                    .join(Moneysum.accountid)
+                    .join(Moneysum.currencyid)
+                    .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Accounts.name == check.name,
                     Moneysum.moneysum != 0.0,
                 )
-                .all()
+                    .all()
             )
             if result:
                 for details in sorted(result):
@@ -73,10 +73,10 @@ def get_account_money(UUID: str):
                     session.query(
                         Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                     )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .join(Moneysum.roots)
-                    .filter(
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
                         Moneysum.moneysum != 0.0,
@@ -84,7 +84,7 @@ def get_account_money(UUID: str):
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 1,
                     )
-                    .all()
+                        .all()
                 )
             elif not roots.isgeneral:
                 usr = get_user_by_UUID(s["UUID"].strip()).get("id")
@@ -92,10 +92,10 @@ def get_account_money(UUID: str):
                     session.query(
                         Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                     )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
-                    .join(Moneysum.roots)
-                    .filter(
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
                         Moneysum.moneysum != 0.0,
@@ -103,7 +103,7 @@ def get_account_money(UUID: str):
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 0,
                     )
-                    .all()
+                        .all()
                 )
             summa_usd = summa_eur = summa_uah = summa_zlt = 0
             for details in sorted(result):
@@ -308,7 +308,7 @@ def get_name_account_checker():
     return [result for result in result]
 
 
-def merge_dict(dct_list: list[dict]) -> list[dict]:
+def merge_dict(dct_list: list) -> list:
     """
     This module merges valuta on the sample wallet
     :param dct_list: dict to check and merge
@@ -329,7 +329,7 @@ def merge_dict(dct_list: list[dict]) -> list[dict]:
     return res_dict
 
 
-def restrict_dict(dct: list[dict]):
+def restrict_dict(dct):
     """
     Thid module changes data in money key
     :param dct: dict to change
@@ -346,7 +346,7 @@ def restrict_dict(dct: list[dict]):
                     final.append(d)
 
 
-def check_keys(dct: list[dict]) -> None:
+def check_keys(dct) -> None:
     """
     This module adds needed keys to yser dict
     :param dct: dict to add keys
@@ -445,6 +445,7 @@ def delete_accountstatus(identifier: int):
     status = Accountstatus.query.get_or_404(identifier)
     status.isdeleted = True
     status.ismodified = s["UUID"]
+    status.datedelete = datetime.datetime.now()
     database.session.add(status)
     database.session.commit()
 
@@ -459,9 +460,9 @@ def get_by_account_status(identifier):
     session = session()
     result = (
         session.query(Accounts.name)
-        .join(Moneysum.accountid)
-        .filter(Moneysum.id == identifier)
-        .first()
+            .join(Moneysum.accountid)
+            .filter(Moneysum.id == identifier)
+            .first()
     )
     return result
 

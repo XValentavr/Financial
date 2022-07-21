@@ -2,6 +2,8 @@
 This module creates WTForm to provide security of authentication
 
 """
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -66,7 +68,7 @@ class Income(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()])
+    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -78,7 +80,7 @@ class Outcome(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()])
+    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -87,17 +89,14 @@ class Outcome(FlaskForm):
 
 class Move(FlaskForm):
     sum_ = IntegerField("Сумма: ", validators=[DataRequired()])
-    from_ = SelectField("Выберите кошелек", choices=[])
+    from_ = SelectField("Кошелек откуда", choices=[])
     currency_from = SelectField("Валюта", choices=[])
-    to_ = SelectField("Выберите кошелек", choices=[])
-    currency_to = SelectField("Валюта", choices=[])
-    rate = FloatField("Введите курс", validators=[DataRequired()])
+    to_ = SelectField("Кошелек куда", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()])
+    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
 
     def set_choices(self):
         self.currency_from.choices = get_currency()
-        self.currency_to.choices = get_currency()
         self.from_.choices = get_name_account()
         self.to_.choices = get_name_account()
 

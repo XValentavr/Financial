@@ -17,7 +17,7 @@
                 {% for cat, msg in get_flashed_messages(True) %}
                     <div class="flash {{ cat }}">{{ msg }}</div>
                 {% endfor %}
-                <form action="" method="post" class="form-contact">
+                <form action="" method="post" class="form-contact" id="movingform">
                     {{ form.hidden_tag() }}
                     {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
                         <p>                                    {% if field.errors %}
@@ -36,7 +36,7 @@
                     {% endfor %}
                     <div class="form-group">
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                            <button type="submit" class="form-control btn btn-primary rounded submit px-3" id="submitID">
                                 Подтвердить
                             </button>
                         </div>
@@ -58,6 +58,15 @@
             </form>
         </div>
         <script>
+                        let form = document.getElementById('movingform');
+            let submitButton = document.getElementById('submitID');
+            form.addEventListener('submit', function () {
+                submitButton.setAttribute('disabled', 'disabled');
+
+                submitButton.value = 'Please wait...';
+
+            }, false);
+
             document.querySelector(".openChatBtn").addEventListener("click", openForm);
             document.querySelector(".close").addEventListener("click", closeForm);
 

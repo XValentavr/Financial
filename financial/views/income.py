@@ -4,10 +4,11 @@ from flask_login import login_required
 from financial.service.accounts import insert_account
 from financial.service.currency import get_list_currency
 from financial.service.error import add_error
-from financial.views import financial, WTForm
+from financial.views import WTForm
+from . import financial
 
 
-@financial.route("/income", methods=["POST", "GET"])
+@financial.route("/income", methods=["GET", "POST"])
 @login_required
 def income():
     wtform = WTForm.Income()
