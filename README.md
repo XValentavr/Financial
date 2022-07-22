@@ -1,7 +1,4 @@
-<img src="https://coveralls.io/repos/github/XValentavr/EPAMFlaskFinalProject/badge.svg" alt="Coverage Status" />
-https://coveralls.io/github/XValentavr/EPAMFlaskFinalProject
-
-# Hospital app
+# Finance app
 
 This is a web application for managing your financial. It uses a RESTful web service to perform crud operations. The app
 allows you to:
@@ -73,10 +70,6 @@ To launch the app just run:
 
 ## What you can do
 
-### Here is the list of available addresses of web service:
-
-#### Here is the list of available addresses of web application:
-
 #### Finance
 
 - /income - add money
@@ -84,6 +77,9 @@ To launch the app just run:
 - /pay - pay with percents
 - /move - move from wallet to wallet
 - /exchange - exchange money
+- /comments/edit/<slug:uuid> - change transaction
+- /delete - delete transaction
+- /walletinfo/<slug:wallet> - get story of transaction for current wallet
 
 #### Users
 
