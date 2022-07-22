@@ -1,6 +1,7 @@
 # Finance app
 
-This is a web application for managing your financial. Now this web is in AWS server. Using RD database and EC2.Deployed with the help of AWS Beanstalk. Set up IAM and security groups.
+This is a web application for managing your financial. Now this web is in AWS server. Using RD database and EC2. Deployed with the help of AWS Beanstalk. Set up IAM and security groups.
+
 Application uses a RESTful web service to perform crud operations. The app
 allows you to:
 
