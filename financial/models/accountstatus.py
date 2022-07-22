@@ -22,6 +22,8 @@ class Accountstatus(database.Model):
     isdeleted = database.Column(database.String())
     pairidentificator = database.Column(database.String())
     useridentificator = database.Column(database.String())
+    datedelete = database.Column(database.DateTime())
+    datechange = database.Column(database.DateTime())
 
     moneyid = database.relationship("Moneysum", backref="accountstatus")
 

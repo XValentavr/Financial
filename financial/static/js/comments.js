@@ -42,7 +42,10 @@ function getter(data) {
             'pair': comments['pairs'],
             'modified': comments['modified'],
             'deleted': comments['deleted'],
-            'superuser': comments['superuser']
+            'superuser': comments['superuser'],
+            'datedelete': comments['datedelete'],
+            'datechange':comments['datechange']
+
         }
         com.push(json_comments)
     }
@@ -121,7 +124,7 @@ function printer(element, tb, visibility, str, flag) {
     if (element['superuser'] === true) {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
-            let changed = (' Отменено: ' + element['modified']).italics()
+            let changed = (' Отменено: ' + element['modified'] + '. ' + element['datedelete']).italics()
             string = string.italics() + ' ' + changed
             text.innerHTML = string
             cell.appendChild(text);
@@ -130,7 +133,7 @@ function printer(element, tb, visibility, str, flag) {
     } else if (visibility === 'Общий') {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
-            let changed = (' Отменено: ' + element['modified']).italics()
+            let changed = (' Отменено: ' + element['modified'] + '. ' + element['datedelete']).italics()
             string = string.italics() + ' ' + changed
             text.innerHTML = string
             cell.appendChild(text)
@@ -139,7 +142,7 @@ function printer(element, tb, visibility, str, flag) {
         } else {
             if (element['modified'] !== null) {
                 text = document.createElement('div');
-                let changed = (' Изменено:' + element['modified']).italics()
+                let changed = (' Изменено:' + element['modified']+ '. ' + element['datechange']).italics()
                 string = string.italics() + ' ' + changed
                 text.innerHTML = string
                 cell.appendChild(text);
@@ -152,7 +155,7 @@ function printer(element, tb, visibility, str, flag) {
     } else {
         if (element['deleted'] !== '0') {
             text = document.createElement('div');
-            let changed = (' Отменено: ' + element['modified']).italics()
+            let changed = (' Отменено: ' + element['modified']+'. '+element['datedelete']).italics()
             string = string.italics() + ' ' + changed
             text.innerHTML = string
             cell.appendChild(text);
@@ -179,7 +182,7 @@ function add_buttons(element, string, cell, visibility, flag) {
             text.innerHTML = string
         } else if (element['modified'] !== null) {
             text = document.createElement('div');
-            let changed = (' Изменено:' + element['modified']).italics()
+            let changed = (' Изменено:' + element['modified']+ '. ' + element['datechange']).italics()
             string = string + ' ' + changed
             text.innerHTML = string
         } else {
@@ -190,7 +193,7 @@ function add_buttons(element, string, cell, visibility, flag) {
     } else {
         if (element['modified'] !== null) {
             text = document.createElement('div');
-            let changed = (' Изменено:' + element['modified']).italics()
+            let changed = (' Изменено:' + element['modified']+ '. ' + element['datechange']).italics()
             string.replace(/(<([^>]+)>)/ig, '');
             string = string + ' ' + changed
             text.innerHTML = string

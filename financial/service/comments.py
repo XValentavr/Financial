@@ -63,6 +63,8 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
             Userroot.isgeneral,
+            Accountstatus.datedelete,
+            Accountstatus.datechange
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -75,7 +77,7 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
     return create_result_comments(result, comments)
 
 
-def get_comment_by_wallet_name(name) -> list[dict]:
+def get_comment_by_wallet_name(name):
     """
     This module gets comment by wallet name
     :return:
@@ -102,6 +104,8 @@ def get_comment_by_wallet_name(name) -> list[dict]:
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
             Userroot.isgeneral,
+            Accountstatus.datedelete,
+            Accountstatus.datechange
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -114,7 +118,7 @@ def get_comment_by_wallet_name(name) -> list[dict]:
     return create_result_comments(result, comments)
 
 
-def get_all_comments() -> list[dict]:
+def get_all_comments():
     """
     This module gets all comments from database to show
     :return: json of get data
@@ -141,6 +145,8 @@ def get_all_comments() -> list[dict]:
             Accountstatus.ismodified,
             Accountstatus.isdeleted,
             Userroot.isgeneral,
+            Accountstatus.datedelete,
+            Accountstatus.datechange
         )
             .join(Moneysum.userid)
             .join(Moneysum.accountinfo)
@@ -305,6 +311,7 @@ def update_comment(
                         isdeleted=False,
                         pairidentificator=uuid,
                         useridentificator=user.useridentificator,
+                        datechange=datetime.datetime.now()
                     )
                 elif from_where == "outcome":
                     accounts = Accountstatus(
@@ -323,6 +330,8 @@ def update_comment(
                         isdeleted=False,
                         pairidentificator=uuid,
                         useridentificator=user.useridentificator,
+                        datechange=datetime.datetime.now()
+
                     )
                 database.session.add(accounts)
                 database.session.commit()
@@ -355,6 +364,8 @@ def update_comment(
                     isdeleted=False,
                     pairidentificator=uuid,
                     useridentificator=user_to_reset,
+                    datechange=datetime.datetime.now()
+
                 )
                 database.session.add(accounts)
                 database.session.commit()
@@ -379,13 +390,15 @@ def update_comment(
                     ismodified=s["UUID"],
                     pairidentificator=uuid,
                     useridentificator=user_to_reset,
+                    datechange=datetime.datetime.now()
+
                 )
                 database.session.add(accounts)
                 database.session.commit()
 
 
 def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_delete, wallet_add, cur_currency_delete,
-                                        cur_currency_add, from_where, added,user_2_change):
+                                        cur_currency_add, from_where, added, user_2_change):
     if from_where == 'moving':
         sum_ = form.sum_.data
 
@@ -395,9 +408,8 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
 
         # get to data
         to_ = form.to_.data
-        currency_to = form.currency_to.data
+        currency_to = currency_from
 
-        rate = form.rate.data
         info = form.info.data
         date = str(form.date.data) + " " + str(datetime.datetime.now().time())
         moved = True
@@ -412,8 +424,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         currency_from = get_current_currency_by_name(currency_from).id
 
         # get to data
-        to_ = form.get('wallet_to')
-        to_ = get_current_wallet_by_name(to_)
+        to_ = from_
         currency_to = form.get('valuta_buy')
         currency_to = get_current_currency_by_name(currency_to).id
 
@@ -421,6 +432,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         info = form.get('comments')
         date = str(form.get('date')) + " " + str(datetime.datetime.now().time())
         moved = False
+        sum_ = float(sum_) * float(rate)
     # work with delete data
     cur_currency_delete_id = get_current_currency_by_name(cur_currency_delete).id
     wallet_delete_id = get_current_wallet_by_name(*wallet_delete)
@@ -492,7 +504,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
             database.session.commit()
             insert_single_comm_add(added, summa_to_update_add_part.id, date, info,
                                    get_current_currency(currency_to).name,
-                                   float(sum_) * float(rate),
+                                   float(sum_),
                                    user_to_reset, moved)
 
     new_summa_add_or_update_from_part = get_to_sum(user, from_, currency_from)
@@ -516,23 +528,23 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
     # if summa to move from is not exists then minus data
     if new_summa_add_or_update_to_part is not None:
         for new_summa_add_or_update_to_part in new_summa_add_or_update_to_part:
-            new_summa_add_or_update_to_part.moneysum += float(sum_) * float(rate)
+            new_summa_add_or_update_to_part.moneysum += float(sum_)
             database.session.add(new_summa_add_or_update_to_part)
             database.session.commit()
             insert_single_comm_add(added, new_summa_add_or_update_to_part.id, date, info,
-                                   get_current_currency(currency_to).name, float(sum_) * float(rate), user_to_reset,
+                                   get_current_currency(currency_to).name, float(sum_), user_to_reset,
                                    moved)
     # if summa to move doest not exist then create new
     elif new_summa_add_or_update_to_part is None:
-        inser_into_money_sum(float(sum_) * float(rate), user, currency_to, to_)
+        inser_into_money_sum(float(sum_), user, currency_to, to_)
         new_inserted = get_to_sum(user, to_, currency_to)
         for n_s in new_inserted:
             insert_single_comm_add(added, n_s.id, date, info, get_current_currency(currency_to).name,
-                                   float(sum_) * float(rate),
+                                   float(sum_),
                                    user_to_reset, moved)
 
 
-def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
+def create_dict(comments: list, transpone: list, user: int):
     """
     This module create dict of current list
     :param comments: list to change
@@ -559,12 +571,14 @@ def create_dict(comments: list, transpone: list, user: int) -> list[dict]:
             "deleted": transpone[14],
             "superuser": s["superuser"],
             "general": transpone[15],
+            'datedelete': transpone[16],
+            'datechange': transpone[17]
         }
     )
     return comments
 
 
-def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
+def create_result_comments(result, comments: list):
     """
     This module creates list of comments to show user
     :param result: result of query database
@@ -581,10 +595,10 @@ def create_result_comments(result: list[tuple], comments: list) -> list[dict]:
                 user = None
             if s["superuser"]:
                 # if superuser then check only with user roots
-                """wallet = get_current_wallet_by_name(transpone[5])
-                usr = get_user_by_UUID(transpone[6].strip()).get("id")
-                root = get_user_root(usr, wallet).isgeneral
-                if root:"""
+                # wallet = get_current_wallet_by_name(transpone[5])
+                # usr = get_user_by_UUID(transpone[6].strip()).get("id")
+                # root = get_user_root(usr, wallet).isgeneral
+                # if root:"""
                 create_dict(comments, transpone, user)
             else:
                 # check current user roots
@@ -635,6 +649,8 @@ def insert_single_comm_delete(added, summa_id, date, info, currency, sum_, user,
         isdeleted=False,
         pairidentificator=added,
         useridentificator=user,
+        datechange=datetime.datetime.now()
+
     )
     database.session.add(accounts)
     database.session.commit()
@@ -672,6 +688,8 @@ def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, mo
         isdeleted=False,
         pairidentificator=added,
         useridentificator=user,
+        datechange=datetime.datetime.now()
+
     )
     database.session.add(accounts)
     database.session.commit()

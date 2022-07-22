@@ -13,7 +13,7 @@
         </div>
         <div class="wrap">
             <div class="login-wrap p-4 p-md-5">
-                <form action="" method="post" class="form-contact" name="popup">
+                <form action="" method="post" class="form-contact" name="popup" id="exchangeform">
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Продали из:</label>
                         <select name="wallet_from" class="form-control" id='wallet'>
@@ -31,14 +31,6 @@
                         <select id='currencies_sold' name="valuta_sold" class="form-control" onchange="exchanged()">
                             {% for v in ths_from %}
                                 <option value="{{ v.name }}">{{ v.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label class='labelstyle'>Перевели в:</label>
-                        <select name="wallet_to" class="form-control" id='wallet'>
-                            {% for s in selected_to %}
-                                <option value="{{ s.name }}">{{ s.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -78,7 +70,7 @@
                                                                        required/></label>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                        <button type="submit" class="form-control btn btn-primary rounded submit px-3" id="submitID">
                             Подтвердить
                         </button>
                     </div>
@@ -86,10 +78,10 @@
             </div>
         </div>
     </div>
-       <div class='flex_end' style="padding-top: 20px">
+    <div class='flex_end' style="padding-top: 20px">
         <button class="openChatBtn" onclick="openForm()">Техподдержка</button>
         <div class="openChat">
-            <form class="formpopup"  method="post">
+            <form class="formpopup" method="post">
                 <label for="msg"><b>Введите сообщение</b></label>
                 <textarea placeholder="Сообщение..." name="errormessage" required></textarea>
                 <button type="submit" class="btn" name='popup'>Отправить</button>
@@ -99,6 +91,14 @@
             </form>
         </div>
         <script>
+            let form = document.getElementById('exchangeform');
+            let submitButton = document.getElementById('submitID');
+            form.addEventListener('submit', function () {
+                submitButton.setAttribute('disabled', 'disabled');
+
+                submitButton.value = 'Please wait...';
+
+            }, false);
             document.querySelector(".openChatBtn").addEventListener("click", openForm);
             document.querySelector(".close").addEventListener("click", closeForm);
 
