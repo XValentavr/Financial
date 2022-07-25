@@ -9,9 +9,8 @@ from wtforms import (
     StringField,
     PasswordField,
     SelectField,
-    DateField,
+    DateTimeLocalField,
     IntegerField,
-    FloatField,
 )
 from wtforms.validators import DataRequired, Length
 
@@ -68,7 +67,7 @@ class Income(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], default=datetime.today)
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -80,7 +79,7 @@ class Outcome(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], )
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -93,7 +92,7 @@ class Move(FlaskForm):
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Кошелек куда", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateField("Выберите дату", validators=[DataRequired()],default=datetime.today)
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], )
 
     def set_choices(self):
         self.currency_from.choices = get_currency()

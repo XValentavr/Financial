@@ -18,7 +18,7 @@
                 {% for cat, msg in get_flashed_messages(True) %}
                     <div class="flash {{ cat }}">{{ msg }}</div>
                 {% endfor %}
-                <form action="" method="post" class="form-contact" id ='outcomeform'>
+                <form action="" method="post" class="form-contact" id='outcomeform'>
                     {{ form.hidden_tag() }}
                     {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
                         <p>                                    {% if field.errors %}
@@ -29,15 +29,23 @@
         {% endfor %}
 	</span>
                         {% else %}
-                            <p>{{ field.label() }}</p>
-                            <div class="form-group mt-3">
-                                {{ field(class="form-control") }}
-                            </div>
+                            {% if field.name =='date' %}
+                                <p>{{ field.label() }}</p>
+                                <div class="form-group mt-3">
+                                    {{ field(class="form-control",id='date') }}
+                                </div>
+                            {% else %}
+                                <p>{{ field.label() }}</p>
+                                <div class="form-group mt-3">
+                                    {{ field(class="form-control") }}
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     <div class="form-group">
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary rounded submit px-3" id = "submitID">
+                            <button type="submit" class="form-control btn btn-primary rounded submit px-3"
+                                    id="submitID">
                                 Подтвердить
                             </button>
                         </div>
@@ -46,7 +54,7 @@
             </div>
         </div>
     </div>
-       <div class='flex_end' style="padding-top: 20px">
+    <div class='flex_end' style="padding-top: 20px">
         <button class="openChatBtn" onclick="openForm()">Техподдержка</button>
         <div class="openChat">
             <form class="formpopup" id='popup' method="post">
@@ -58,8 +66,9 @@
                 </button>
             </form>
         </div>
+            <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
         <script>
-                                    let form = document.getElementById('outcomeform');
+            let form = document.getElementById('outcomeform');
             let submitButton = document.getElementById('submitID');
             form.addEventListener('submit', function () {
                 submitButton.setAttribute('disabled', 'disabled');
@@ -70,13 +79,9 @@
             document.querySelector(".openChatBtn").addEventListener("click", openForm);
             document.querySelector(".close").addEventListener("click", closeForm);
 
-            function openForm() {
-                document.querySelector(".openChat").style.display = "block";
-            }
-
-            function closeForm() {
-                document.querySelector(".openChat").style.display = "none";
-            }
+            let now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('date').max = now.toISOString().slice(0, 19);
         </script>
     </div>
     </body>

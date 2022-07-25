@@ -1,14 +1,14 @@
+
 from flask import render_template, session, request
 from flask_login import login_required
 
 from financial.service.accounts import insert_account
 from financial.service.currency import get_list_currency
 from financial.service.error import add_error
-from financial.views import WTForm
-from . import financial
+from financial.views import financial, WTForm
 
 
-@financial.route("/income", methods=["GET", "POST"])
+@financial.route("/income", methods=["POST", "GET"])
 @login_required
 def income():
     wtform = WTForm.Income()

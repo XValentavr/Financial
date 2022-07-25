@@ -411,7 +411,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         currency_to = currency_from
 
         info = form.info.data
-        date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+        date = str(form.date.data)
         moved = True
 
     elif from_where == 'exchange':
@@ -430,9 +430,8 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
 
         rate = form.get('rate_exchange')
         info = form.get('comments')
-        date = str(form.get('date')) + " " + str(datetime.datetime.now().time())
+        date = str(form.get('date'))
         moved = False
-        sum_ = float(sum_) * float(rate)
     # work with delete data
     cur_currency_delete_id = get_current_currency_by_name(cur_currency_delete).id
     wallet_delete_id = get_current_wallet_by_name(*wallet_delete)
@@ -526,6 +525,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
 
     new_summa_add_or_update_to_part = get_to_sum(user, to_, currency_to)
     # if summa to move from is not exists then minus data
+    sum_ = float(sum_) * float(rate)
     if new_summa_add_or_update_to_part is not None:
         for new_summa_add_or_update_to_part in new_summa_add_or_update_to_part:
             new_summa_add_or_update_to_part.moneysum += float(sum_)

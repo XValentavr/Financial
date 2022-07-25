@@ -49,7 +49,7 @@ def get_account_money(UUID: str):
                     .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
-                    Accounts.name == check.name,
+                    #Accounts.name == check.name,
                     Moneysum.moneysum != 0.0,
                 )
                     .all()
@@ -79,7 +79,7 @@ def get_account_money(UUID: str):
                         .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
-                        Moneysum.moneysum != 0.0,
+                        #Moneysum.moneysum != 0.0,
                         Moneysum.user == Userroot.username,
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 1,
@@ -98,7 +98,7 @@ def get_account_money(UUID: str):
                         .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
-                        Moneysum.moneysum != 0.0,
+                        #Moneysum.moneysum != 0.0,
                         Moneysum.user == usr,
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 0,
@@ -167,7 +167,7 @@ def insert_account(form):
     identificaator = uuid.uuid4()
     wallet = form.wallet.data
     info = form.info.data
-    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+    date = str(form.date.data)
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     summa = form.sum.data
@@ -232,7 +232,7 @@ def delete_data(form):
     identificator = uuid.uuid4()
     wallet = form.wallet.data
     info = form.info.data
-    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+    date = str(form.date.data)
     user = get_user_by_UUID(s["UUID"].strip()).get("id")
     summa = form.sum.data
     currency = form.currency.data
@@ -373,7 +373,7 @@ def insert_pay_account(form):
     comments = form.get("comments")
     currency = form.get("valuta")
     currency = get_current_currency_by_name(currency)
-    date = str(form.get("date")) + " " + str(datetime.datetime.now().time())
+    date = str(form.get("date"))
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
@@ -386,7 +386,7 @@ def insert_pay_account(form):
     ).all()
     if summa_to_update:
         for summa_to_update in summa_to_update:
-            summa_to_update.moneysum -= float(summa)
+            summa_to_update.moneysum += float(summa)
             update_summa(
                 summa_to_update,
                 summa_to_update.moneysum,
@@ -407,7 +407,7 @@ def insert_pay_account(form):
                 s["UUID"],
             )
     else:
-        inser_into_money_sum(0 - summa, user, currency.id, int(wallet))
+        inser_into_money_sum(summa, user, currency.id, int(wallet))
         summa_to_update = get_to_sum(user, int(wallet), currency.id)
         if summa_to_update:
             for summa_to_update in summa_to_update:

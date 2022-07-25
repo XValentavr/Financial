@@ -29,15 +29,23 @@
         {% endfor %}
 	</span>
                         {% else %}
-                            <p>{{ field.label() }}</p>
-                            <div class="form-group mt-3">
-                                {{ field(class="form-control") }}
-                            </div>
+                            {% if field.name =='date' %}
+                                <p>{{ field.label() }}</p>
+                                <div class="form-group mt-3">
+                                    {{ field(class="form-control",id='date') }}
+                                </div>
+                            {% elif field.name !='date' %}
+                                <p>{{ field.label() }}</p>
+                                <div class="form-group mt-3">
+                                    {{ field(class="form-control") }}
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     <div class="form-group">
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary rounded submit px-3" id="submitID">
+                            <button type="submit" class="form-control btn btn-primary rounded submit px-3"
+                                    id="submitID">
                                 Подтвердить
                             </button>
                         </div>
@@ -58,8 +66,10 @@
                 </button>
             </form>
         </div>
+        <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
+
         <script>
-                        let form = document.getElementById('incomeform');
+            let form = document.getElementById('incomeform');
             let submitButton = document.getElementById('submitID');
             form.addEventListener('submit', function () {
                 submitButton.setAttribute('disabled', 'disabled');
@@ -70,14 +80,6 @@
 
             document.querySelector(".openChatBtn").addEventListener("click", openForm);
             document.querySelector(".close").addEventListener("click", closeForm);
-
-            function openForm() {
-                document.querySelector(".openChat").style.display = "block";
-            }
-
-            function closeForm() {
-                document.querySelector(".openChat").style.display = "none";
-            }
         </script>
     </div>
     </body>

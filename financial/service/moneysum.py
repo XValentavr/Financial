@@ -1,4 +1,3 @@
-import datetime
 import os
 import uuid
 
@@ -14,7 +13,6 @@ from financial.service.currency import (
     get_current_currency_by_name,
     get_current_currency,
 )
-from financial.service.exchangerate import MoneyRate
 from financial.service.userroot import get_user_root_id
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
@@ -159,14 +157,13 @@ def exchange_command(form):
     summa = request.form.get("summa")
 
     from_ = request.form.get("wallet_from")
+    to_ = from_
     from_ = get_current_wallet_by_name(from_)
+    to_ = get_current_wallet_by_name(to_)
+
 
     currency_from_name = request.form.get("valuta_sold")
     currency_to = request.form.get("valuta_buy")
-
-    new_entered_summa = MoneyRate(currency_from_name, currency_to, float(summa),
-                                  float(request.form.get('rate_exchange'))).changed_summa
-
     currency_from = get_current_currency_by_name(currency_from_name).id
     currency_to = get_current_currency_by_name(currency_to).id
 
@@ -175,10 +172,9 @@ def exchange_command(form):
 
     summa_to_delete = get_to_sum(user, int(from_), currency_from)
     info = request.form.get("comments")
-    date = str(request.form.get("date")) + " " + str(datetime.datetime.now().time())
-    to_ = from_
+    date = str(request.form.get("date"))
     final_sum = 0
-    print(new_entered_summa)
+    new_entered_summa = float(summa) * float(request.form.get("rate_exchange"))
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
@@ -262,20 +258,21 @@ def moving_command(form):
     sum_ = float(form.sum_.data)
     from_ = form.from_.data
     currency_from = int(form.currency_from.data)
-    currency_to = currency_from
+    currency_to = int(form.currency_to.data)
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     summa_to_delete = Moneysum.query.filter_by(
         user=user, wallet=int(from_), currency=currency_from
     ).all()
     info = form.info.data
-    date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+    date = str(form.date.data)
     to_ = form.to_.data
     final_sum = 0
     code_from = get_current_currency(currency_from)
     currency_from = code_from.id
     code_to = get_current_currency(currency_to)
     currency_to = code_to.id
+    new_entered_summa = sum_ * float(form.rate.data)
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
@@ -311,7 +308,7 @@ def moving_command(form):
     ).all()
     if summa_to_add:
         for summa_to_add in summa_to_add:
-            summa_to_add.moneysum += float(sum_)
+            summa_to_add.moneysum += float(new_entered_summa)
             update_summa(
                 summa_to_add,
                 summa_to_add.moneysum,
@@ -320,7 +317,7 @@ def moving_command(form):
                 to_,
                 date,
                 info,
-                sum_,
+                new_entered_summa,
                 None,
                 None,
                 None,
@@ -332,7 +329,7 @@ def moving_command(form):
                 s["UUID"],
             )
     else:
-        inser_into_money_sum(sum_, user, currency_to, int(to_))
+        inser_into_money_sum(new_entered_summa, user, currency_to, int(to_))
         summa_to_update = get_to_sum(user, int(to_), currency_to)
         currency_name = get_current_currency(currency_to).name
         if summa_to_update:
@@ -342,7 +339,7 @@ def moving_command(form):
                     money=money,
                     date=date,
                     comments=info,
-                    addedsumma=str(sum_) + " " + currency_name,
+                    addedsumma=str(new_entered_summa) + " " + currency_name,
                     deletedsumma=None,
                     isexchanged=False,
                     ismoved=True,
