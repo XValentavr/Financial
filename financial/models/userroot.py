@@ -36,6 +36,8 @@ class Userroot(UserMixin, database.Model):
     #: admin's avatar
     isgeneral = database.Column(database.BOOLEAN, nullable=False)
 
+    ispublic = database.Column(database.BOOLEAN, nullable=False)
+
     userid = database.relationship(
         "Users", foreign_keys=[username], backref="user_root", cascade="all,delete"
     )

@@ -1,7 +1,5 @@
 """Specify configurations"""
-import os
 from datetime import timedelta
-from financial import osenvironment
 
 
 class Config(object):
@@ -11,8 +9,8 @@ class Config(object):
 
     PERMANENT_SESSION_LIFETIME = timedelta(days=24)
     MAX_CONTENT_LENGTH = 1024 * 1024
-    SECRET_KEY = os.getenv("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    SECRET_KEY = "7b0342f12ee64296aaaa9738c72ca2c4"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@localhost:3306/financialapp"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_AS_ASCII = False
 

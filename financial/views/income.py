@@ -18,6 +18,7 @@ def income():
         form = request.form
         message = form.get("errormessage")
         if message is None:
+            print(wtform.data)
             if wtform.validate_on_submit():
                 insert_account(wtform)
                 return render_template(

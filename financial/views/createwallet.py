@@ -1,7 +1,7 @@
 from flask import render_template, session, flash, request
 from flask_login import login_required
 
-from financial.service.userroot import add_all_possible_pairs, update_roots
+from financial.service.userroot import add_all_possible_pairs, update_roots, update_public_visibility
 from financial.service.users import get_all_user, get_user_by_enter_name
 from financial.service.wallet import get_wallets, insert_wallet, update_wallet
 from financial.views import financial, WTForm
@@ -55,11 +55,6 @@ def changewallet():
 @financial.route("/wallet/edit/<string:identifier>", methods=["GET", "POST"])
 @login_required
 def edit_wallet(identifier):
-    """
-    This function represents the logic on /employees/edit address
-    :return: the rendered employee.html template to edit an existing employee
-    """
-
     # load employee.html template
     users = get_all_user()
     if not session["superuser"]:
@@ -76,6 +71,15 @@ def edit_wallet(identifier):
                         if request.form.get(u.name) == "on":
                             usr = get_user_by_enter_name(u.name)
                             update_roots(identifier, 1, usr.id)
+        elif form.public.data == "Да":
+            if request.method == "POST":
+                if request.form.get("Allvisibility") == "on":
+                    update_public_visibility(identifier, 1)
+                else:
+                    for u in users:
+                        if request.form.get(u.name) == "on":
+                            usr = get_user_by_enter_name(u.name)
+                            update_public_visibility(identifier, 1, usr.id)
         else:
             update_roots(identifier, 0)
         if form.validate_on_submit():

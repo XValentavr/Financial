@@ -10,7 +10,7 @@ class Accountstatus(database.Model):
     id = database.Column(database.Integer(), primary_key=True)
 
     money = database.Column(database.Integer(), database.ForeignKey("money_sum.id"))
-    date = database.Column(database.DateTime())
+    date = database.Column(database.DateTime(timezone=True))
     comments = database.Column(database.String())
     addedsumma = database.Column(database.String())
     deletedsumma = database.Column(database.String())
@@ -22,8 +22,8 @@ class Accountstatus(database.Model):
     isdeleted = database.Column(database.String())
     pairidentificator = database.Column(database.String())
     useridentificator = database.Column(database.String())
-    datedelete = database.Column(database.DateTime())
-    datechange = database.Column(database.DateTime())
+    datedelete = database.Column(database.DateTime(timezone=True))
+    datechange = database.Column(database.DateTime(timezone=True))
 
     moneyid = database.relationship("Moneysum", backref="accountstatus")
 

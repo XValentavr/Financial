@@ -36,6 +36,22 @@ def update_roots(identifier: int, general: int, username=None):
         database.session.commit()
 
 
+def update_public_visibility(identifier: int, public: int, username=None):
+    """
+    This module updates  all users by wallet id if ALL checker is selected
+    :param username: user unique identificator
+    :param identifier: wallet identificator
+    :return: None
+    """
+    if username is not None:
+        roots = Userroot.query.filter_by(walletname=identifier, username=username).all()
+    else:
+        roots = Userroot.query.filter_by(walletname=identifier).all()
+    for r in roots:
+        r.ispublic = public
+        database.session.commit()
+
+
 def get_user_root_id(username: int, walletname: int):
     """
     This function gets root id to chain to tables

@@ -123,7 +123,7 @@ def get_all_comments():
     This module gets all comments from database to show
     :return: json of get data
     """
-    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
@@ -224,7 +224,7 @@ def update_comment(
         summa = form.sum.data
         info = form.info.data
         currency = form.currency.data
-        date = str(form.date.data) + " " + str(datetime.datetime.now().time())
+        date = str(form.date.data)
     user_ = get_user_by_UUID(user_2_change.strip())
     user = user_.get("id")
     currency = get_current_currency(currency)

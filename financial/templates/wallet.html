@@ -77,19 +77,38 @@
                         {% if field.name=='visibility' %}
                             <p>{{ field.label() }}</p>
                             <div class="form-group mt-3">
-                                {{ field(class="form-control",onchange="get_value()", id="valuetoshowall") }}
+                                {{ field(class="form-control",onchange="get_value_hiber1()", id="valuetoshowall") }}
                             </div>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
-                <div id='hider'>
+                <div id='hider1'>
                     <p>Выберите для каких пользователей</p>
                     <div class="form-group mt-3">
-                        <input type="checkbox" onclick="toggle(this)" name="All">Всех<br>
+                        <input type="checkbox" onclick="toggle_general(this)" name="All" about="forgeneral">Всех<br>
                     </div>
                     {% for u in variant %}
                         <div class="form-group mt-3">
-                            <input type="checkbox" name="{{ u.name }}">{{ u.name }}<br>
+                            <input type="checkbox" about="forgeneral" name="{{ u.name }}">{{ u.name }}<br>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
+                    {% if field.name=='public' %}
+                        <p>{{ field.label() }}</p>
+                        <div class="form-group mt-3">
+                            {{ field(class="form-control",onchange="get_value_hiber2()", id="valuetoshowall") }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div id='hider2'>
+                    <p>Открыть для пользователей</p>
+                    <div class="form-group mt-3">
+                        <input type="checkbox" onclick="toggle_public(this)" name="Allvisibility" about="forpublic">Всех<br>
+                    </div>
+                    {% for u in variant %}
+                        <div class="form-group mt-3">
+                            <input type="checkbox" about="forpublic" name="{{ u.name }}">{{ u.name }} <br>
                         </div>
                     {% endfor %}
                 </div>
@@ -112,24 +131,9 @@
     <script src="{{ url_for('static', filename='js/popper.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        function get_value() {
-            let valuetoshowall = document.getElementById('valuetoshowall')
-            if (valuetoshowall.value === 'Нет') {
-                document.getElementById('hider').style.display = 'none'
-            } else if (valuetoshowall.value === 'Да') {
-                document.getElementById('hider').style.display = 'block'
-            }
-        }
-
-        function toggle(source) {
-            let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            for (let i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i] !== source)
-                    checkboxes[i].checked = source.checked;
-            }
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/hidechoices.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
+    <script></script>
 </div>
 </body>
 </html>

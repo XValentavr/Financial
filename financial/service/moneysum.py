@@ -1,4 +1,3 @@
-import os
 import uuid
 
 import sqlalchemy
@@ -131,7 +130,7 @@ def get_count_users(identifier: int):
     This module gets users wallet group by wallets
     :return: list of number of wallets
     """
-    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    engine = sqlalchemy.create_engine('mysql+pymysql://root:root@localhost:3306/financialapp')
     session = sessionmaker(bind=engine)
     session = session()
     with session as session:
@@ -160,7 +159,6 @@ def exchange_command(form):
     to_ = from_
     from_ = get_current_wallet_by_name(from_)
     to_ = get_current_wallet_by_name(to_)
-
 
     currency_from_name = request.form.get("valuta_sold")
     currency_to = request.form.get("valuta_buy")

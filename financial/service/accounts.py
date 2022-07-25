@@ -11,6 +11,7 @@ from financial.models.accountstatus import Accountstatus
 from financial.models.currency import Currency
 from financial.models.moneysum import Moneysum
 from financial.models.userroot import Userroot
+from financial.models.users import Users
 from financial.models.wallet import Accounts
 from financial.service.currency import (
     get_list_currency,
@@ -34,7 +35,7 @@ def get_account_money(UUID: str):
     dct_lst = []
     get_user = get_user_by_UUID(UUID)
     account_id = get_user.get("id")
-    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
     session = sessionmaker(bind=engine)
     session = session()
     checker = get_name_account_checker()
@@ -49,7 +50,7 @@ def get_account_money(UUID: str):
                     .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
-                    #Accounts.name == check.name,
+                    # Accounts.name == check.name,
                     Moneysum.moneysum != 0.0,
                 )
                     .all()
@@ -79,7 +80,7 @@ def get_account_money(UUID: str):
                         .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
-                        #Moneysum.moneysum != 0.0,
+                        # Moneysum.moneysum != 0.0,
                         Moneysum.user == Userroot.username,
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 1,
@@ -98,7 +99,7 @@ def get_account_money(UUID: str):
                         .filter(
                         Accounts.visibility == check.visibility,
                         Accounts.name == check.name,
-                        #Moneysum.moneysum != 0.0,
+                        # Moneysum.moneysum != 0.0,
                         Moneysum.user == usr,
                         Moneysum.wallet == Userroot.walletname,
                         Userroot.isgeneral == 0,
@@ -292,11 +293,24 @@ def get_name_account():
     This module gets account name of value
     :return: list of account name
     """
-    from financial import create_app
 
-    with create_app().app_context():
-        result = Accounts.query.all()
-        return [(result.id, result.name) for result in result]
+    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
+    session = sessionmaker(bind=engine)
+    session = session()
+    result = (
+        session.query(
+            Accounts.id, Accounts.name
+        )
+            .join(Userroot.walletid)
+            .join(Userroot.userid)
+            .filter(
+            Users.UUID == s['UUID'],
+            Userroot.ispublic == 1
+        )
+            .all()
+    )
+
+    return [(result.id, result.name) for result in result]
 
 
 def get_name_account_checker():
@@ -395,8 +409,8 @@ def insert_pay_account(form):
                 wallet,
                 date,
                 comments,
-                None,
                 summa,
+                None,
                 number,
                 percent,
                 False,
@@ -416,8 +430,8 @@ def insert_pay_account(form):
                     money=money,
                     date=date,
                     comments=comments,
-                    addedsumma=None,
-                    deletedsumma=str(summa) + " " + currency.name,
+                    addedsumma=str(summa) + " " + currency.name,
+                    deletedsumma=None,
                     number=number,
                     percent=percent,
                     isexchanged=False,

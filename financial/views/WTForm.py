@@ -2,7 +2,6 @@
 This module creates WTForm to provide security of authentication
 
 """
-from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -67,7 +66,8 @@ class Income(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], default=datetime.today)
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M'
+                              )
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -79,7 +79,7 @@ class Outcome(FlaskForm):
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], )
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
 
     def set_choices(self):
         self.currency.choices = get_currency()
@@ -92,7 +92,7 @@ class Move(FlaskForm):
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Кошелек куда", choices=[])
     info = StringField("Введите комментарий: ", validators=[DataRequired()])
-    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], )
+    date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
 
     def set_choices(self):
         self.currency_from.choices = get_currency()
@@ -102,4 +102,3 @@ class Move(FlaskForm):
 
 class Wallet(FlaskForm):
     wallet = StringField("Введите название кошелька", validators=[DataRequired()])
-    visibility = SelectField("Сделать видимым?", choices=["Да", "Нет"])
