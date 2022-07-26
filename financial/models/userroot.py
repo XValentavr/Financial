@@ -45,7 +45,8 @@ class Userroot(UserMixin, database.Model):
         "Accounts", foreign_keys=[walletname], backref="user_root", cascade="all,delete"
     )
 
-    def __init__(self, username, walletname, isgeneral):
+    def __init__(self, username, walletname, isgeneral, ispublic):
         self.username = username
         self.walletname = walletname
         self.isgeneral = isgeneral
+        self.ispublic = ispublic

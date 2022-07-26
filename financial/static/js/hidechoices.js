@@ -1,5 +1,5 @@
 function get_value_hiber1() {
-    let valuetoshowall = document.getElementById('valuetoshowall')
+    let valuetoshowall = document.getElementById('valuetoshowgeneral')
     if (valuetoshowall.value === 'Нет') {
         document.getElementById('hider1').style.display = 'none'
     } else if (valuetoshowall.value === 'Да') {

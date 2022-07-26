@@ -604,16 +604,18 @@ def create_result_comments(result, comments: list):
                 # check current user roots
                 wallet = get_current_wallet_by_name(transpone[5])
                 usr = get_user_by_UUID(s["UUID"].strip()).get("id")
-                root = get_user_root(usr, wallet).isgeneral
-                if not root and transpone[6] == s["UUID"]:
-                    create_dict(comments, transpone, user)
-                elif root and (transpone[6] == s["UUID"] or transpone[6] != s["UUID"]):
-                    # if if general then check each user root
-                    wallet = get_current_wallet_by_name(transpone[5])
-                    usr = get_user_by_UUID(transpone[6].strip()).get("id")
-                    root = get_user_root(usr, wallet).isgeneral
-                    if root:
+                root = get_user_root(usr, wallet)
+                if root is not None:
+                    root = root.isgeneral
+                    if not root and transpone[6] == s["UUID"]:
                         create_dict(comments, transpone, user)
+                    elif root and (transpone[6] == s["UUID"] or transpone[6] != s["UUID"]):
+                        # if if general then check each user root
+                        wallet = get_current_wallet_by_name(transpone[5])
+                        usr = get_user_by_UUID(transpone[6].strip()).get("id")
+                        root = get_user_root(usr, wallet).isgeneral
+                        if root:
+                            create_dict(comments, transpone, user)
     return comments
 
 

@@ -15,7 +15,7 @@ def add_all_possible_pairs():
             rts = Userroot.query.filter_by(username=us.id, walletname=wa.id).all()
             if rts:
                 continue
-            roots = Userroot(username=us.id, walletname=wa.id, isgeneral=0)
+            roots = Userroot(username=us.id, walletname=wa.id, isgeneral=0, ispublic=0)
             database.session.add(roots)
             database.session.commit()
 
@@ -33,6 +33,22 @@ def update_roots(identifier: int, general: int, username=None):
         roots = Userroot.query.filter_by(walletname=identifier).all()
     for r in roots:
         r.isgeneral = general
+        database.session.commit()
+
+
+def update_public_roots(identifier: int, public: int, username=None):
+    """
+    This module updates  all users by wallet id if ALL checker is selected
+    :param username: user unique identificator
+    :param identifier: wallet identificator
+    :return: None
+    """
+    if username is not None:
+        roots = Userroot.query.filter_by(walletname=identifier, username=username).all()
+    else:
+        roots = Userroot.query.filter_by(walletname=identifier).all()
+    for r in roots:
+        r.ispublic = public
         database.session.commit()
 
 
@@ -70,7 +86,7 @@ def get_user_root(username: int, walletname: int):
     :param walletname: id of wallet
     :return: int
     """
-    return Userroot.query.filter_by(username=username, walletname=walletname).first()
+    return Userroot.query.filter_by(username=username, walletname=walletname, ispublic=1).first()
 
 
 def get_user_root_by_name_for_comments(username: int):

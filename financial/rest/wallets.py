@@ -17,7 +17,6 @@ parser.add_argument("users")
 
 class AllWallets(Resource):
     """
-    This is the class for AllDepartments Resource available at /hospital url
     """
 
     @staticmethod

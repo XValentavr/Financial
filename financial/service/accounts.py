@@ -46,15 +46,17 @@ def get_account_money(UUID: str):
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
                     .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid)
+                    .join(Moneysum.currencyid,
+                          Moneysum.roots)
                     .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
+                    Userroot.ispublic == 1
                     # Accounts.name == check.name,
-                    Moneysum.moneysum != 0.0,
                 )
                     .all()
             )
+            print(result)
             if result:
                 for details in sorted(result):
                     transpone = list(details)
@@ -69,93 +71,96 @@ def get_account_money(UUID: str):
             user = get_user_by_UUID(s["UUID"].strip()).get("id")
             wallet = get_current_wallet_by_name(check.name)
             roots = get_user_root(user, wallet)
-            if roots.isgeneral:
-                result = (
-                    session.query(
-                        Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+            if roots is not None:
+                if roots.isgeneral:
+                    result = (
+                        session.query(
+                            Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                        )
+                            .join(Moneysum.accountid)
+                            .join(Moneysum.currencyid)
+                            .join(Moneysum.roots)
+                            .filter(
+                            Accounts.visibility == check.visibility,
+                            Accounts.name == check.name,
+                            # Moneysum.moneysum != 0.0,
+                            Moneysum.user == Userroot.username,
+                            Moneysum.wallet == Userroot.walletname,
+                            Userroot.isgeneral == 1,
+                            Userroot.ispublic == 1
+                        )
+                            .all()
                     )
-                        .join(Moneysum.accountid)
-                        .join(Moneysum.currencyid)
-                        .join(Moneysum.roots)
-                        .filter(
-                        Accounts.visibility == check.visibility,
-                        Accounts.name == check.name,
-                        # Moneysum.moneysum != 0.0,
-                        Moneysum.user == Userroot.username,
-                        Moneysum.wallet == Userroot.walletname,
-                        Userroot.isgeneral == 1,
+                elif not roots.isgeneral:
+                    usr = get_user_by_UUID(s["UUID"].strip()).get("id")
+                    result = (
+                        session.query(
+                            Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
+                        )
+                            .join(Moneysum.accountid)
+                            .join(Moneysum.currencyid)
+                            .join(Moneysum.roots)
+                            .filter(
+                            Accounts.visibility == check.visibility,
+                            Accounts.name == check.name,
+                            # Moneysum.moneysum != 0.0,
+                            Moneysum.user == usr,
+                            Moneysum.wallet == Userroot.walletname,
+                            Userroot.isgeneral == 0,
+                            Userroot.ispublic == 1
+                        )
+                            .all()
                     )
-                        .all()
-                )
-            elif not roots.isgeneral:
-                usr = get_user_by_UUID(s["UUID"].strip()).get("id")
-                result = (
-                    session.query(
-                        Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
-                    )
-                        .join(Moneysum.accountid)
-                        .join(Moneysum.currencyid)
-                        .join(Moneysum.roots)
-                        .filter(
-                        Accounts.visibility == check.visibility,
-                        Accounts.name == check.name,
-                        # Moneysum.moneysum != 0.0,
-                        Moneysum.user == usr,
-                        Moneysum.wallet == Userroot.walletname,
-                        Userroot.isgeneral == 0,
-                    )
-                        .all()
-                )
-            summa_usd = summa_eur = summa_uah = summa_zlt = 0
-            for details in sorted(result):
-                transpone = list(details)
-                if transpone[3] == "USD":
-                    summa_usd += transpone[2]
-                if transpone[3] == "EUR":
-                    summa_eur += transpone[2]
-                if transpone[3] == "UAH":
-                    summa_uah += transpone[2]
-                if transpone[3] == "PLN":
-                    summa_zlt += transpone[2]
-            count_usd = count_uah = count_eur = count_pln = 0
-            for details in sorted(result):
-                transpone = list(details)
-                if transpone[3] == "USD" and count_usd == 0:
-                    count_usd += 1
-                    dct_lst.append(
-                        {
-                            "id": transpone[0],
-                            "account": transpone[1],
-                            "money": str(summa_usd) + " " + transpone[3],
-                        }
-                    )
-                if transpone[3] == "EUR" and count_eur == 0:
-                    count_eur += 1
-                    dct_lst.append(
-                        {
-                            "id": transpone[0],
-                            "account": transpone[1],
-                            "money": str(summa_eur) + " " + transpone[3],
-                        }
-                    )
-                if transpone[3] == "UAH" and count_uah == 0:
-                    count_uah += 1
-                    dct_lst.append(
-                        {
-                            "id": transpone[0],
-                            "account": transpone[1],
-                            "money": str(summa_uah) + " " + transpone[3],
-                        }
-                    )
-                if transpone[3] == "PLN" and count_pln == 0:
-                    count_pln += 1
-                    dct_lst.append(
-                        {
-                            "id": transpone[0],
-                            "account": transpone[1],
-                            "money": str(summa_zlt) + " " + transpone[3],
-                        }
-                    )
+                summa_usd = summa_eur = summa_uah = summa_zlt = 0
+                for details in sorted(result):
+                    transpone = list(details)
+                    if transpone[3] == "USD":
+                        summa_usd += transpone[2]
+                    if transpone[3] == "EUR":
+                        summa_eur += transpone[2]
+                    if transpone[3] == "UAH":
+                        summa_uah += transpone[2]
+                    if transpone[3] == "PLN":
+                        summa_zlt += transpone[2]
+                count_usd = count_uah = count_eur = count_pln = 0
+                for details in sorted(result):
+                    transpone = list(details)
+                    if transpone[3] == "USD" and count_usd == 0:
+                        count_usd += 1
+                        dct_lst.append(
+                            {
+                                "id": transpone[0],
+                                "account": transpone[1],
+                                "money": str(summa_usd) + " " + transpone[3],
+                            }
+                        )
+                    if transpone[3] == "EUR" and count_eur == 0:
+                        count_eur += 1
+                        dct_lst.append(
+                            {
+                                "id": transpone[0],
+                                "account": transpone[1],
+                                "money": str(summa_eur) + " " + transpone[3],
+                            }
+                        )
+                    if transpone[3] == "UAH" and count_uah == 0:
+                        count_uah += 1
+                        dct_lst.append(
+                            {
+                                "id": transpone[0],
+                                "account": transpone[1],
+                                "money": str(summa_uah) + " " + transpone[3],
+                            }
+                        )
+                    if transpone[3] == "PLN" and count_pln == 0:
+                        count_pln += 1
+                        dct_lst.append(
+                            {
+                                "id": transpone[0],
+                                "account": transpone[1],
+                                "money": str(summa_zlt) + " " + transpone[3],
+                            }
+                        )
     return merge_dict(dct_lst)
 
 
