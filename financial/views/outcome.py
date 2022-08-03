@@ -1,4 +1,4 @@
-from flask import render_template, session, request
+from flask import render_template, session, request, redirect
 from flask_login import login_required
 
 from financial.service.accounts import delete_data
@@ -19,13 +19,7 @@ def outcome():
         if message is None:
             if wtform.validate_on_submit():
                 delete_data(wtform)
-                return render_template(
-                    "outcome.html",
-                    form=wtform,
-                    user=session["user"],
-                    superuser=session["superuser"],
-                    ths=ths,
-                )
+                return redirect(request.referrer)
         else:
             add_error(message)
             return render_template(

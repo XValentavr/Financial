@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import sqlalchemy
@@ -130,7 +131,7 @@ def get_count_users(identifier: int):
     This module gets users wallet group by wallets
     :return: list of number of wallets
     """
-    engine = sqlalchemy.create_engine('mysql+pymysql://root:root@localhost:3306/financialapp')
+    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
     session = sessionmaker(bind=engine)
     session = session()
     with session as session:

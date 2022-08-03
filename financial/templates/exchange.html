@@ -91,10 +91,21 @@
             </form>
         </div>
         <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/defaulttime.js') }}" defer></script>
         <script src="{{ url_for('static', filename='js/support.js') }}" defer></script>
         <script src="{{ url_for('static', filename='js/exchange.js') }}"></script>
+        <script>
+            let form = document.getElementById('exchangeform');
+            let submitButton = document.getElementById('submitID');
+            form.addEventListener('submit', function () {
+                submitButton.setAttribute('disabled', 'disabled');
+                submitButton.value = 'Please wait...';
+            }, false);
 
+            let now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('today').max = now.toISOString().slice(0, 16);
+            document.getElementById('today').value = now.toISOString().slice(0, 16);
+        </script>
     </div>
     </body>
 {% endblock %}

@@ -35,7 +35,7 @@ def get_account_money(UUID: str):
     dct_lst = []
     get_user = get_user_by_UUID(UUID)
     account_id = get_user.get("id")
-    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
+    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
     session = sessionmaker(bind=engine)
     session = session()
     checker = get_name_account_checker()
@@ -56,7 +56,6 @@ def get_account_money(UUID: str):
                 )
                     .all()
             )
-            print(result)
             if result:
                 for details in sorted(result):
                     transpone = list(details)
@@ -299,7 +298,7 @@ def get_name_account():
     :return: list of account name
     """
 
-    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
+    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
     session = sessionmaker(bind=engine)
     session = session()
     result = (
@@ -323,7 +322,21 @@ def get_name_account_checker():
     This module gets account name of valuex
     :return: list of account name
     """
-    result = Accounts.query.all()
+    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
+    session = sessionmaker(bind=engine)
+    session = session()
+    result = (
+        session.query(
+            Accounts.id, Accounts.name,Accounts.visibility
+        )
+            .join(Userroot.walletid)
+            .join(Userroot.userid)
+            .filter(
+            Users.UUID == s['UUID'],
+            Userroot.ispublic == 1
+        )
+            .all()
+    )
     return [result for result in result]
 
 

@@ -1,4 +1,4 @@
-from flask import render_template, session, request
+from flask import render_template, session, request, redirect
 from flask_login import login_required
 
 from financial.service.currency import get_list_currency
@@ -19,13 +19,8 @@ def move():
         if message is None:
             if wtform.validate_on_submit():
                 moving_command(wtform)
-                return render_template(
-                    "move.html",
-                    form=wtform,
-                    user=session["user"],
-                    superuser=session["superuser"],
-                    ths=ths,
-                )
+                return redirect(request.referrer)
+
         else:
             add_error(message)
             return render_template(

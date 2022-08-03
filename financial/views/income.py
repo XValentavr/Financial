@@ -1,5 +1,5 @@
 
-from flask import render_template, session, request
+from flask import render_template, session, request, redirect, url_for
 from flask_login import login_required
 
 from financial.service.accounts import insert_account
@@ -18,16 +18,9 @@ def income():
         form = request.form
         message = form.get("errormessage")
         if message is None:
-            print(wtform.data)
             if wtform.validate_on_submit():
                 insert_account(wtform)
-                return render_template(
-                    "income.html",
-                    form=wtform,
-                    user=session["user"],
-                    superuser=session["superuser"],
-                    ths=ths,
-                )
+                return redirect(request.referrer)
         else:
             add_error(message)
             return render_template(

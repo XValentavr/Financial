@@ -69,6 +69,17 @@
         <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
         <script src="{{ url_for('static', filename='js/defaulttime.js') }}" defer></script>
         <script src="{{ url_for('static', filename='js/support.js') }}" defer></script>
+                <script>
+            let form = document.getElementById('outcomeform');
+            let submitButton = document.getElementById('submitID');
+            form.addEventListener('submit', function () {
+                submitButton.setAttribute('disabled', 'disabled');
+
+                submitButton.value = 'Please wait...';
+
+            }, false);
+
+        </script>
     </div>
     </body>
     </html>

@@ -1,4 +1,5 @@
 import datetime
+import locale
 import os
 
 import sqlalchemy
@@ -123,7 +124,7 @@ def get_all_comments():
     This module gets all comments from database to show
     :return: json of get data
     """
-    engine = sqlalchemy.create_engine("mysql+pymysql://root:root@localhost:3306/financialapp")
+    engine = sqlalchemy.create_engine(os.getenv('SQLALCHEMY_DATABASE_URI'))
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
@@ -555,7 +556,7 @@ def create_dict(comments: list, transpone: list, user: int):
     comments.append(
         {
             "id": transpone[8],
-            "date": transpone[0],
+            "date": str(transpone[0]),
             "comment": transpone[1],
             "addedsumma": transpone[2],
             "deletedsumma": transpone[3],
@@ -571,8 +572,8 @@ def create_dict(comments: list, transpone: list, user: int):
             "deleted": transpone[14],
             "superuser": s["superuser"],
             "general": transpone[15],
-            'datedelete': transpone[16],
-            'datechange': transpone[17]
+            'datedelete': str(transpone[16]),
+            'datechange': str(transpone[17])
         }
     )
     return comments
