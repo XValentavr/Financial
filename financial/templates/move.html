@@ -78,6 +78,11 @@
 
             }, false);
 
+            let now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('today').max = now.toISOString().slice(0, 16);
+            document.getElementById('today').value = now.toISOString().slice(0, 16);
+
         </script>
     </div>
     </body>

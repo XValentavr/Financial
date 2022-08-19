@@ -18,7 +18,6 @@ def wallet():
     else:
         if form.validate_on_submit():
             name = form.wallet.data
-            visibility = form.visibility.data
             wallets = get_wallets()
             identifier = wallets[-1].get("id") + 1
             for w in wallets:
@@ -32,8 +31,35 @@ def wallet():
                         variant=users,
                     )
             else:
-                insert_wallet(identifier, name, visibility)
+                insert_wallet(identifier, name, form.visibility.data)
                 add_all_possible_pairs()
+                if form.visibility.data == "Да":
+                    if request.method == "POST":
+                        if request.form.get("All") == "on":
+                            update_roots(identifier, 1)
+                            update_public_visibility(identifier, 1)
+                        else:
+                            for u in users:
+                                if request.form.get(u.name) == "on":
+                                    usr = get_user_by_enter_name(u.name)
+                                    update_roots(identifier, 1, usr.id)
+                                    update_public_visibility(identifier, 1, usr.id)
+                else:
+                    update_roots(identifier, 0)
+                if form.public.data == "Да":
+                    if request.method == "POST":
+                        if request.form.get("Allvisibility") == "on":
+                            update_public_visibility(identifier, 1)
+                        else:
+                            for u in users:
+                                if request.form.get(u.name) == "on":
+                                    usr = get_user_by_enter_name(u.name)
+                                    update_public_visibility(identifier, 1, usr.id)
+                                else:
+                                    usr = get_user_by_enter_name(u.name)
+                                    update_public_visibility(identifier, 0, usr.id)
+                elif form.visibility.data == "Нет" and form.public.data == "Нет":
+                    update_public_roots(identifier, 0)
         return render_template(
             "wallet.html",
             form=form,
@@ -76,7 +102,6 @@ def edit_wallet(identifier):
         else:
             update_roots(identifier, 0)
         if form.public.data == "Да":
-            print('hvfvfw1')
             if request.method == "POST":
                 if request.form.get("Allvisibility") == "on":
                     update_public_visibility(identifier, 1)

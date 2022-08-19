@@ -45,16 +45,16 @@ def get_account_money(UUID: str):
                 session.query(
                     Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                 )
-                    .join(Moneysum.accountid)
-                    .join(Moneysum.currencyid,
-                          Moneysum.roots)
-                    .filter(
+                .join(Moneysum.accountid)
+                .join(Moneysum.currencyid,
+                      Moneysum.roots)
+                .filter(
                     Moneysum.user == account_id,
                     Accounts.visibility == check.visibility,
                     Userroot.ispublic == 1
                     # Accounts.name == check.name,
                 )
-                    .all()
+                .all()
             )
             if result:
                 for details in sorted(result):
@@ -76,10 +76,10 @@ def get_account_money(UUID: str):
                         session.query(
                             Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                         )
-                            .join(Moneysum.accountid)
-                            .join(Moneysum.currencyid)
-                            .join(Moneysum.roots)
-                            .filter(
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
                             Accounts.visibility == check.visibility,
                             Accounts.name == check.name,
                             # Moneysum.moneysum != 0.0,
@@ -88,7 +88,7 @@ def get_account_money(UUID: str):
                             Userroot.isgeneral == 1,
                             Userroot.ispublic == 1
                         )
-                            .all()
+                        .all()
                     )
                 elif not roots.isgeneral:
                     usr = get_user_by_UUID(s["UUID"].strip()).get("id")
@@ -96,10 +96,10 @@ def get_account_money(UUID: str):
                         session.query(
                             Moneysum.wallet, Accounts.name, Moneysum.moneysum, Currency.name
                         )
-                            .join(Moneysum.accountid)
-                            .join(Moneysum.currencyid)
-                            .join(Moneysum.roots)
-                            .filter(
+                        .join(Moneysum.accountid)
+                        .join(Moneysum.currencyid)
+                        .join(Moneysum.roots)
+                        .filter(
                             Accounts.visibility == check.visibility,
                             Accounts.name == check.name,
                             # Moneysum.moneysum != 0.0,
@@ -108,7 +108,7 @@ def get_account_money(UUID: str):
                             Userroot.isgeneral == 0,
                             Userroot.ispublic == 1
                         )
-                            .all()
+                        .all()
                     )
                 summa_usd = summa_eur = summa_uah = summa_zlt = 0
                 for details in sorted(result):
@@ -305,13 +305,13 @@ def get_name_account():
         session.query(
             Accounts.id, Accounts.name
         )
-            .join(Userroot.walletid)
-            .join(Userroot.userid)
-            .filter(
+        .join(Userroot.walletid)
+        .join(Userroot.userid)
+        .filter(
             Users.UUID == s['UUID'],
             Userroot.ispublic == 1
         )
-            .all()
+        .all()
     )
 
     return [(result.id, result.name) for result in result]
@@ -327,15 +327,15 @@ def get_name_account_checker():
     session = session()
     result = (
         session.query(
-            Accounts.id, Accounts.name,Accounts.visibility
+            Accounts.id, Accounts.name, Accounts.visibility
         )
-            .join(Userroot.walletid)
-            .join(Userroot.userid)
-            .filter(
+        .join(Userroot.walletid)
+        .join(Userroot.userid)
+        .filter(
             Users.UUID == s['UUID'],
             Userroot.ispublic == 1
         )
-            .all()
+        .all()
     )
     return [result for result in result]
 
@@ -367,20 +367,38 @@ def restrict_dict(dct):
     :param dct: dict to change
     :return: final transformed dict
     """
-    final = []
     cur = get_list_currency()
     for c in cur:
         for d in dct:
             valuta = d.get("money").split(", ")
             for v in valuta:
                 if c.name in v:
-                    d[c.name] = v.replace(f" {c.name}", "")
-                    final.append(d)
+                    money = v.replace(f" {c.name}", "")
+                    d[c.name] = money
+    delete_if_zeros_more_than_2(dct, cur)
+
+
+def delete_if_zeros_more_than_2(money: dict, currency: list) -> None:
+    """
+    This nodule deletes if more then 2 zeros
+    :param money: dict of money
+    :param currency: currencies
+    :return:
+    """
+    for m in money:
+        zeros = 0
+        for c in currency:
+            mon = m.get(c.name)
+            if mon is not None:
+                if float('0.0') == float(mon):
+                    zeros += 1
+                if zeros >= 2:
+                    del m[c.name]
 
 
 def check_keys(dct) -> None:
     """
-    This module adds needed keys to yser dict
+    This module adds needed keys to user dict
     :param dct: dict to add keys
     :return: None
     """
@@ -492,9 +510,9 @@ def get_by_account_status(identifier):
     session = session()
     result = (
         session.query(Accounts.name)
-            .join(Moneysum.accountid)
-            .filter(Moneysum.id == identifier)
-            .first()
+        .join(Moneysum.accountid)
+        .filter(Moneysum.id == identifier)
+        .first()
     )
     return result
 

@@ -65,7 +65,7 @@ class Income(FlaskForm):
     sum = IntegerField("Сумма: ", validators=[DataRequired()])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
-    info = StringField("Введите комментарий: ", validators=[DataRequired()])
+    info = StringField("Введите комментарий: ")
     date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M'
                               )
 
@@ -78,7 +78,7 @@ class Outcome(FlaskForm):
     sum = IntegerField("Сумма: ", validators=[DataRequired()])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
-    info = StringField("Введите комментарий: ", validators=[DataRequired()])
+    info = StringField("Введите комментарий: ")
     date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
 
     def set_choices(self):
@@ -91,7 +91,7 @@ class Move(FlaskForm):
     from_ = SelectField("Кошелек откуда", choices=[])
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Кошелек куда", choices=[])
-    info = StringField("Введите комментарий: ", validators=[DataRequired()])
+    info = StringField("Введите комментарий: ")
     date = DateTimeLocalField("Выберите дату", validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
 
     def set_choices(self):

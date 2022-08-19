@@ -3,7 +3,7 @@ import locale
 import os
 
 import sqlalchemy
-from flask import session as s
+from flask import session as s, redirect, request, flash
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
 
@@ -65,15 +65,16 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
             Accountstatus.isdeleted,
             Userroot.isgeneral,
             Accountstatus.datedelete,
-            Accountstatus.datechange
+            Accountstatus.datechange,
+            Accountstatus.percent
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name, Accountstatus.date.between(start, end))
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -106,15 +107,16 @@ def get_comment_by_wallet_name(name):
             Accountstatus.isdeleted,
             Userroot.isgeneral,
             Accountstatus.datedelete,
-            Accountstatus.datechange
+            Accountstatus.datechange,
+            Accountstatus.percent
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .filter(Accounts.name == name)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -147,14 +149,15 @@ def get_all_comments():
             Accountstatus.isdeleted,
             Userroot.isgeneral,
             Accountstatus.datedelete,
-            Accountstatus.datechange
+            Accountstatus.datechange,
+            Accountstatus.percent,
         )
-            .join(Moneysum.userid)
-            .join(Moneysum.accountinfo)
-            .join(Moneysum.accountid)
-            .join(Moneysum.roots)
-            .order_by(desc(Accountstatus.id))
-            .all()
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .order_by(desc(Accountstatus.id))
+        .all()
     )
     return create_result_comments(result, comments)
 
@@ -400,6 +403,7 @@ def update_comment(
 
 def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_delete, wallet_add, cur_currency_delete,
                                         cur_currency_add, from_where, added, user_2_change):
+    rate = 1
     if from_where == 'moving':
         sum_ = form.sum_.data
 
@@ -410,7 +414,9 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         # get to data
         to_ = form.to_.data
         currency_to = currency_from
-
+        if to_ == from_:
+            flash('Вы переводите в тот же кошелек. Смените кошелек!')
+            return redirect(request.referrer)
         info = form.info.data
         date = str(form.date.data)
         moved = True
@@ -428,7 +434,8 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         to_ = from_
         currency_to = form.get('valuta_buy')
         currency_to = get_current_currency_by_name(currency_to).id
-
+        if currency_from == currency_to:
+            flash('Вы обмениваете одну и ту же валюту. Смените её!')
         rate = form.get('rate_exchange')
         info = form.get('comments')
         date = str(form.get('date'))
@@ -573,7 +580,8 @@ def create_dict(comments: list, transpone: list, user: int):
             "superuser": s["superuser"],
             "general": transpone[15],
             'datedelete': str(transpone[16]),
-            'datechange': str(transpone[17])
+            'datechange': str(transpone[17]),
+            'percent': transpone[18]
         }
     )
     return comments

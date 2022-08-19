@@ -2,7 +2,7 @@ import os
 import uuid
 
 import sqlalchemy
-from flask import request, session as s
+from flask import request, session as s, redirect, flash
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
@@ -137,9 +137,9 @@ def get_count_users(identifier: int):
     with session as session:
         result = (
             session.query(Moneysum.wallet, func.count(Moneysum.wallet))
-                .filter_by(wallet=identifier)
-                .group_by(Moneysum.wallet)
-                .all()
+            .filter_by(wallet=identifier)
+            .group_by(Moneysum.wallet)
+            .all()
         )
     res_list = []
     if result:
@@ -163,6 +163,9 @@ def exchange_command(form):
 
     currency_from_name = request.form.get("valuta_sold")
     currency_to = request.form.get("valuta_buy")
+    if currency_from_name == currency_to:
+        flash('Вы обмениваете одну и ту же валюту. Смените её!')
+        return redirect(request.referrer)
     currency_from = get_current_currency_by_name(currency_from_name).id
     currency_to = get_current_currency_by_name(currency_to).id
 
@@ -253,11 +256,15 @@ def exchange_command(form):
 
 
 def moving_command(form):
+    from_ = form.from_.data
+    to_ = form.to_.data
+    if to_ == from_:
+        flash('Вы переводите в тот же кошелек. Смените кошелек!')
+        return redirect(request.referrer)
     pair = uuid.uuid4()
     sum_ = float(form.sum_.data)
-    from_ = form.from_.data
     currency_from = int(form.currency_from.data)
-    currency_to = int(form.currency_to.data)
+    currency_to = currency_from
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     summa_to_delete = Moneysum.query.filter_by(
@@ -265,13 +272,13 @@ def moving_command(form):
     ).all()
     info = form.info.data
     date = str(form.date.data)
-    to_ = form.to_.data
     final_sum = 0
     code_from = get_current_currency(currency_from)
     currency_from = code_from.id
     code_to = get_current_currency(currency_to)
     currency_to = code_to.id
-    new_entered_summa = sum_ * float(form.rate.data)
+    new_entered_summa = sum_
+
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
