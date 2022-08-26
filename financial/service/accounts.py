@@ -392,8 +392,8 @@ def delete_if_zeros_more_than_2(money: dict, currency: list) -> None:
             if mon is not None:
                 if float('0.0') == float(mon):
                     zeros += 1
-                if zeros >= 2:
-                    del m[c.name]
+                    if zeros >= 2:
+                        del m[c.name]
 
 
 def check_keys(dct) -> None:
