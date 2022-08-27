@@ -41,6 +41,13 @@
                     </div>
                 </div>
                 <div class="dropdown">
+                    <span class="nav-item"><p class="nav-link">Работа с валютой </p></span>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('financial.currency') }}" class="nav-link">Изменить</a>
+                        <a href="{{ url_for('financial.currency_add') }}" class="nav-link">Добавить</a>
+                    </div>
+                </div>
+                <div class="dropdown">
                     <span class="nav-item"><p class="nav-link">Счета</p></span>
                     <div class="dropdown-content">
                         <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>

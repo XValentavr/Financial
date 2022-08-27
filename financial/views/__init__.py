@@ -24,6 +24,7 @@ from . import createwallet
 from . import pay
 from . import wallets
 from . import auth
+from . import currency
 
 
 @financial.app_errorhandler(404)

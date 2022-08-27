@@ -19,3 +19,6 @@ class Currency(database.Model):
     def __init__(self, name):
         #: admin's name
         self.name = name
+
+    def json(self):
+        return {'identifier': self.id, 'name': self.name}

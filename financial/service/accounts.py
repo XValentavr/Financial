@@ -1,6 +1,7 @@
 import datetime
 import os
 import uuid
+from collections import OrderedDict
 
 import sqlalchemy
 from flask import session as s
@@ -61,7 +62,6 @@ def get_account_money(UUID: str):
                     transpone = list(details)
                     dct_lst.append(
                         {
-                            "id": transpone[0],
                             "account": transpone[1],
                             "money": str(transpone[2]) + " " + transpone[3],
                         }
@@ -110,56 +110,16 @@ def get_account_money(UUID: str):
                         )
                         .all()
                     )
-                summa_usd = summa_eur = summa_uah = summa_zlt = 0
                 for details in sorted(result):
                     transpone = list(details)
-                    if transpone[3] == "USD":
-                        summa_usd += transpone[2]
-                    if transpone[3] == "EUR":
-                        summa_eur += transpone[2]
-                    if transpone[3] == "UAH":
-                        summa_uah += transpone[2]
-                    if transpone[3] == "PLN":
-                        summa_zlt += transpone[2]
-                count_usd = count_uah = count_eur = count_pln = 0
-                for details in sorted(result):
-                    transpone = list(details)
-                    if transpone[3] == "USD" and count_usd == 0:
-                        count_usd += 1
-                        dct_lst.append(
-                            {
-                                "id": transpone[0],
-                                "account": transpone[1],
-                                "money": str(summa_usd) + " " + transpone[3],
-                            }
-                        )
-                    if transpone[3] == "EUR" and count_eur == 0:
-                        count_eur += 1
-                        dct_lst.append(
-                            {
-                                "id": transpone[0],
-                                "account": transpone[1],
-                                "money": str(summa_eur) + " " + transpone[3],
-                            }
-                        )
-                    if transpone[3] == "UAH" and count_uah == 0:
-                        count_uah += 1
-                        dct_lst.append(
-                            {
-                                "id": transpone[0],
-                                "account": transpone[1],
-                                "money": str(summa_uah) + " " + transpone[3],
-                            }
-                        )
-                    if transpone[3] == "PLN" and count_pln == 0:
-                        count_pln += 1
-                        dct_lst.append(
-                            {
-                                "id": transpone[0],
-                                "account": transpone[1],
-                                "money": str(summa_zlt) + " " + transpone[3],
-                            }
-                        )
+                    dct_lst.append(
+                        {
+                            "id": transpone[0],
+                            "account": transpone[1],
+                            "money": str(transpone[2]) + " " + transpone[3],
+                        }
+                    )
+
     return merge_dict(dct_lst)
 
 
@@ -358,6 +318,7 @@ def merge_dict(dct_list: list) -> list:
             else:
                 res_dict.append(dct)
     restrict_dict(res_dict)
+    delete_unused(res_dict)
     return res_dict
 
 
@@ -376,6 +337,14 @@ def restrict_dict(dct):
                     money = v.replace(f" {c.name}", "")
                     d[c.name] = money
     delete_if_zeros_more_than_2(dct, cur)
+
+
+def delete_unused(res_dict):
+    for dct in res_dict:
+        if 'id' in dct.keys():
+            del dct['id']
+        if 'money' in dct.keys():
+            del dct['money']
 
 
 def delete_if_zeros_more_than_2(money: dict, currency: list) -> None:

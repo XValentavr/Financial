@@ -5,7 +5,7 @@ Imports the department_of_hospital_api and employee_api submodules and registers
 from flask_restful import Api
 
 # local imports
-from . import purse, users, wallets, comments
+from . import purse, users, wallets, comments, currency
 
 
 def create_api(application):
@@ -17,6 +17,9 @@ def create_api(application):
     api.add_resource(users.AllUsers, "/api/users")
     api.add_resource(users.SingleUser, "/api/users/<identifier>")
 
+    # for currency
+    api.add_resource(currency.AllCurrencies, "/api/currency")
+    api.add_resource(currency.SingleCurrency, "/api/currency/<identifier>")
     # for wallets
     api.add_resource(wallets.AllWallets, "/api/wallets")
     api.add_resource(wallets.SingleWallet, "/api/wallets/<identifier>")

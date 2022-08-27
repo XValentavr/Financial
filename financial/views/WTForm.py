@@ -39,6 +39,10 @@ class LoginForm(FlaskForm):
     )
 
 
+class CreateCurrency(FlaskForm):
+    name = StringField('Название:', validators=[DataRequired(), Length(min=1, max=20)])
+
+
 class Register(FlaskForm):
     """
     This class create WTForm to login admin user. There are four fields to enter data

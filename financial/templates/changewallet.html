@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>
-    <script src="{{ url_for('static', filename='js/wallet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wallet.js') }}"></script>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container-fluid">
@@ -38,6 +38,13 @@
                     <div class="dropdown-content">
                         <a href="{{ url_for('financial.add') }}" class="nav-link">Добавить</a>
                         <a href="{{ url_for('financial.change') }}" class="nav-link">Изменить</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <span class="nav-item"><p class="nav-link">Работа с валютой </p></span>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('financial.currency') }}" class="nav-link">Изменить</a>
+                        <a href="{{ url_for('financial.currency_add') }}" class="nav-link">Добавить</a>
                     </div>
                 </div>
                 <div class="dropdown">

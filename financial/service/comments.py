@@ -704,3 +704,5 @@ def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, mo
     )
     database.session.add(accounts)
     database.session.commit()
+
+
