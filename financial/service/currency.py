@@ -49,20 +49,21 @@ def get_api_currency():
     return [currency.json() for currency in currency]
 
 
-def insert_new_currency(name: str):
+def insert_new_currency(name: str, equal: str):
     """
     This module creates new currency
     :param name:name of currency
+    :param equal:status to dollar
     :return: None
     """
     from financial.models.currency import Currency
 
-    cur = Currency(name=name)
+    cur = Currency(name=name, equal=equal)
     database.session.add(cur)
     database.session.commit()
 
 
-def change_currency(old_name: str, new_name: str):
+def change_currency(old_name: str, new_name: str, equal: str):
     """
     This module creates new currency
     :param old_name:old_name of currency
@@ -76,6 +77,7 @@ def change_currency(old_name: str, new_name: str):
     change_comment(old_name, new_name)
     cur = Currency.query.filter_by(name=old_name).first()
     cur.name = new_name
+    cur.equal = equal
     database.session.add(cur)
     database.session.commit()
 

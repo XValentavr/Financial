@@ -13,8 +13,10 @@
         </div>
         <div class="wrap">
             <div class="login-wrap p-4 p-md-5">
-                            {% for cat, msg in get_flashed_messages(True) %}
-                    <div class="flash {{ cat }}">{{ msg }}</div>
+                {% for cat, msg in get_flashed_messages(True) %}
+                    <script type="text/javascript">window.setTimeout("document.getElementById('successMessage').style.display='none';", 5000); </script>
+                    <div id="successMessage" class="flash">{{ msg }}</div>
+                    <br>
                 {% endfor %}
                 <form action="" method="post" class="form-contact" name="popup" id="exchangeform">
                     <div class="form-group mt-3">
@@ -27,7 +29,7 @@
                     </div>
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Сумма:</label>
-                        <input id="changedsumma" name="summa" type="number" class="summa_inline" onkeyup="exchanged()">
+                        <input id="changedsumma" name="summa" type="number" step="0.01" class="summa_inline" onkeyup="exchanged()">
                     </div>
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Валюта продажи:</label>
@@ -54,8 +56,8 @@
                         <label>
                             <div style="display:inline-block">
                                 <label class='labelstyle'>Получили:</label><br>
-                                <input id="newsumma" class="summa_inline" onkeyup="exchanged()" name="changed_summa"
-                                       readonly
+                                <input id="newsumma" class="summa_inline" step="0.01" onchange="onchange_summa()"
+                                       name="changed_summa"
                                        style="border: none">
                                 <label class='labelstyle'>по курсу</label>
                                 <input id="valuta" name="rate_exchange" class="valuta" style="border: none"

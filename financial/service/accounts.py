@@ -1,7 +1,6 @@
 import datetime
 import os
 import uuid
-from collections import OrderedDict
 
 import sqlalchemy
 from flask import session as s
@@ -318,7 +317,6 @@ def merge_dict(dct_list: list) -> list:
             else:
                 res_dict.append(dct)
     restrict_dict(res_dict)
-    delete_unused(res_dict)
     return res_dict
 
 
@@ -328,15 +326,20 @@ def restrict_dict(dct):
     :param dct: dict to change
     :return: final transformed dict
     """
+    final = []
     cur = get_list_currency()
     for c in cur:
         for d in dct:
             valuta = d.get("money").split(", ")
             for v in valuta:
                 if c.name in v:
-                    money = v.replace(f" {c.name}", "")
-                    d[c.name] = money
+                    if c.name in d.keys():
+                        d[c.name] += float(v.replace(f" {c.name}", ""))
+                    else:
+                        d[c.name] = float(v.replace(f" {c.name}", ""))
+                    final.append(d)
     delete_if_zeros_more_than_2(dct, cur)
+    delete_unused(dct)
 
 
 def delete_unused(res_dict):
@@ -396,10 +399,12 @@ def insert_pay_account(form):
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
-    if int(percent) > 0:
-        summa = int(summa) - (int(summa) * (int(percent) / 100))
+    print(summa)
+    print(percent)
+    if float(percent) > 0:
+        summa = float(summa) - (float(summa) * (float(percent) / 100))
     else:
-        summa = int(summa)
+        summa = float(summa)
     summa_to_update = Moneysum.query.filter_by(
         user=user, wallet=int(wallet), currency=currency.id
     ).all()

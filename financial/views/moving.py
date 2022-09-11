@@ -1,4 +1,4 @@
-from flask import render_template, session, request, redirect
+from flask import render_template, session, request, redirect, flash
 from flask_login import login_required
 
 from financial.service.currency import get_list_currency

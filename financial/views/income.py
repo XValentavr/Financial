@@ -1,5 +1,4 @@
-
-from flask import render_template, session, request, redirect, url_for
+from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required
 
 from financial.service.accounts import insert_account
@@ -20,6 +19,7 @@ def income():
         if message is None:
             if wtform.validate_on_submit():
                 insert_account(wtform)
+                flash('Вы успешно добавили средства. ')
                 return redirect(request.referrer)
         else:
             add_error(message)

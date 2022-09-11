@@ -1,4 +1,4 @@
-from flask import render_template, session, request
+from flask import render_template, session, request, flash
 from flask_login import login_required
 
 from financial.service.accounts import insert_pay_account, get_name_account_checker
@@ -27,6 +27,7 @@ def paynment():
                 selected=selected,
             )
         else:
+            flash('Вы успешно оплатили.')
             insert_pay_account(request.form)
 
     return render_template(

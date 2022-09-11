@@ -19,6 +19,7 @@ from financial.service.currency import (
     get_current_currency,
     get_current_currency_by_name,
 )
+from financial.service.exchangerate import MoneyRate
 from financial.service.moneysum import reset_moneysum, inser_into_money_sum
 from financial.service.userroot import get_user_root
 from financial.service.users import get_user_by_UUID
@@ -429,7 +430,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
         from_ = get_current_wallet_by_name(from_)
         currency_from = form.get('valuta_sold')
         currency_from = get_current_currency_by_name(currency_from).id
-
+        changed_summa = form.get('changed_summa')
         # get to data
         to_ = from_
         currency_to = form.get('valuta_buy')
@@ -533,7 +534,7 @@ def update_moving_and_exchange_commands(form, summa_delete, summa_add, wallet_de
 
     new_summa_add_or_update_to_part = get_to_sum(user, to_, currency_to)
     # if summa to move from is not exists then minus data
-    sum_ = float(sum_) * float(rate)
+    sum_ = changed_summa
     if new_summa_add_or_update_to_part is not None:
         for new_summa_add_or_update_to_part in new_summa_add_or_update_to_part:
             new_summa_add_or_update_to_part.moneysum += float(sum_)
@@ -704,5 +705,3 @@ def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, mo
     )
     database.session.add(accounts)
     database.session.commit()
-
-

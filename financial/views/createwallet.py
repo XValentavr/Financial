@@ -11,6 +11,7 @@ from financial.views import financial, WTForm
 @financial.route("/wallet", methods=["POST", "GET"])
 @login_required
 def wallet():
+    indicator = False
     form = WTForm.Wallet()
     users = get_all_user()
     if not session["superuser"]:
@@ -36,11 +37,13 @@ def wallet():
                 if form.visibility.data == "Да":
                     if request.method == "POST":
                         if request.form.get("All") == "on":
+                            indicator = True
                             update_roots(identifier, 1)
                             update_public_visibility(identifier, 1)
                         else:
+                            indicator = True
                             for u in users:
-                                if request.form.get(u.name) == "on":
+                                if request.form.get('general_' + u.name) == "on":
                                     usr = get_user_by_enter_name(u.name)
                                     update_roots(identifier, 1, usr.id)
                                     update_public_visibility(identifier, 1, usr.id)
@@ -52,10 +55,10 @@ def wallet():
                             update_public_visibility(identifier, 1)
                         else:
                             for u in users:
-                                if request.form.get(u.name) == "on":
+                                if request.form.get('public_' + u.name) == "on":
                                     usr = get_user_by_enter_name(u.name)
                                     update_public_visibility(identifier, 1, usr.id)
-                                else:
+                                elif not indicator:
                                     usr = get_user_by_enter_name(u.name)
                                     update_public_visibility(identifier, 0, usr.id)
                 elif form.visibility.data == "Нет" and form.public.data == "Нет":
@@ -82,6 +85,7 @@ def changewallet():
 @financial.route("/wallet/edit/<string:identifier>", methods=["GET", "POST"])
 @login_required
 def edit_wallet(identifier):
+    indicator = False
     # load employee.html template
     users = get_all_user()
     if not session["superuser"]:
@@ -94,8 +98,9 @@ def edit_wallet(identifier):
                     update_roots(identifier, 1)
                     update_public_visibility(identifier, 1)
                 else:
+                    indicator = True
                     for u in users:
-                        if request.form.get(u.name) == "on":
+                        if request.form.get("general_" + u.name) == "on":
                             usr = get_user_by_enter_name(u.name)
                             update_roots(identifier, 1, usr.id)
                             update_public_visibility(identifier, 1, usr.id)
@@ -107,10 +112,13 @@ def edit_wallet(identifier):
                     update_public_visibility(identifier, 1)
                 else:
                     for u in users:
-                        if request.form.get(u.name) == "on":
+                        print(indicator)
+                        print(form)
+                        print(request.form.get('public_' + u.name))
+                        if request.form.get('public_' + u.name) == "on":
                             usr = get_user_by_enter_name(u.name)
                             update_public_visibility(identifier, 1, usr.id)
-                        else:
+                        elif not indicator or request.form.get('public_' + u.name) is None:
                             usr = get_user_by_enter_name(u.name)
                             update_public_visibility(identifier, 0, usr.id)
         elif form.visibility.data == "Нет" and form.public.data == "Нет":

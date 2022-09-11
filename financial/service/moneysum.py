@@ -2,7 +2,7 @@ import os
 import uuid
 
 import sqlalchemy
-from flask import request, session as s, redirect, flash
+from flask import request, session as s, redirect, flash, url_for
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
@@ -13,6 +13,7 @@ from financial.service.currency import (
     get_current_currency_by_name,
     get_current_currency,
 )
+from financial.service.exchangerate import MoneyRate
 from financial.service.userroot import get_user_root_id
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
@@ -162,12 +163,12 @@ def exchange_command(form):
     to_ = get_current_wallet_by_name(to_)
 
     currency_from_name = request.form.get("valuta_sold")
-    currency_to = request.form.get("valuta_buy")
-    if currency_from_name == currency_to:
+    currency_to_name = request.form.get("valuta_buy")
+    if currency_from_name == currency_to_name:
         flash('Вы обмениваете одну и ту же валюту. Смените её!')
         return redirect(request.referrer)
     currency_from = get_current_currency_by_name(currency_from_name).id
-    currency_to = get_current_currency_by_name(currency_to).id
+    currency_to = get_current_currency_by_name(currency_to_name).id
 
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
@@ -176,7 +177,8 @@ def exchange_command(form):
     info = request.form.get("comments")
     date = str(request.form.get("date"))
     final_sum = 0
-    new_entered_summa = float(summa) * float(request.form.get("rate_exchange"))
+    print(request.form)
+    new_entered_summa = float(request.form.get("changed_summa"))
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
             final_sum = summa_to_delete.moneysum
@@ -253,6 +255,7 @@ def exchange_command(form):
                 )
                 database.session.add(accounts)
                 database.session.commit()
+    flash('Вы успешно обменяли средства.')
 
 
 def moving_command(form):
@@ -260,7 +263,7 @@ def moving_command(form):
     to_ = form.to_.data
     if to_ == from_:
         flash('Вы переводите в тот же кошелек. Смените кошелек!')
-        return redirect(request.referrer)
+        return redirect(url_for('financial.move'))
     pair = uuid.uuid4()
     sum_ = float(form.sum_.data)
     currency_from = int(form.currency_from.data)
@@ -356,6 +359,8 @@ def moving_command(form):
                 )
                 database.session.add(accounts)
                 database.session.commit()
+
+    flash('Вы успешно перевели средства.')
 
 
 def reset_moneysum(status_id: int, identifier: int, summa: float):

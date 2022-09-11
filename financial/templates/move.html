@@ -15,7 +15,8 @@
         <div class="wrap">
             <div class="login-wrap p-4 p-md-5">
                 {% for cat, msg in get_flashed_messages(True) %}
-                    <div class="flash {{ cat }}">{{ msg }}</div>
+                    <script type="text/javascript">window.setTimeout("document.getElementById('successMessage').style.display='none';", 5000); </script>
+                    <div id="successMessage" class="flash">{{ msg }}</div>
                 {% endfor %}
                 <form action="" method="post" class="form-contact" id="movingform">
                     {{ form.hidden_tag() }}
@@ -32,6 +33,11 @@
                                 <p>{{ field.label() }}</p>
                                 <div class="form-group mt-3">
                                     {{ field(class="form-control",id='today') }}
+                                </div>
+                            {% elif field.name =='sum_' %}
+                                <p>{{ field.label() }}</p>
+                                <div class="form-group mt-3">
+                                    {{ field(class="form-control",id='move',onchange="changer('move')") }}
                                 </div>
                             {% else %}
                                 <p>{{ field.label() }}</p>
@@ -68,6 +74,7 @@
         <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
         <script src="{{ url_for('static', filename='js/defaulttime.js') }}" defer></script>
         <script src="{{ url_for('static', filename='js/support.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='js/comma_changer.js') }}" defer></script>
         <script>
             let form = document.getElementById('movingform');
             let submitButton = document.getElementById('submitID');

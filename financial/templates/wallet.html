@@ -31,12 +31,6 @@
                     </div>
                 </div>
                 <div class="dropdown">
-                    <span class="nav-item"><p class="nav-link">Работа с валютой </p></span>
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('financial.currency') }}" class="nav-link">Изменить</a>
-                    </div>
-                </div>
-                <div class="dropdown">
                     <span class="nav-item"><p class="nav-link">Счета</p></span>
                     <div class="dropdown-content">
                         <a href="{{ url_for('financial.wallet') }}" class="nav-link">Открыть счет</a>
@@ -94,7 +88,7 @@
                     </div>
                     {% for u in variant %}
                         <div class="form-group mt-3">
-                            <input type="checkbox" about="forgeneral" name="{{ u.name }}">{{ u.name }}<br>
+                            <input type="checkbox" about="forgeneral" name="general_{{ u.name }}">{{ u.name }}<br>
                         </div>
                     {% endfor %}
                 </div>
@@ -112,7 +106,7 @@
                     </div>
                     {% for u in variant %}
                         <div class="form-group mt-3">
-                            <input type="checkbox" about="forpublic" name="{{ u.name }}">{{ u.name }} <br>
+                            <input type="checkbox" about="forpublic" name="public_{{ u.name }}">{{ u.name }} <br>
                         </div>
                     {% endfor %}
                 </div>

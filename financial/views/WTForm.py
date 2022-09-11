@@ -9,9 +9,9 @@ from wtforms import (
     PasswordField,
     SelectField,
     DateTimeLocalField,
-    IntegerField,
+    FloatField
 )
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, NumberRange
 
 from financial.service.accounts import get_name_account
 from financial.service.currency import get_currency
@@ -41,6 +41,7 @@ class LoginForm(FlaskForm):
 
 class CreateCurrency(FlaskForm):
     name = StringField('Название:', validators=[DataRequired(), Length(min=1, max=20)])
+    equal = SelectField("Относительно $", choices=['Больше', 'Меньше', 'Равно'])
 
 
 class Register(FlaskForm):
@@ -66,7 +67,7 @@ class Register(FlaskForm):
 
 
 class Income(FlaskForm):
-    sum = IntegerField("Сумма: ", validators=[DataRequired()])
+    sum = FloatField("Сумма: ", validators=[DataRequired(), NumberRange(min=0, max=9999999999)])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ")
@@ -79,7 +80,7 @@ class Income(FlaskForm):
 
 
 class Outcome(FlaskForm):
-    sum = IntegerField("Сумма: ", validators=[DataRequired()])
+    sum = FloatField("Сумма: ", validators=[DataRequired()])
     currency = SelectField("Валюта", choices=[])
     wallet = SelectField("Выберите кошелек", choices=[])
     info = StringField("Введите комментарий: ")
@@ -91,7 +92,7 @@ class Outcome(FlaskForm):
 
 
 class Move(FlaskForm):
-    sum_ = IntegerField("Сумма: ", validators=[DataRequired()])
+    sum_ = FloatField("Сумма: ", validators=[DataRequired()])
     from_ = SelectField("Кошелек откуда", choices=[])
     currency_from = SelectField("Валюта", choices=[])
     to_ = SelectField("Кошелек куда", choices=[])

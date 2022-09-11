@@ -16,7 +16,7 @@ class Currency(database.Model):
     #: admin's name
     name = database.Column(database.String(length=255), nullable=False, unique=True)
 
-    def __init__(self, name):
+    def __init__(self, name, equal):
         #: admin's name
         self.name = name
 
