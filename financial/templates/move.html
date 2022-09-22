@@ -16,7 +16,7 @@
             <div class="login-wrap p-4 p-md-5">
                 {% for cat, msg in get_flashed_messages(True) %}
                     <script type="text/javascript">window.setTimeout("document.getElementById('successMessage').style.display='none';", 5000); </script>
-                    <div id="successMessage" class="flash">{{ msg }}</div>
+                    <div id="errormessage" class="flasherror">{{ msg }}</div>
                 {% endfor %}
                 <form action="" method="post" class="form-contact" id="movingform">
                     {{ form.hidden_tag() }}
@@ -32,7 +32,7 @@
                             {% if field.name =='date' %}
                                 <p>{{ field.label() }}</p>
                                 <div class="form-group mt-3">
-                                    {{ field(class="form-control",id='today') }}
+                                    {{ field(class="form-control",id='today',onchange='more_then_now()') }}
                                 </div>
                             {% elif field.name =='sum_' %}
                                 <p>{{ field.label() }}</p>
@@ -89,6 +89,14 @@
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('today').max = now.toISOString().slice(0, 16);
             document.getElementById('today').value = now.toISOString().slice(0, 16);
+            let global_date = document.getElementById('today').value
+
+            function more_then_now() {
+                let current = document.getElementById('today').value
+                if (current.slice(11, 16) > global_date.slice(11, 16) && current.slice(0, 10) === global_date.slice(0, 10)) {
+                    document.getElementById('today').value = global_date;
+                }
+            }
 
         </script>
     </div>

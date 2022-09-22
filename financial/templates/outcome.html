@@ -33,7 +33,7 @@
                             {% if field.name =='date' %}
                                 <p>{{ field.label() }}</p>
                                 <div class="form-group mt-3">
-                                    {{ field(class="form-control",id='date') }}
+                                    {{ field(class="form-control",id='date', onchange='more_then_now()') }}
                                 </div>
                             {% elif field.name =='sum' %}
                                 <p>{{ field.label() }}</p>

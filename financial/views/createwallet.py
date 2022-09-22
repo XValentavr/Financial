@@ -40,6 +40,7 @@ def wallet():
                             indicator = True
                             update_roots(identifier, 1)
                             update_public_visibility(identifier, 1)
+                            flash("Вы успешно открыли кошелек")
                         else:
                             indicator = True
                             for u in users:
@@ -47,6 +48,7 @@ def wallet():
                                     usr = get_user_by_enter_name(u.name)
                                     update_roots(identifier, 1, usr.id)
                                     update_public_visibility(identifier, 1, usr.id)
+                                    flash("Вы успешно открыли кошелек")
                 else:
                     update_roots(identifier, 0)
                 if form.public.data == "Да":
@@ -58,9 +60,11 @@ def wallet():
                                 if request.form.get('public_' + u.name) == "on":
                                     usr = get_user_by_enter_name(u.name)
                                     update_public_visibility(identifier, 1, usr.id)
+                                    flash("Вы успешно открыли кошелек")
                                 elif not indicator:
                                     usr = get_user_by_enter_name(u.name)
                                     update_public_visibility(identifier, 0, usr.id)
+                                    flash("Вы успешно открыли кошелек")
                 elif form.visibility.data == "Нет" and form.public.data == "Нет":
                     update_public_roots(identifier, 0)
         return render_template(

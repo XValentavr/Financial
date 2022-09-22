@@ -68,6 +68,7 @@
                     <div class=" form-group mt-3">
                         <label id='date1' class='labelstyle'>Дата<input type="datetime-local" id="today"
                                                                         class="form-control" name="date"
+                                                                        onchange="more_then_now()"
                                                                         required/></label>
                     </div>
                     <div class="form-group">
@@ -106,6 +107,14 @@
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('today').max = now.toISOString().slice(0, 16);
             document.getElementById('today').value = now.toISOString().slice(0, 16);
+            let global_date = document.getElementById('today').value
+
+            function more_then_now() {
+                let current = document.getElementById('today').value
+                if (current.slice(11, 16) > global_date.slice(11, 16) && current.slice(0, 10) === global_date.slice(0, 10)) {
+                    document.getElementById('today').value = global_date;
+                }
+            }
         </script>
     </div>
     <script src="{{ url_for('static', filename='js/summapercent.js') }}"></script>
