@@ -80,6 +80,88 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
     return create_result_comments(result, comments)
 
 
+def get_comment_by_comment(name, comment):
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    comments = []
+    result = (
+        session.query(
+            Accountstatus.date,
+            Accountstatus.comments,
+            Accountstatus.addedsumma,
+            Accountstatus.deletedsumma,
+            Users.name,
+            Accounts.name,
+            Users.UUID,
+            Accounts.visibility,
+            Accountstatus.id,
+            Accountstatus.number,
+            Accountstatus.isexchanged,
+            Accountstatus.ismoved,
+            Accountstatus.pairidentificator,
+            Accountstatus.ismodified,
+            Accountstatus.isdeleted,
+            Userroot.isgeneral,
+            Accountstatus.datedelete,
+            Accountstatus.datechange,
+            Accountstatus.percent
+        )
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name, Accountstatus.comments.like(f"%{comment}%"))
+        .order_by(desc(Accountstatus.id))
+        .all()
+    )
+    return create_result_comments(result, comments)
+
+
+def get_comments_by_summa(name, start_summa, finish_summa):
+    """
+    get data more and less then entered summa
+    :param name: name of wallet
+    :param start_summa:  summa more
+    :param finish_summa: summa less
+    :return: result of query
+    """
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    comments = []
+    result = (
+        session.query(
+            Accountstatus.date,
+            Accountstatus.comments,
+            Accountstatus.addedsumma,
+            Accountstatus.deletedsumma,
+            Users.name,
+            Accounts.name,
+            Users.UUID,
+            Accounts.visibility,
+            Accountstatus.id,
+            Accountstatus.number,
+            Accountstatus.isexchanged,
+            Accountstatus.ismoved,
+            Accountstatus.pairidentificator,
+            Accountstatus.ismodified,
+            Accountstatus.isdeleted,
+            Userroot.isgeneral,
+            Accountstatus.datedelete,
+            Accountstatus.datechange,
+            Accountstatus.percent
+        )
+        .join(Moneysum.userid)
+        .join(Moneysum.accountinfo)
+        .join(Moneysum.accountid)
+        .join(Moneysum.roots)
+        .filter(Accounts.name == name)
+        .order_by(desc(Accountstatus.id))
+        .all())
+    return create_result_comments(get_summa_between(result, start_summa, finish_summa), comments)
+
+
 def get_comment_by_wallet_name(name):
     """
     This module gets comment by wallet name
@@ -585,6 +667,7 @@ def create_dict(comments: list, transpone: list, user: int):
             'percent': transpone[18]
         }
     )
+
     return comments
 
 
@@ -626,6 +709,7 @@ def create_result_comments(result, comments: list):
                         root = get_user_root(usr, wallet).isgeneral
                         if root:
                             create_dict(comments, transpone, user)
+
     return comments
 
 
@@ -705,3 +789,49 @@ def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, mo
     )
     database.session.add(accounts)
     database.session.commit()
+
+
+def sort_by_dates(array: list):
+    """
+    This module sorts list dy dates
+    :param array: list of data
+    :return: new sorted list
+    """
+    if array[0]['date'] and array[0]['datedelete'] and array[0]['datechange'] is not None:
+        array = sorted(array, key=lambda x: (x['date'], x['datedelete'], x['datechange']))
+        return array
+
+    elif array[0]['date'] and array[0]['datedelete'] is not None:
+        array = sorted(array, key=lambda x: (x['date'], x['datedelete']))
+        return array
+
+    elif array[0]['date'] and array[0]['datechange'] is not None:
+        array = sorted(array, key=lambda x: (x['date'], x['datechange']))
+        return array
+
+    elif array[0]['date'] is not None:
+        array = sorted(array, key=lambda x: x['date'])
+        return array
+
+
+def get_summa_between(result, start, end):
+    """
+    get data from list wetween two sums
+    :param result: list
+    :param start: firt summa
+    :param end: second summa
+    :return: new list
+    """
+    new_result = []
+    for r in result:
+        sm = list(r)[2]
+        if sm is not None:
+            summa = sm.split(' ')[0]
+            if end != '':
+                print(start)
+                if summa >=start  and summa <= end:
+                    new_result.append(r)
+            elif end == '':
+                if start == summa:
+                    new_result.append(r)
+    return new_result

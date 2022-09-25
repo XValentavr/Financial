@@ -13,7 +13,8 @@ from financial.service.comments import (
     get_all_comments,
     reset_summa,
     get_comment_by_wallet_name_and_dates,
-    get_comment_by_wallet_name,
+    get_comment_by_wallet_name, get_comment_by_comment,
+    get_comments_by_summa
 )
 
 parser = reqparse.RequestParser()
@@ -25,6 +26,9 @@ parser.add_argument("addedsumma")
 parser.add_argument("deletedsumma")
 parser.add_argument("money")
 parser.add_argument("identifier")
+parser.add_argument("from")
+parser.add_argument("to")
+parser.add_argument("flag")
 
 
 def validate_date(date):
@@ -60,10 +64,13 @@ class SingleCommentDate(Resource):
     @staticmethod
     def get(identifier):
         args = request.args
-        if (
-            len(args) == 2
-            and validate_date(args["start_date"].replace("-", "/"))
-            and validate_date(args["end_date"].replace("-", "/"))
+        if len(args) == 3:
+            if args['from'] and (args['to'] or not args['to']):
+                return jsonify(get_comments_by_summa(unquote(identifier), args['from'], args['to']))
+        elif (
+                len(args) == 2
+                and validate_date(args["start_date"].replace("-", "/"))
+                and validate_date(args["end_date"].replace("-", "/"))
         ):
             return jsonify(
                 get_comment_by_wallet_name_and_dates(
@@ -72,23 +79,26 @@ class SingleCommentDate(Resource):
                     end=args["end_date"].replace("-", "/"),
                 )
             )
-        if (
-            len(args) == 2
-            and validate_date(args["start_date"].replace("-", "/"))
-            and not validate_date(args["end_date"].replace("-", "/"))
+        elif (
+                len(args) == 2
+                and validate_date(args["start_date"].replace("-", "/"))
+                and not validate_date(args["end_date"].replace("-", "/"))
         ):
             return jsonify(
                 get_comment_by_wallet_name_and_dates(
                     unquote(identifier), start=args["start_date"].replace("-", "/")
                 )
             )
-        if (
-            len(args) == 2
-            and not validate_date(args["start_date"].replace("-", "/"))
-            and not validate_date(args["end_date"].replace("-", "/"))
+        elif (
+                len(args) == 2
+                and not validate_date(args["start_date"].replace("-", "/"))
+                and not validate_date(args["end_date"].replace("-", "/"))
         ):
             return jsonify(get_comment_by_wallet_name(unquote(identifier)))
-        if len(args) == 0:
+        elif len(args) == 1:
+            if args['comment'] or not args['comment']:
+                return jsonify(get_comment_by_comment(unquote(identifier), args['comment']))
+        elif len(args) == 0:
             return jsonify(get_comment_by_wallet_name(unquote(identifier)))
         return abort(Response("Couldn't perform search. Invalid data", 400))
 

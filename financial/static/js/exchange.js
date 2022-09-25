@@ -41,7 +41,9 @@ function exchanger(summa, rate, to, from) {
         }
 
     }
-    document.getElementById("newsumma").value = valuta_dict[from][to].toFixed(2);
+    if (valuta_dict[from][to] === Infinity) {
+        document.getElementById("newsumma").value = null
+    } else document.getElementById("newsumma").value = valuta_dict[from][to].toFixed(2);
 }
 
 function onchange_summa() {

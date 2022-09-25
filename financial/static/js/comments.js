@@ -250,3 +250,45 @@ function get_story_date() {
         })
 
 }
+
+function get_story_comment() {
+    let table = document.getElementById("userstory");
+    let rowCount = table.rows.length;
+    for (let i = rowCount - 1; i >= 0; i--) {
+        table.deleteRow(i);
+    }
+    let comment = document.getElementById('comment').value
+    let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
+    fetch('/api/comments/' + page + '?comment=' + comment)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.length > 0) {
+                displaydata(getter(data))
+            } else {
+                alert("Ничего не найдено, проверьте данные")
+            }
+        })
+}
+
+function get_story_sum() {
+    let table = document.getElementById("userstory");
+    let rowCount = table.rows.length;
+    for (let i = rowCount - 1; i >= 0; i--) {
+        table.deleteRow(i);
+    }
+    let current_sum_value = document.getElementById('current_sum_value').value
+    let to_sum_value = document.getElementById('to_sum_value').value
+    let from_sum_value = document.getElementById('from_sum_value').value
+    if (from_sum_value !== '') {
+        current_sum_value = from_sum_value
+    }
+    let page = decodeURI(document.URL.substring(document.URL.lastIndexOf('/')))
+    fetch('/api/comments/' + page + '?from=' + current_sum_value + "&to=" + to_sum_value + '&flag=' + true).then((response) => response.json())
+        .then((data) => {
+            if (data.length > 0) {
+                displaydata(getter(data))
+            } else {
+                alert("Ничего не найдено, проверьте данные")
+            }
+        })
+}

@@ -54,7 +54,16 @@
         </div>
     </div>
 </nav>
-<div class="left">
+<div class="dropdown_search">
+    <label for="search">Выберите тип поиска:</label>
+    <select id="search" onchange="where_checker()">
+        <option value="" selected disabled hidden>Выбрать</option>
+        <option id='using_date'>По дате</option>
+        <option id='using_sum'>По сумме</option>
+        <option is='using_comm'>По комментарию</option>
+    </select>
+</div>
+<div class="left" id='by_date' style="display:none">
     <div class=" form-group mt-3">
         <label class='labelstyle'>C<input type="date"
                                           class="form-control" name="date" id='start_date'
@@ -79,7 +88,66 @@
         </button>
     </a>
 </div>
-<div class='center_comments' id='setcomments'>
+
+<div class="left" id='by_comment' style="display:none">
+    <div class=" form-group mt-3">
+        <label class='labelstyle'>Комментарий<input type="search"
+                                                    class="form-control" name="date" id="comment"
+                                                    required/></label>
+    </div>
+    <div>
+        <button type="submit" value="ok" onclick="get_story_comment()"
+                class="form-inline  btn btn-primary rounded submit px-3">
+            &#128270;
+        </button>
+    </div>
+    <a href="{{ url_for('financial.income') }}">
+        <button class="form-inline  btn btn-primary rounded submit px-3" value="U+2190">
+            &#8592;
+        </button>
+    </a>
+</div>
+<div class="left" id='by_sum' style="display:none">
+    <div class="dropdown_search">
+        <label for="search_sum">Выберите тип поиска по сумме:</label>
+        <select id="search_sum" onchange="where_checker()">
+            <option value="" selected disabled hidden>Выбрать</option>
+            <option id='current_sum'>Точная сумма</option>
+            <option id='between_sum'>В диапазоне</option>
+        </select>
+    </div>
+    <div id='div_current_sum' style="display: none">
+        <div class=" form-group mt-3">
+            <label class='labelstyle'>Сумма:<input type="number"
+                                                   class="form-control"  id="current_sum_value"
+                                                   required/></label>
+        </div>
+    </div>
+    <div id='div_between_sum' style="display: none">
+        <div class=" form-group mt-3">
+            <label class='labelstyle'>С:<input type="number"
+                                               class="form-control"  id="from_sum_value"
+                                               required/></label>
+        </div>
+        <div class=" form-group mt-3">
+            <label class='labelstyle'>По:<input type="number"
+                                                class="form-control" name="date" id="to_sum_value"
+                                                required/></label>
+        </div>
+    </div>
+    <div>
+        <button type="submit" value="ok" onclick="get_story_sum()"
+                class="form-inline  btn btn-primary rounded submit px-3">
+            &#128270;
+        </button>
+    </div>
+    <a href="{{ url_for('financial.income') }}">
+        <button class="form-inline  btn btn-primary rounded submit px-3" value="U+2190">
+            &#8592;
+        </button>
+    </a>
+</div>
+<div class='center_comments' id='setcomments' style="display: none">
     <table class="comments_date" id="userstory">
         <thead>
         </thead>
@@ -91,5 +159,8 @@
 <script src="{{ url_for('static', filename='js/popper.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/walletinfo.js') }}"></script>
 <script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+
+
 </html>
