@@ -18,8 +18,18 @@ def move():
         message = form.get("errormessage")
         if message is None:
             if wtform.validate_on_submit():
-                moving_command(wtform)
-                return redirect(request.referrer)
+                if wtform.to_.data == wtform.from_.data:
+                    flash('Вы переводите в тот же кошелек. Смените кошелек!')
+                    return render_template(
+                        "move.html",
+                        form=wtform,
+                        user=session["user"],
+                        superuser=session["superuser"],
+                        ths=get_list_currency(),
+                    )
+                else:
+                    moving_command(wtform)
+                    return redirect(request.referrer)
 
         else:
             add_error(message)

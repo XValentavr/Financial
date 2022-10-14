@@ -2,7 +2,7 @@ import os
 import uuid
 
 import sqlalchemy
-from flask import request, session as s, redirect, flash, url_for
+from flask import request, session as s, redirect, flash, url_for, render_template, session
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
@@ -11,9 +11,8 @@ from financial.models.accountstatus import Accountstatus
 from financial.models.moneysum import Moneysum
 from financial.service.currency import (
     get_current_currency_by_name,
-    get_current_currency,
+    get_current_currency, get_list_currency,
 )
-from financial.service.exchangerate import MoneyRate
 from financial.service.userroot import get_user_root_id
 from financial.service.users import get_user_by_UUID
 from financial.service.wallet import get_current_wallet_by_name
@@ -177,7 +176,6 @@ def exchange_command(form):
     info = request.form.get("comments")
     date = str(request.form.get("date"))
     final_sum = 0
-    print(request.form)
     new_entered_summa = float(request.form.get("changed_summa"))
     if summa_to_delete:
         for summa_to_delete in summa_to_delete:
@@ -261,9 +259,6 @@ def exchange_command(form):
 def moving_command(form):
     from_ = form.from_.data
     to_ = form.to_.data
-    if to_ == from_:
-        flash('Вы переводите в тот же кошелек. Смените кошелек!')
-        return redirect(url_for('financial.move'))
     pair = uuid.uuid4()
     sum_ = float(form.sum_.data)
     currency_from = int(form.currency_from.data)
@@ -375,6 +370,7 @@ def reset_moneysum(status_id: int, identifier: int, summa: float):
     from financial.service.accounts import delete_accountstatus
 
     changed = Moneysum.query.filter_by(id=identifier).first()
+
     changed.id = changed.id
     changed.user = changed.user
     changed.currency = changed.currency

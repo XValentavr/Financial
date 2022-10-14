@@ -16,7 +16,7 @@
             <div class="login-wrap p-4 p-md-5">
                 {% for cat, msg in get_flashed_messages(True) %}
                     <script type="text/javascript">window.setTimeout("document.getElementById('successMessage').style.display='none';", 5000); </script>
-                    <div id="errormessage" class="flasherror">{{ msg }}</div>
+                    <div id="successMessage" class="flasherror">{{ msg }}</div>
                 {% endfor %}
                 <form action="" method="post" class="form-contact" id="movingform">
                     {{ form.hidden_tag() }}

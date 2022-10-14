@@ -18,7 +18,8 @@
                     <div id="successMessage" class="flasherror">{{ msg }}</div>
                     <br>
                 {% endfor %}
-                <form action="" method="post" class="form-contact" name="popup" id="exchangeform">
+                <form action="" method="post" class="form-contact" name="popup" id="exchangeform"
+                      onsubmit="change_exchange_form">
                     <div class="form-group mt-3">
                         <label class='labelstyle'>Продали из:</label>
                         <select name="wallet_from" class="form-control" id='wallet'>
@@ -58,11 +59,13 @@
                         <label>
                             <div style="display:inline-block">
                                 <label class='labelstyle'>Получили:</label><br>
-                                <input id="newsumma" type="number" class="summa_inline" step="0.01" onchange="onchange_summa()"
+                                <input id="newsumma" type="number" class="summa_inline" step="0.01"
+                                       onchange="onchange_summa()"
                                        name="changed_summa"
                                        style="border: none">
                                 <label class='labelstyle'>по курсу</label>
-                                <input id="valuta" type="number" name="rate_exchange" class="valuta" style="border: none" step="0.01"
+                                <input id="valuta" type="number" name="rate_exchange" class="valuta"
+                                       style="border: none" step="0.01"
                                        onchange="onchange_rate()">
                             </div>
                         </label>
@@ -100,7 +103,7 @@
         </div>
         <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
         <script src="{{ url_for('static', filename='js/support.js') }}" defer></script>
-        <script src="{{ url_for('static', filename='js/exchange.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/exchange.js') }}" defer></script>
         <script>
             let form = document.getElementById('exchangeform');
             let submitButton = document.getElementById('submitID');

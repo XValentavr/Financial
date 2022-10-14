@@ -399,8 +399,6 @@ def insert_pay_account(form):
     user = get_user_by_UUID(s["UUID"].strip())
     user = user.get("id")
     wallet = get_current_wallet_by_name(wallet)
-    print(summa)
-    print(percent)
     if float(percent) > 0:
         summa = float(summa) - (float(summa) * (float(percent) / 100))
     else:
@@ -467,10 +465,33 @@ def delete_accountstatus(identifier: int):
     :return: new changed database
     """
     status = Accountstatus.query.get_or_404(identifier)
-    status.isdeleted = True
-    status.ismodified = s["UUID"]
-    status.datedelete = datetime.datetime.now()
-    database.session.add(status)
+    if status.addedsumma is not None:
+        added = status.addedsumma
+    else:
+        added = None
+    if status.deletedsumma is not None:
+        deleted = status.deletedsumma
+    else:
+        deleted = None
+    accounts = Accountstatus(
+        money=status.money,
+        date=status.date,
+        comments=status.comments,
+        addedsumma=added,
+        deletedsumma=deleted,
+        number=status.number,
+        percent=status.percent,
+        isexchanged=0,
+        ismoved=0,
+        ismodified=s["UUID"],
+        isdeleted=True,
+        pairidentificator=status.pairidentificator,
+        useridentificator=status.useridentificator,
+        datedelete=datetime.datetime.now()
+    )
+    database.session.delete(status)
+    database.session.commit()
+    database.session.add(accounts)
     database.session.commit()
 
 

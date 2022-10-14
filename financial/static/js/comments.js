@@ -292,3 +292,5 @@ function get_story_sum() {
             }
         })
 }
+
+

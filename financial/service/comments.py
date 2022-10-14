@@ -47,37 +47,53 @@ def get_comment_by_wallet_name_and_dates(name, start, end=None):
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
+    final_r = []
     result = (
         session.query(
-            Accountstatus.date,
-            Accountstatus.comments,
-            Accountstatus.addedsumma,
-            Accountstatus.deletedsumma,
-            Users.name,
-            Accounts.name,
-            Users.UUID,
-            Accounts.visibility,
-            Accountstatus.id,
-            Accountstatus.number,
-            Accountstatus.isexchanged,
-            Accountstatus.ismoved,
             Accountstatus.pairidentificator,
-            Accountstatus.ismodified,
-            Accountstatus.isdeleted,
-            Userroot.isgeneral,
-            Accountstatus.datedelete,
-            Accountstatus.datechange,
-            Accountstatus.percent
+
         )
         .join(Moneysum.userid)
         .join(Moneysum.accountinfo)
         .join(Moneysum.accountid)
         .join(Moneysum.roots)
-        .filter(Accounts.name == name, Accountstatus.date.between(start, end))
+        .filter(Accounts.name == name)
         .order_by(desc(Accountstatus.id))
         .all()
     )
-    return create_result_comments(result, comments)
+    for p in result:
+        result = (
+            session.query(
+                Accountstatus.date,
+                Accountstatus.comments,
+                Accountstatus.addedsumma,
+                Accountstatus.deletedsumma,
+                Users.name,
+                Accounts.name,
+                Users.UUID,
+                Accounts.visibility,
+                Accountstatus.id,
+                Accountstatus.number,
+                Accountstatus.isexchanged,
+                Accountstatus.ismoved,
+                Accountstatus.pairidentificator,
+                Accountstatus.ismodified,
+                Accountstatus.isdeleted,
+                Userroot.isgeneral,
+                Accountstatus.datedelete,
+                Accountstatus.datechange,
+                Accountstatus.percent
+            )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accountstatus.pairidentificator == list(p)[0], Accountstatus.date.between(start, end))
+            .order_by(desc(Accountstatus.id))
+            .all()
+        )
+        final_r.append(result)
+    return create_result_comments(create_list_from_list_of_lists(final_r), comments)
 
 
 def get_comment_by_comment(name, comment):
@@ -85,37 +101,54 @@ def get_comment_by_comment(name, comment):
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
+    final_r = []
     result = (
         session.query(
-            Accountstatus.date,
-            Accountstatus.comments,
-            Accountstatus.addedsumma,
-            Accountstatus.deletedsumma,
-            Users.name,
-            Accounts.name,
-            Users.UUID,
-            Accounts.visibility,
-            Accountstatus.id,
-            Accountstatus.number,
-            Accountstatus.isexchanged,
-            Accountstatus.ismoved,
             Accountstatus.pairidentificator,
-            Accountstatus.ismodified,
-            Accountstatus.isdeleted,
-            Userroot.isgeneral,
-            Accountstatus.datedelete,
-            Accountstatus.datechange,
-            Accountstatus.percent
+
         )
         .join(Moneysum.userid)
         .join(Moneysum.accountinfo)
         .join(Moneysum.accountid)
         .join(Moneysum.roots)
-        .filter(Accounts.name == name, Accountstatus.comments.like(f"%{comment}%"))
+        .filter(Accounts.name == name)
         .order_by(desc(Accountstatus.id))
         .all()
     )
-    return create_result_comments(result, comments)
+    for p in result:
+        result = (
+            session.query(
+                Accountstatus.date,
+                Accountstatus.comments,
+                Accountstatus.addedsumma,
+                Accountstatus.deletedsumma,
+                Users.name,
+                Accounts.name,
+                Users.UUID,
+                Accounts.visibility,
+                Accountstatus.id,
+                Accountstatus.number,
+                Accountstatus.isexchanged,
+                Accountstatus.ismoved,
+                Accountstatus.pairidentificator,
+                Accountstatus.ismodified,
+                Accountstatus.isdeleted,
+                Userroot.isgeneral,
+                Accountstatus.datedelete,
+                Accountstatus.datechange,
+                Accountstatus.percent
+            )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accountstatus.pairidentificator == list(p)[0], Accountstatus.comments.like(f"%{comment}%"))
+            .order_by(desc(Accountstatus.id))
+            .all()
+        )
+        final_r.append(result)
+
+    return create_result_comments(create_list_from_list_of_lists(final_r), comments)
 
 
 def get_comments_by_summa(name, start_summa, finish_summa):
@@ -130,27 +163,11 @@ def get_comments_by_summa(name, start_summa, finish_summa):
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
+    final_r = []
     result = (
         session.query(
-            Accountstatus.date,
-            Accountstatus.comments,
-            Accountstatus.addedsumma,
-            Accountstatus.deletedsumma,
-            Users.name,
-            Accounts.name,
-            Users.UUID,
-            Accounts.visibility,
-            Accountstatus.id,
-            Accountstatus.number,
-            Accountstatus.isexchanged,
-            Accountstatus.ismoved,
             Accountstatus.pairidentificator,
-            Accountstatus.ismodified,
-            Accountstatus.isdeleted,
-            Userroot.isgeneral,
-            Accountstatus.datedelete,
-            Accountstatus.datechange,
-            Accountstatus.percent
+
         )
         .join(Moneysum.userid)
         .join(Moneysum.accountinfo)
@@ -158,8 +175,42 @@ def get_comments_by_summa(name, start_summa, finish_summa):
         .join(Moneysum.roots)
         .filter(Accounts.name == name)
         .order_by(desc(Accountstatus.id))
-        .all())
-    return create_result_comments(get_summa_between(result, start_summa, finish_summa), comments)
+        .all()
+    )
+    for p in result:
+        result = (
+            session.query(
+                Accountstatus.date,
+                Accountstatus.comments,
+                Accountstatus.addedsumma,
+                Accountstatus.deletedsumma,
+                Users.name,
+                Accounts.name,
+                Users.UUID,
+                Accounts.visibility,
+                Accountstatus.id,
+                Accountstatus.number,
+                Accountstatus.isexchanged,
+                Accountstatus.ismoved,
+                Accountstatus.pairidentificator,
+                Accountstatus.ismodified,
+                Accountstatus.isdeleted,
+                Userroot.isgeneral,
+                Accountstatus.datedelete,
+                Accountstatus.datechange,
+                Accountstatus.percent
+            )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accountstatus.pairidentificator == list(p)[0])
+            .order_by(desc(Accountstatus.id))
+            .all())
+        final_r.append(result)
+    return create_result_comments(create_list_from_list_of_lists(
+        get_summa_between(create_list_from_list_of_lists(final_r), start_summa, finish_summa)),
+        comments)
 
 
 def get_comment_by_wallet_name(name):
@@ -171,27 +222,11 @@ def get_comment_by_wallet_name(name):
     session = sessionmaker(bind=engine)
     session = session()
     comments = []
+    final_r = []
     result = (
         session.query(
-            Accountstatus.date,
-            Accountstatus.comments,
-            Accountstatus.addedsumma,
-            Accountstatus.deletedsumma,
-            Users.name,
-            Accounts.name,
-            Users.UUID,
-            Accounts.visibility,
-            Accountstatus.id,
-            Accountstatus.number,
-            Accountstatus.isexchanged,
-            Accountstatus.ismoved,
             Accountstatus.pairidentificator,
-            Accountstatus.ismodified,
-            Accountstatus.isdeleted,
-            Userroot.isgeneral,
-            Accountstatus.datedelete,
-            Accountstatus.datechange,
-            Accountstatus.percent
+
         )
         .join(Moneysum.userid)
         .join(Moneysum.accountinfo)
@@ -201,7 +236,39 @@ def get_comment_by_wallet_name(name):
         .order_by(desc(Accountstatus.id))
         .all()
     )
-    return create_result_comments(result, comments)
+    for p in result:
+        result = (
+            session.query(
+                Accountstatus.date,
+                Accountstatus.comments,
+                Accountstatus.addedsumma,
+                Accountstatus.deletedsumma,
+                Users.name,
+                Accounts.name,
+                Users.UUID,
+                Accounts.visibility,
+                Accountstatus.id,
+                Accountstatus.number,
+                Accountstatus.isexchanged,
+                Accountstatus.ismoved,
+                Accountstatus.pairidentificator,
+                Accountstatus.ismodified,
+                Accountstatus.isdeleted,
+                Userroot.isgeneral,
+                Accountstatus.datedelete,
+                Accountstatus.datechange,
+                Accountstatus.percent,
+            )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accountstatus.pairidentificator == list(p)[0])
+            .order_by(desc(Accountstatus.id))
+            .all()
+        )
+        final_r.append(result)
+    return create_result_comments(create_list_from_list_of_lists(final_r), comments)
 
 
 def get_all_comments():
@@ -671,6 +738,10 @@ def create_dict(comments: list, transpone: list, user: int):
     return comments
 
 
+def create_list_from_list_of_lists(result):
+    return [second for first in result for second in first]
+
+
 def create_result_comments(result, comments: list):
     """
     This module creates list of comments to show user
@@ -709,7 +780,6 @@ def create_result_comments(result, comments: list):
                         root = get_user_root(usr, wallet).isgeneral
                         if root:
                             create_dict(comments, transpone, user)
-
     return comments
 
 
@@ -791,29 +861,6 @@ def insert_single_comm_add(added, summa_id, date, info, currency, sum_, user, mo
     database.session.commit()
 
 
-def sort_by_dates(array: list):
-    """
-    This module sorts list dy dates
-    :param array: list of data
-    :return: new sorted list
-    """
-    if array[0]['date'] and array[0]['datedelete'] and array[0]['datechange'] is not None:
-        array = sorted(array, key=lambda x: (x['date'], x['datedelete'], x['datechange']))
-        return array
-
-    elif array[0]['date'] and array[0]['datedelete'] is not None:
-        array = sorted(array, key=lambda x: (x['date'], x['datedelete']))
-        return array
-
-    elif array[0]['date'] and array[0]['datechange'] is not None:
-        array = sorted(array, key=lambda x: (x['date'], x['datechange']))
-        return array
-
-    elif array[0]['date'] is not None:
-        array = sorted(array, key=lambda x: x['date'])
-        return array
-
-
 def get_summa_between(result, start, end):
     """
     get data from list wetween two sums
@@ -824,14 +871,58 @@ def get_summa_between(result, start, end):
     """
     new_result = []
     for r in result:
-        sm = list(r)[2]
-        if sm is not None:
-            summa = sm.split(' ')[0]
+        list_tuple = list(r)
+        if list_tuple[2] is not None:
+            summa = list_tuple[2].split(' ')[0]
+            if list_tuple[18] is not None:
+                summa_percent = round((float(summa) * 100 / (100 - float(list_tuple[18]))), 1)
+            else:
+                summa_percent = 0.0
             if end != '':
-                print(start)
-                if summa >=start  and summa <= end:
-                    new_result.append(r)
+                if (float(start) <= float(summa) <= float(end)) or (
+                        float(start) <= float(summa_percent) <= float(end)):
+                    new_result.append(r[12])
             elif end == '':
-                if start == summa:
-                    new_result.append(r)
-    return new_result
+                if float(start) == float(summa) or float(start) == float(summa_percent):
+                    new_result.append(r[12])
+    return get_after_search_by_summa(new_result)
+
+
+def get_after_search_by_summa(pair):
+    engine = sqlalchemy.create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"))
+    session = sessionmaker(bind=engine)
+    session = session()
+    final_r = []
+    for p in pair:
+        result = (
+            session.query(
+                Accountstatus.date,
+                Accountstatus.comments,
+                Accountstatus.addedsumma,
+                Accountstatus.deletedsumma,
+                Users.name,
+                Accounts.name,
+                Users.UUID,
+                Accounts.visibility,
+                Accountstatus.id,
+                Accountstatus.number,
+                Accountstatus.isexchanged,
+                Accountstatus.ismoved,
+                Accountstatus.pairidentificator,
+                Accountstatus.ismodified,
+                Accountstatus.isdeleted,
+                Userroot.isgeneral,
+                Accountstatus.datedelete,
+                Accountstatus.datechange,
+                Accountstatus.percent,
+            )
+            .join(Moneysum.userid)
+            .join(Moneysum.accountinfo)
+            .join(Moneysum.accountid)
+            .join(Moneysum.roots)
+            .filter(Accountstatus.pairidentificator == p)
+            .order_by(desc(Accountstatus.id))
+            .all()
+        )
+        final_r.append(result)
+    return final_r
